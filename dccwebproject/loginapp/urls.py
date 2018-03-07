@@ -7,4 +7,7 @@ urlpatterns = [
  url(r'^$',views.loginpage),
  url(r'^loggin/$',views.loggin, name='loggin'),
  url(r'^dash/$',views.dash ,name='dash'),
+ url(r'^logout/$',views.logout ,name='logout'),
+ url(r'^dash2/$',views.dash2 ,name='dash2'),
+ url(r'^dash1/$',views.dash1 ,name='dash1'),
 ]
