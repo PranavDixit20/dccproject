@@ -10,4 +10,5 @@ urlpatterns = [
  url(r'^logout/$',views.logout ,name='logout'),
  url(r'^dash2/$',views.dash2 ,name='dash2'),
  url(r'^dash1/$',views.dash1 ,name='dash1'),
+ url(r'^calendar/$',views.calendar,name='calendar'),
 ]
