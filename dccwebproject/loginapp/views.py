@@ -26,3 +26,6 @@ def dash2(request):
 
 def dash1(request):
     return render(request,'loginapp/index.html')
+
+def calendar(request):
+    return render(request,'loginapp/calendar.html')
