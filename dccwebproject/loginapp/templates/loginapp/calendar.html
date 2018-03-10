@@ -573,6 +573,50 @@
               <div class="box-body no-padding">
                 <!-- THE CALENDAR -->
                 <div id="calendar"></div>
+
+                <!--modal form-->
+                <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document" id="modal1">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">call Allocate</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                      </div>
+                      <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                          <i class="fa fa-user prefix grey-text"></i>
+                          <input type="text" id="cname" class="form-control validate">
+                          <label data-error="wrong" data-success="right" for="form34">Your name</label>
+                        </div>
+
+                        <div class="md-form mb-5">
+                          <i class="fa fa-envelope prefix grey-text"></i>
+                          <input type="email" id="email" class="form-control validate">
+                          <label data-error="wrong" data-success="right" for="form29">Your email</label>
+                        </div>
+
+                        <div class="md-form mb-5">
+                          <i class="fa fa-tag prefix grey-text"></i>
+                          <input type="text" id="contact" class="form-control validate">
+                          <label data-error="wrong" data-success="right" for="form32">Contact</label>
+                        </div>
+
+                        <div class="md-form">
+                          <i class="fa fa-pencil prefix grey-text"></i>
+                          <textarea type="text" id="address" class="md-textarea form-control" rows="4"></textarea>
+                          <label data-error="wrong" data-success="right" for="form8">Address</label>
+                        </div>
+
+                      </div>
+                      <div class="modal-footer d-flex justify-content-center">
+                        <button id="modal-action" class="btn btn-primary">OK <i class="fa ml-1"></i></button>
+                        <button class="btn btn-primary" data-dismiss="modal">Cancel <i class="fa ml-1"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <!-- /.box-body -->
             </div>
@@ -805,10 +849,140 @@
   <script src="{% static 'loginapp/dist/js/demo.js' %}"></script>
   <!-- fullCalendar -->
   <script src="{% static 'loginapp/bower_components/moment/moment.js' %}"></script>
-  <script src="{% static 'loginapp/js/initializecal.js' %}"></script>
   <script src="{% static 'loginapp/bower_components/fullcalendar/fullcalendar.min.js' %}"></script>
   <!-- Page specific script -->
-  
+
+  <script>
+    //load page
+    $(document).ready(function () {
+      'use strict'
+      var myevents = [];
+      var curdate;
+
+
+      //fullcalendar
+      $('#calendar').fullCalendar({
+
+        editable: true,
+        droppable: true,
+        dragRevertDuration: 0,
+        startEditable: true,
+        eventLimit: true,
+        allDayDefault: true,
+        selectable: true,
+        selectHelper: true,
+        header: {
+          left: 'prev,next today myCustomButton',
+          center: 'title',
+          right: 'month,agendaWeek,agendaDay'
+        },
+
+        events: myevents,
+        color: 'yellow',
+        textColor: 'black',
+
+        //calendar date-selection function
+        select: function(start, end, jsEvent, view) {
+          var newdate = $('#calendar').fullCalendar('getDate');
+          console.log(newdate);
+          curdate = moment(start).format();
+          $('#startdt').val(curdate);
+          console.log(curdate);
+          moment(end).format() + 1;
+        },
+
+        //calendar day-click function
+        dayClick: function () {
+          $('modal').modal();
+          $('#modalContactForm').modal('show');
+          $('#calendar').fullCalendar('renderEvent', event);
+        },
+
+        drop: function () {
+          // is the "remove after drop" checkbox checked?
+          if ($('#drop-remove').is(':checked')) {
+            // if so, remove the element from the "Draggable Events" list
+            $(this).remove();
+          }
+        },
+        eventDragStop: function (event, jsEvent, ui, view) {
+
+          if (isEventOverDiv(jsEvent.clientX, jsEvent.clientY)) {
+            $('#calendar').fullCalendar('removeEvents', event._id);
+            var el = $("<div class='fc-event'>").appendTo('#external-events-listing').text(event.title);
+            el.draggable({
+              zIndex: 999,
+              revert: true,
+              revertDuration: 0
+            });
+            el.data('event', {
+              title: event.title,
+              id: event.id,
+              stick: true
+            });
+          }
+        }
+      });
+      //fullcalendar end
+      var isEventOverDiv = function(x, y) {
+
+        var external_events = $('#external-events');
+        var offset = external_events.offset();
+        offset.right = external_events.width() + offset.left;
+        offset.bottom = external_events.height() + offset.top;
+
+        // Compare
+        if (x >= offset.left &&
+          y >= offset.top &&
+          x <= offset.right &&
+          y <= offset.bottom) {
+          return true;
+        }
+        return false;
+
+      };
+
+      //modal-onclick function
+      $('.modal-action').click(function() {
+        var eventarr = [];
+        var company_name = $('#cname').val();
+        var company_email = $('#email').val();
+        var company_contact = $('#contact').val();
+        var company_address = $('#address').val();
+        var eventobj = {
+          title: title1,
+          start: curdate,
+          end: end1,
+          description: desc
+        };
+        eventarr.push(eventobj);
+        myevents.push(eventobj);
+        //add event to calendar
+        $('#calendar').fullCalendar('addEventSource', eventarr);
+        $('#calendar').fullCalendar('rerenderEvents');
+        console.log(myevents);
+      });
+
+
+      $('#external-events').each(function() {
+
+        // store data so the calendar knows to render an event upon drop
+        $(this).data('event', {
+          title: $.trim($(this).text()), // use the element's text as the event title
+          stick: true // maintain when user navigates (see docs on the renderEvent method)
+        });
+
+        // make the event draggable using jQuery UI
+        $(this).draggable({
+          zIndex: 999,
+          revert: true, // will cause the event to go back to its
+          revertDuration: 0 //  original position after the drag
+        });
+
+      });
+    });
+  </script>
+
 </body>
 
 </html>
