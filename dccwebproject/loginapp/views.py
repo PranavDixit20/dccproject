@@ -29,3 +29,6 @@ def dash1(request):
 
 def calendar(request):
     return render(request,'loginapp/calendar.html')
+
+def coregister(request):
+    return render(request,'loginapp/register.html')    
