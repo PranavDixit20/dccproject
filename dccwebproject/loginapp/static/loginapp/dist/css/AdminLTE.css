@@ -3250,6 +3250,7 @@ table.text-center th {
 }
 .login-box,
 .register-box {
+
   width: 360px;
   margin: 7% auto;
 }
