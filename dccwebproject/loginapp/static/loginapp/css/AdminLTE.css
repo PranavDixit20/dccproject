@@ -3269,6 +3269,7 @@ table.text-center th {
 }
 .login-box-body .form-control-feedback,
 .register-box-body .form-control-feedback {
+  
   color: #777;
 }
 .login-box-msg,
