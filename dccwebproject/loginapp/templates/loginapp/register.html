@@ -335,7 +335,7 @@
             </ul>
           </li>
           <li class="active">
-          <a href="{% url 'loginapp:coregister' %}">
+          <a href="{% url 'loginapp:regcoadmin' %}">
             <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
 
           </a>
@@ -581,102 +581,105 @@
                 <div class=" register-box-body ">
                   <p class="login-box-msg">Register a new co-Admin</p>
 
-                  <form action="../../index.html" method="post">
+                  <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    {{field.errors}}
                     <div class="col-sm-4 text-center">
-                      <b>Employe Id</b>
+                      <b>{{field.label}}</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.name}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-pencil form-control-feedback"></span>
                       </div>
                     </div>
-                    <div class="col-sm-4 text-center">
+                <!--    <div class="col-sm-4 text-center">
                       <b>Full name</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_name}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Email Id</b>
                       <div class="form-group has-feedback">
-                        <input type="email" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_email}}" type="email" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Contact No</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_number}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-phone form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Telephone No</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_telephone}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-phone-alt form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>City</b>
                       <div class="form-group has-feedback">
-                        <input type="textarea" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_city}}" type="textarea" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-map-marker form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Branch Code</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_branch_code}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-barcode form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Gender</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_gender}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Birthday</b>
                       <div class="form-group has-feedback">
-                        <input type="date" class="form-control" placeholder="Birth Date">
+                        <input name="{{field.coadmin_bdate}}" type="date" class="form-control" placeholder="Birth Date">
                         <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Age</b>
                       <div class="form-group has-feedback">
-                        <input type="number" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_age}}" type="number" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-bitcoin form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Joining Date</b>
                       <div class="form-group has-feedback">
-                        <input type="date" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_joining_date}}" type="date" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Qualification</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_qualification}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-certificate form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Designation</b>
                       <div class="form-group has-feedback">
-                        <input type="text" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_designation}}" type="text" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-certificate form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Photo</b>
                       <div class="form-group has-feedback">
-                        <input type="file" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_photo}}" type="file" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-picture form-control-feedback"></span>
                       </div>
                     </div>
@@ -684,18 +687,18 @@
                     <div class="col-sm-4 text-center">
                       <b>Password</b>
                       <div class="form-group has-feedback ">
-                        <input type="password" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_password}}" type="password" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                       </div>
                     </div>
                     <div class="col-sm-4 text-center">
                       <b>Retype password</b>
                       <div class="form-group has-feedback">
-                        <input type="password" class="form-control" placeholder="">
+                        <input name="{{field.coadmin_conf_pass}}" type="password" class="form-control" placeholder="">
                         <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
                       </div>
-                    </div>
-
+                    </div>-->
+                        {% endfor %}
                     <div class="row">
                       <div class="col-lg-8">
                         <div class="checkbox icheck">
@@ -713,6 +716,7 @@
                       </div>
                       <!-- /.col -->
                     </div>
+
                   </form>
 
 
