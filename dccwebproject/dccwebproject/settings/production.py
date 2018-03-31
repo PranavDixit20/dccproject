@@ -7,8 +7,6 @@ SECRET_KEY = '0@^9uca^^u3v2^b8^()^&n4eq=)dc!u7m@no-m*wkjv3+k*=8y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dccwebproject.settings.production")
-
 ALLOWED_HOSTS = ['*']
 
 # Database
@@ -24,3 +22,5 @@ DATABASES = {
         'PORT' : '3306',
     }
 }
+
+STATIC_URL = '/static/'
