@@ -1,5 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect,HttpResponse
 from . forms import RegisterForm
 from . models import coadmin
@@ -8,6 +10,7 @@ from . models import coadmin
 def loginpage(request):
     return render(request,'loginapp/login.html')
 
+@login_required
 def dash(request):
     return render(request,'loginapp/loggin/index.html')
 
@@ -41,43 +44,26 @@ def regcoadmin(request):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-            id = form.cleaned_data['coadmin_id']
-            name = form.cleaned_data['coadmin_name']
-            address = form.cleaned_data['coadmin_address']
-            email = form.cleaned_data['coadmin_email']
-            number = form.cleaned_data['coadmin_number']
-            telephone = form.cleaned_data['coadmin_telephone']
-            city = form.cleaned_data['coadmin_city']
-            branch_code = form.cleaned_data['coadmin_branch_code']
-            gender = form.cleaned_data['coadmin_gender']
-            bdate = form.cleaned_data['coadmin_bdate']
-            age = form.cleaned_data['coadmin_age']
-            joining_date = form.cleaned_data['coadmin_joining_date']
-            qualification = form.cleaned_data['coadmin_qualification']
-            designation = form.cleaned_data['coadmin_designation']
-            photo = form.cleaned_data['coadmin_photo']
-            password = form.cleaned_data['coadmin_password']
-            conf_password = form.cleaned_data['coadmin_conf_pass']
-
-            coadmin.objects.create(
-            co_id=id,
-            co_name=name,
-            co_address=address,
-            co_email=email,
-            contact_number=number,
-            tell_no=telephone,
-            co_city=city,
-            branch_code=branch_code,
-            co_gender=gender,
-            co_bdate=bdate,
-            co_age=age,
-            co_joining_date=joining_date,
-            co_qual=qualification,
-            co_designation=designation,
-            co_photo=ImageModel(co_photo=request.FILES['co_photo']),
-            co_pass=password,
-            co_conf_pass=conf_password,
-            ).save()
+            user = form.save()
+            user.refresh_from_db()
+            user.coadmin.id = form.cleaned_data.get('coadmin_id')
+            user.coadmin.name = form.cleaned_data.get('coadmin_name')
+            user.coadmin.address = form.cleaned_data.get('coadmin_address')
+            user.coadmin.email = form.cleaned_data.get('coadmin_email')
+            user.coadmin.number = form.cleaned_data.get('coadmin_number')
+            user.coadmin.telephone = form.cleaned_data.get('coadmin_telephone')
+            user.coadmin.city = form.cleaned_data.get('coadmin_city')
+            user.coadmin.branch_code = form.cleaned_data.get('coadmin_branch_code')
+            user.coadmin.gender = form.cleaned_data.get('coadmin_gender')
+            user.coadmin.bdate = form.cleaned_data.get('coadmin_bdate')
+            user.coadmin.age = form.cleaned_data.get('coadmin_age')
+            user.coadmin.joining_date = form.cleaned_data.get('coadmin_joining_date')
+            user.coadmin.qualification = form.cleaned_data.get('coadmin_qualification')
+            user.coadmin.designation = form.cleaned_data.get('coadmin_designation')
+            user.save()
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.name, password=raw_password)
+            login(request,user)
             return HttpResponseRedirect('/')
     else:
         form = RegisterForm()
