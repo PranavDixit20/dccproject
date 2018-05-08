@@ -318,23 +318,28 @@
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">MAIN NAVIGATION</li>
           <li class="treeview">
-            <a href="#">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-            <ul class="treeview-menu">
-              <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
               <li><a href="{% url 'loginapp:dash2' %}"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
-            </ul>
           </li>
           <li>
             <a href="{% url 'loginapp:regcoadmin' %}">
             <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
-
           </a>
-          </li>
+          </li
+          <li>
+          <a href="{% url 'loginapp:regengg' %}">
+            <i class="fa fa-files-o"></i> <span>Add Engg</span>
+          </a>
+        </li>
+        <li>
+        <a href="{% url 'loginapp:regcustom' %}">
+          <i class="fa fa-files-o"></i> <span>Add Customer</span>
+        </a>
+      </li>
+      <li>
+      <a href="{% url 'loginapp:getengg' %}">
+        <i class="fa fa-files-o"></i> <span>Engineers List</span>
+      </a>
+    </li>
           <li>
             <a href="widgets.html">
             <i class="fa fa-th"></i> <span>Widgets</span>
@@ -566,6 +571,7 @@
                 <div id="calendar"></div>
 
                 <!--modal form-->
+
                 <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document" id="modal1">
                     <div class="modal-content">
@@ -577,8 +583,11 @@
                       </div>
                       <div class="modal-body mx-3">
                         <div class="md-form mb-5">
-                          <i class="fa fa-user prefix grey-text"></i>
-                          <input type="text" id="cname" class="form-control validate">
+                          <form method="post" action="{% url 'loginapp:callalloclist' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                          {{callobj.as_p}}
+                        </form>
+                        <!--  <input type="text" id="cname" class="form-control validate">
                           <label data-error="wrong" data-success="right" for="form34">Your name</label>
                         </div>
 
@@ -600,7 +609,7 @@
                           <label data-error="wrong" data-success="right" for="form8">Address</label>
                         </div>
 
-                      </div>
+                      </div>-->
                       <div class="modal-footer d-flex justify-content-center">
                         <button id="modal-action" class="btn btn-primary">OK <i class="fa ml-1"></i></button>
                         <button class="btn btn-primary" data-dismiss="modal">Cancel <i class="fa ml-1"></i></button>
@@ -884,6 +893,7 @@
         //calendar day-click function
         dayClick: function () {
           $('modal').modal();
+
           $('#modalContactForm').modal('show');
           $('#calendar').fullCalendar('renderEvent', event);
         },

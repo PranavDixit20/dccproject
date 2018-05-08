@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.conf.urls import url,include
 from django.urls import path
 from . import views
+from loginapp import views
+from rest_framework.urlpatterns import format_suffix_patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^about/$',views.about),
     url(r'^',include('loginapp.urls')),
-    #url(r'^loginapp/',),
+    url(r'callallocation/',views.calllist.as_view()),
+
 ]

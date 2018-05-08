@@ -325,15 +325,38 @@
           </a>
           <ul class="treeview-menu">
             <li class="active"><a href="#"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
-            <li><a href="{% url 'loginapp:dash2' %}"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
           </ul>
         </li>
         <li>
         <a href="{% url 'loginapp:regcoadmin' %}">
           <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
-
         </a>
       </li>
+      <li>
+      <a href="{% url 'loginapp:regengg' %}">
+        <i class="fa fa-files-o"></i> <span>Add Engg</span>
+      </a>
+    </li>
+    <li>
+    <a href="{% url 'loginapp:regcustom' %}">
+      <i class="fa fa-files-o"></i> <span>Add Customer</span>
+    </a>
+  </li>
+  <li>
+  <a href="{% url 'loginapp:getcoadmin' %}">
+    <i class="fa fa-files-o"></i> <span>Coadmin List</span>
+  </a>
+</li>
+  <li>
+  <a href="{% url 'loginapp:getengg' %}">
+    <i class="fa fa-files-o"></i> <span>Engineers List</span>
+  </a>
+</li>
+<li>
+<a href="{% url 'loginapp:getcustomer' %}">
+  <i class="fa fa-files-o"></i> <span>Customer List</span>
+</a>
+</li>
         <li>
           <a href="pages/widgets.html">
             <i class="fa fa-th"></i> <span>Widgets</span>
