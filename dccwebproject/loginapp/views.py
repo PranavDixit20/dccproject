@@ -10,11 +10,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect,HttpResponse
 from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm
-from . models import engg,callallocate
-from . models import coadmin,callallocate
+from . models import engg
+from . models import callallocate
+from . models import coadmin
 from . models import customer
 import json
-from . serializers import CallAllocateSerializer
+from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
 
@@ -160,6 +161,7 @@ def regengg(request):
 
 
 def regcustom(request):
+
     if request.method == 'POST':
         customform = CustomerRegisterForm(request.POST,prefix='customform')
 
@@ -206,63 +208,79 @@ def regcustom(request):
         customform = CustomerRegisterForm(prefix='customform')
         return render(request,'loginapp/customregister.html',{'customform':customform,})
 
-def callallocate(request) :
+
+def callallocation(request):
+
     if request.method == 'POST':
-            callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
+        callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
 
-            if callallocateform.is_valid:
-                compname = callallocateform.cleaned_data['company_name']
-                compaddr = callallocateform.cleaned_data['company_address']
-                compemail = callallocateform.cleaned_data['company_email']
-                compcontact = callallocateform.cleaned_data['contact_number']
-                compprob = callallocateform.cleaned_data['company_problem']
-                calldate = callallocateform.cleaned_data['call_allocation_date']
-                calltime = callallocateform.cleaned_data['call_allocation_time']
-                enggname = callallocateform.cleaned_data['engg_name']
-                enggid = callallocateform.cleaned_data['engg_id']
-                enggcontact = callallocateform.cleaned_data['engg_contact']
-                callstatus = callallocateform.cleaned_data['call_status']
-                callclose = callallocateform.cleaned_data['call_closed_date']
-                calltype = callallocateform.cleaned_data['call_type']
-                compcty = callallocateform.cleaned_data['company_city']
-                callautoclose = callallocateform.cleaned_data['call_auto_close_date']
-                tat = callallocateform.cleaned_data['call_TAT']
-                note = callallocateform.cleaned_data['call_note']
-                cno = callallocateform.cleaned_data['complaint_no']
-                prdct = callallocateform.cleaned_data['product']
-                priority = callallocateform.cleaned_data['call_priority']
-                caller = callallocateform.cleaned_data['caller_name']
+        if callallocateform.is_valid():
+            compname = callallocateform.cleaned_data['company_name']
+            compaddr = callallocateform.cleaned_data['company_address']
+            compemail = callallocateform.cleaned_data['company_email']
+            compcontact = callallocateform.cleaned_data['contact_number']
+            compprob = callallocateform.cleaned_data['company_problem']
+            calldate = callallocateform.cleaned_data['call_allocation_date']
+            calltime = callallocateform.cleaned_data['call_allocation_time']
+            enggname = callallocateform.cleaned_data['engg_name']
+            enggid = callallocateform.cleaned_data['engg_id']
+            enggcontact = callallocateform.cleaned_data['engg_contact']
+            callstatus = callallocateform.cleaned_data['call_status']
+            calltype = callallocateform.cleaned_data['call_type']
+            compcty = callallocateform.cleaned_data['company_city']
+            callautoclose = callallocateform.cleaned_data['call_auto_close_date']
+            tat = callallocateform.cleaned_data['call_TAT']
+            note = callallocateform.cleaned_data['call_note']
+            cno = callallocateform.cleaned_data['complaint_no']
+            prdct = callallocateform.cleaned_data['product']
+            priority = callallocateform.cleaned_data['call_priority']
+            caller = callallocateform.cleaned_data['caller_name']
 
-                callallocate.object.create(
-                comp_name = compname,
-                comp_address = compaddr,
-                comp_email = compemail,
-                phone_number = compcontact,
-                comp_problem = compprob,
-                call_alloc_date = calldate,
-                call_alloc_time = calltime,
-                call_alloc_engg_name = enggname,
-                engg_contact = enggcontact,
-                call_status = callstatus,
-                call_closed_date = callclose,
-                call_type = calltype,
-                cust_city = compcty,
-                call_auto_close_date = callautoclose,
-                call_tat = tat,
-                call_note = note,
-                complaint_no = cno,
-                product = prdct,
-                call_prioriy = priority,
-                caller_name = caller_name,
-                ).save()
+            callallocate.objects.create(
+            title = compname,
+            comp_address = compaddr,
+            comp_email = compemail,
+            phone_number = compcontact,
+            description = compprob,
+            start = calldate,
+            call_alloc_time = calltime,
+            engg_name = enggname,
+            engg_id = enggid,
+            engg_contact = enggcontact,
+            call_status = callstatus,
+            call_type = calltype,
+            cust_city = compcty,
+            end = callautoclose,
+            call_tat = tat,
+            call_note = note,
+            complaint_no = cno,
+            product = prdct,
+            call_prioriy = priority,
+            caller_name = caller,
+            ).save()
 
-                return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
+            return render(request,'loginapp/calendar.html')
 
     else:
-            callallocateform = CallAllocateForm(prefix='callallocateform')
-            return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
+        callallocateform = CallAllocateForm(prefix='callallocateform')
+    return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
 
+class EventCallUpdateView(UpdateView):
+    model = callallocate
+    template_name = 'loginapp/callallocate_update.html'
+    success_url = reverse_lazy('loginapp:calendar')
+    fields = '__all__'
 
+class EventCallDeleteView(DeleteView):
+    model = callallocate
+    success_url = reverse_lazy('loginapp:calendar')
+
+class CallListView(generic.ListView):
+    template_name = 'loginapp/calllist.html'
+    context_object_name = 'callobj'
+
+    def get_queryset(self):
+        return callallocate.objects.all()
 
 class CustomerListView(generic.ListView):
     template_name = 'loginapp/customerlist.html'
@@ -322,16 +340,6 @@ class CoadminDetailView(generic.DetailView):
     model = coadmin
     template_name = 'loginapp/coadmindetail.html'
 
-class CallCreateView(CreateView):
-    model = callallocate
-    template_name = 'loginapp/callallocate_form.html'
-    fields = ['eng_name','comp_name','comp_address','comp_email','phone_number','comp_problem','call_alloc_date','call_alloc_time','engg_contact','call_status','call_type',
-    'cust_city','call_note','complaint_no','product','call_prioriy','caller_name']
-def get_form(self, form_class=None):
-        form = super(CallCreateView, self).get_form(form_class)
-        form.fields['call_alloc_date'].widget = forms.DateInput(attrs={'class': 'datepicker'})
-        return form
-
 
 class CoadminUpdateView(UpdateView):
     model = coadmin
@@ -348,4 +356,16 @@ class calllist(APIView):
     def get(self,request):
         callalloc = callallocate.objects.all()
         serializer = CallAllocateSerializer(callalloc,many=True)
+        return Response(serializer.data)
+
+class engglist(APIView):
+    def get(self,request):
+        callalloc = engg.objects.all()
+        serializer = EnggSerializer(callalloc,many=True)
+        return Response(serializer.data)
+
+class eventcall(APIView):
+    def get(self,request):
+        callalloc = callallocate.objects.all()
+        serializer = EventCallSerializer(callalloc,many=True)
         return Response(serializer.data)

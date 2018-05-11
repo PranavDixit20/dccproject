@@ -1,12 +1,12 @@
 GENDER_CHOICES = (
-    ('M', ("Male")),
-    ('F', ("Female"))
+    ('Male', ("Male")),
+    ('Female', ("Female"))
 
 )
 
 CALL_CHOICES = (
-('O',("Open")),
-('C',("Closed")),
-('P',("Pending"))
+('Open',("Open")),
+('Closed',("Closed")),
+('Pending',("Pending"))
 
 )

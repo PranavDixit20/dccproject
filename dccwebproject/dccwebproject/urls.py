@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^',include('loginapp.urls')),
     url(r'callallocation/',views.calllist.as_view()),
+    url(r'engineers/',views.engglist.as_view()),
+    url(r'eventcall/',views.eventcall.as_view()),
 
 ]

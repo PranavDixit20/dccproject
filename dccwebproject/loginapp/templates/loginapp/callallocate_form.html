@@ -346,14 +346,7 @@
       <i class="fa fa-files-o"></i> <span>Engineers List</span>
     </a>
   </li>
-          <li>
-            <a href="pages/widgets.html">
-              <i class="fa fa-th"></i> <span>Widgets</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-green">new</small>
-              </span>
-            </a>
-          </li>
+          
           <li class="treeview">
             <a href="#">
               <i class="fa fa-pie-chart"></i>
@@ -498,23 +491,23 @@
       <section class="content-header">
         <h1>
           Dashboard
-          <small>Control panel</small>
+          <small><a href="{% url 'loginapp:calendar' %}">Calender</a></small>
         </h1>
         <ol class="breadcrumb">
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">Dashboard</li>
+          <li class="active">Calender</li>
         </ol>
       </section>
 
             <div class="container">
               <div class="row">
                 <div class="register-logo ">
-                  <a href="{% url 'loginapp:dash1' %}"><b>Call Allocate</b></a>
+                  <a href="#"><b>Call Allocate</b></a>
                 </div>
                 <div class=" register-box-body ">
                   <p class="container">Call Allocation Form</p>
 
-                  <form method="post" action="{% url 'loginapp:callallocate' %}" enctype="multipart/form-data">
+                  <form method="POST" action="{% url 'loginapp:callallocation' %}" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="col-lg-12">
@@ -523,7 +516,7 @@
                       <div class="form-group has-feedback table-responsive">
                       <table class="table">
 
-                        {{callallocateform|bootstrap}}
+                        {{ callallocateform|bootstrap }}
                       </table>
 
                       </div>

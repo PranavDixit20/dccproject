@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap_datepicker',
     'rest_framework',
     'bootstrapform',
+    'bootstrap3',
+    'import_export',
     'loginapp',
 ]
 
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [

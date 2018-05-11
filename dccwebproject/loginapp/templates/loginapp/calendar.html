@@ -340,14 +340,7 @@
         <i class="fa fa-files-o"></i> <span>Engineers List</span>
       </a>
     </li>
-          <li>
-            <a href="widgets.html">
-            <i class="fa fa-th"></i> <span>Widgets</span>
-            <span class="pull-right-container">
-              <small class="label pull-right bg-green">new</small>
-            </span>
-          </a>
-          </li>
+          
           <li class="treeview">
             <a href="#">
             <i class="fa fa-pie-chart"></i>
@@ -503,68 +496,9 @@
       <!-- Main content -->
       <section class="content">
         <div class="row">
-          <div class="col-md-3">
-            <div class="box box-solid">
-              <div class="box-header with-border">
-                <h4 class="box-title">Draggable Events</h4>
-              </div>
-              <div class="box-body">
-                <!-- the events -->
-                <div id="external-events">
-                  <div class="external-event bg-green">Lunch</div>
-                  <div class="external-event bg-yellow">Go home</div>
-                  <div class="external-event bg-aqua">Do homework</div>
-                  <div class="external-event bg-light-blue">Work on UI design</div>
-                  <div class="external-event bg-red">Sleep tight</div>
-                  <div class="checkbox">
-                    <label for="drop-remove">
-                    <input type="checkbox" id="drop-remove">
-                    remove after drop
-                  </label>
-                  </div>
-                </div>
-              </div>
-              <!-- /.box-body -->
-            </div>
-            <!-- /. box -->
-            <div class="box box-solid">
-              <div class="box-header with-border">
-                <h3 class="box-title">Create Event</h3>
-              </div>
-              <div class="box-body">
-                <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
-                  <!--<button type="button" id="color-chooser-btn" class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown">Color <span class="caret"></span></button>-->
-                  <ul class="fc-color-picker" id="color-chooser">
-                    <li><a class="text-aqua" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-blue" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-light-blue" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-teal" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-yellow" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-orange" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-green" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-lime" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-red" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-purple" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-fuchsia" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-muted" href="#"><i class="fa fa-square"></i></a></li>
-                    <li><a class="text-navy" href="#"><i class="fa fa-square"></i></a></li>
-                  </ul>
-                </div>
-                <!-- /btn-group -->
-                <div class="input-group">
-                  <input id="new-event" type="text" class="form-control" placeholder="Event Title">
 
-                  <div class="input-group-btn">
-                    <button id="add-new-event" type="button" class="btn btn-primary btn-flat">Add</button>
-                  </div>
-                  <!-- /btn-group -->
-                </div>
-                <!-- /input-group -->
-              </div>
-            </div>
-          </div>
           <!-- /.col -->
-          <div class="col-md-9">
+          <div class="col-md-12">
             <div class="box box-primary">
               <div class="box-body no-padding">
                 <!-- THE CALENDAR -->
@@ -583,7 +517,7 @@
                       </div>
                       <div class="modal-body mx-3">
                         <div class="md-form mb-5">
-                          <form method="post" action="{% url 'loginapp:callalloclist' %}" enctype="multipart/form-data">
+                          <form method="post" action="{% url 'loginapp:callallocation' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                           {{callobj.as_p}}
                         </form>
@@ -858,6 +792,7 @@
       'use strict'
       var myevents = [];
       var curdate;
+      var id;
 
       //fullcalendar
       $('#calendar').fullCalendar({
@@ -876,9 +811,26 @@
           right: 'month,agendaWeek,agendaDay',
         },
 
-        events: myevents,
-        color: 'yellow',
-        textColor: 'black',
+        eventSources: [
+    {
+      url  : "/eventcall",
+      color: 'gray',
+      textColor: 'white',
+    }
+
+  ],
+  eventClick: function(event, element) {
+    id = event.id;
+    var  url = "{% url 'loginapp:eventupdate' 123 %}";
+    document.location.href =  url.replace('123', id);
+    //$(location).attr('href',)
+    console.log(event.id);
+
+
+    $('#calendar').fullCalendar('updateEvent', event);
+
+  },
+
 
         //calendar date-selection function
         select: function (start, end, jsEvent, view) {
@@ -892,94 +844,15 @@
 
         //calendar day-click function
         dayClick: function () {
-          $('modal').modal();
+        var currentdate = $('#calendar').fullCalendar('getDate');
+        //{{callallocate.call_alloc_date}} = currentdate;
+        $(location).attr('href', "{% url 'loginapp:callallocation' %}")
 
-          $('#modalContactForm').modal('show');
+
           $('#calendar').fullCalendar('renderEvent', event);
         },
-
-        drop: function () {
-          // is the "remove after drop" checkbox checked?
-          if ($('#drop-remove').is(':checked')) {
-            // if so, remove the element from the "Draggable Events" list
-            $(this).remove();
-          }
-        }, eventDragStop: function (event, jsEvent, ui, view) {
-
-          if (isEventOverDiv(jsEvent.clientX, jsEvent.clientY)) {
-            $('#calendar').fullCalendar('removeEvents', event._id);
-            var el = $("<div class='fc-event'>").appendTo('#external-events-listing').text(event.title);
-            el.draggable({
-              zIndex: 999,
-              revert: true,
-              revertDuration: 0,
-            });
-            el.data('event', {
-              title: event.title,
-              id: event.id,
-              stick: true,
-            });
-          }
-        },
-      });
-
-      //fullcalendar end
-      var isEventOverDiv = function (x, y) {
-
-        var external_events = $('#external-events');
-        var offset = external_events.offset();
-        offset.right = external_events.width() + offset.left;
-        offset.bottom = external_events.height() + offset.top;
-
-        // Compare
-        if (x >= offset.left &&
-          y >= offset.top &&
-          x <= offset.right &&
-          y <= offset.bottom) {
-          return true;
-        }   return false;
-
-      };
-
-      //modal-onclick function
-      $('.modal-action').click(function () {
-        var eventarr = [];
-        var company_name = $('#cname').val();
-        var company_email = $('#email').val();
-        var company_contact = $('#contact').val();
-        var company_address = $('#address').val();
-        var eventobj = {
-          title: title1,
-          start: curdate,
-          end: end1,
-          description: desc,
-        };
-        eventarr.push(eventobj);
-        myevents.push(eventobj);
-
-        //add event to calendar
-        $('#calendar').fullCalendar('addEventSource', eventarr);
-        $('#calendar').fullCalendar('rerenderEvents');
-        console.log(myevents);
-      });
-
-      $('#external-events').each(function () {
-
-        // store data so the calendar knows to render an event upon drop
-        $(this).data('event', {
-          title: $.trim($(this).text()), // use the element's text as the event title
-          stick: true, // maintain when user navigates (see docs on the renderEvent method)
-        });
-
-        // make the event draggable using jQuery UI
-        $(this).draggable({
-          zIndex: 999,
-          revert: true, // will cause the event to go back to its
-          revertDuration: 0, //  original position after the drag
-        });
-
-      });
-    });
+});
+});
   </script>
 
 </body>
