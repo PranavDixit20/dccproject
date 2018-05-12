@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect,HttpResponse
 from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm
-from . models import engg
+from . models import engg,enggperformance
 from . models import callallocate
 from . models import coadmin
 from . models import customer
@@ -42,6 +42,11 @@ def calendar(request):
 
 def coregister(request):
     return render(request,'loginapp/coadmin_form.html')
+
+def enggmap(request):
+    data = enggperformance.objects.all()
+    return render(request,'loginapp/enggmap.html',{'data':data})
+
 
 def loggin(request):
         if request.method == 'POST':

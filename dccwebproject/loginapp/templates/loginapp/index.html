@@ -292,7 +292,7 @@
   <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
-      
+
 
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
@@ -323,6 +323,11 @@
       <i class="fa fa-files-o"></i> <span>Add Customer</span>
     </a>
   </li>
+  <li>
+  <a href="{% url 'loginapp:enggmap' %}">
+    <i class="fa fa-files-o"></i> <span>Track Engineers</span>
+  </a>
+</li>
   <li>
   <a href="{% url 'loginapp:getcoadmin' %}">
     <i class="fa fa-files-o"></i> <span>Coadmin List</span>
@@ -713,13 +718,10 @@
         <section class="col-lg-5 connectedSortable">
 
           <!-- Map box -->
-          <div class="box box-solid bg-light-blue-gradient">
+          <div class="box box-solid bg-light-blue-gradient text-black" >
             <div class="box-header">
               <!-- tools box -->
               <div class="pull-right box-tools">
-                <button type="button" class="btn btn-primary btn-sm daterange pull-right" data-toggle="tooltip"
-                        title="Date range">
-                  <i class="fa fa-calendar"></i></button>
                 <button type="button" class="btn btn-primary btn-sm pull-right" data-widget="collapse"
                         data-toggle="tooltip" title="Collapse" style="margin-right: 5px;">
                   <i class="fa fa-minus"></i></button>
@@ -733,7 +735,125 @@
               </h3>
             </div>
             <div class="box-body">
-              <div id="world-map" style="height: 250px; width: 100%;"></div>
+              <div id="map" style="height: 250px; width: 100%;"></div>
+              <!-- map script> -->
+              <script>
+
+  function initMap(){
+    //map options
+
+   var options = {
+     zoom:6,
+     center:{lat:19.7515,lng:75.7139}
+   }
+   //new Map
+   var map = new google.maps.Map(document.getElementById('map'),options);
+
+    var markers = [{
+      coords:{lat:18.5204,lng:73.8567},
+      content:'<p>Pune</p>'
+    },
+    {
+      coords:{lat:18.6298,lng:73.7997},
+      content:'<p>Pimpri Chinchwad</p>'
+    },
+    {
+      coords:{lat:19.0952,lng:74.7496},
+      content:'<p>Ahmednager</p>'
+    },
+    {
+      coords:{lat:16.7050,lng:74.2433},
+      content:'<p>Kolhapur</p>'
+    },
+    {
+      coords:{lat:16.8524,lng:74.5815},
+      content:'<p>Sangli</p>'
+    },
+    {
+      coords:{lat:17.2478,lng:73.3709},
+      content:'<p>Ratnagiri</p>'
+    },
+    {
+      coords:{lat:16.3492,lng:73.5594},
+      content:'<p>Sindhudurg</p>'
+    },
+    {
+      coords:{lat:15.2993,lng:74.1240},
+      content:'<p>Goa</p>'
+    },
+    {
+      coords:{lat:19.0760,lng:72.8777},
+      content:'<p>Mumbai</p>'
+    },
+    {
+      coords:{lat:18.5158,lng:73.1822},
+      content:'<p>Raiged</p>'
+    },
+    {
+      coords:{lat:19.8762,lng:75.3433},
+      content:'<p>Aurangabad</p>'
+    },
+    {
+      coords:{lat:19.9975,lng:73.7898},
+      content:'<p>Nashik</p>'
+    },
+    {
+      coords:{lat:21.0077,lng:75.5626},
+      content:'<p>Jalgaon</p>'
+    }
+    ,{
+      coords:{lat:20.4561,lng:76.3637},
+      content:'<p>Buldhana</p>'
+    },
+    {
+      coords:{lat:21.1458,lng:79.0882},
+      content:'<p>Nagpur</p>'
+    },
+    {
+      coords:{lat:17.6599,lng:75.9064},
+      content:'<p>Solapur</p>'
+    },
+    {
+      coords:{lat:19.1383,lng:77.3210},
+      content:'<p>Nanded</p>'
+    },
+    {
+      coords:{lat:18.4088,lng:76.5604},
+      content:'<p>Latur</p>'
+    },
+  ];
+
+for (var i = 0 ;i < markers.length ;i++){
+  addMarker(markers[i]);
+}
+  //add marker
+
+
+   function addMarker(props){
+     var marker = new google.maps.Marker({
+       position:props.coords,
+       map:map,
+       //icon:props.iconImage
+     });
+
+
+    if(props.content){
+      var infoWindow = new google.maps.InfoWindow({
+        content:props.content
+      });
+
+      marker.addListener('click',function(){
+        infoWindow.open(map,marker);
+      });
+    }
+   }
+  }
+
+
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKi-pc0FZh74Ub5mSQCSfK0-lA-pvaA44&callback=initMap">
+</script>
             </div>
             <!-- /.box-body-->
 

@@ -32,4 +32,5 @@ urlpatterns = [
  url(r'coadmin/delete/(?P<pk>[0-9]+)/$',views.CoadminDeleteView.as_view(),name='coadmindelete'),
  url(r'engineer/(?P<pk>[0-9]+)/$',views.EnggUpdateView.as_view(),name='enggupdate'),
  url(r'engineer/delete/(?P<pk>[0-9]+)/$',views.EnggDeleteView.as_view(),name='enggdelete'),
+ url(r'^enggmap/$',views.enggmap,name='enggmap'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
