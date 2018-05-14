@@ -20,7 +20,7 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 
 
-def loginpage(request):
+def index(request):
     return render(request,'loginapp/login.html')
 
 

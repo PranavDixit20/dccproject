@@ -15,3 +15,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dccwebproject.settings.developm
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dccwebproject.settings.production")
 
 application = get_wsgi_application()
+
+WSGIScriptAlias / /htdocs/dccproject2/dccwebproject/dccwebproject/wsgi.py
+WSGIPythonPath /htdocs/dccproject2/
+
+<Directory /htdocs/dccproject2/>
+   <Files wsgi.py>
+      Order deny,allow
+      Allow from all
+   </Files>
+</Directory>

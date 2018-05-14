@@ -6,7 +6,7 @@ from django.contrib.auth.views import login
 
 app_name = 'loginapp'
 urlpatterns = [
- url(r'^$',views.loginpage),
+ url(r'^$',views.loginpage,name=index),
  url(r'^loggin/$',views.loggin, name='loggin'),
  url(r'^dash/$',views.dash ,name='dash'),
  url(r'^logout/$',views.logout ,name='logout'),
