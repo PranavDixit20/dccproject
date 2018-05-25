@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.db.models import Sum
 from loginapp.choices import *
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -9,6 +10,10 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
+class Visitor(models.Model):
+    user = models.OneToOneField(User,on_delete = models.CASCADE)
+    session_key = models.CharField(max_length=40,null=True, blank=True)
+
 class callallocate(models.Model):
     title = models.CharField(max_length=200,null=True,blank=True)
     comp_address = models.TextField(null=True,blank=True)
@@ -16,21 +21,21 @@ class callallocate(models.Model):
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
     description = models.TextField(null=True,blank=True)
-    start = models.DateTimeField(auto_now_add=True, editable=False,null=True,blank=True)
+    start = models.DateTimeField(null=True,blank=True)
     call_alloc_time = models.TimeField(null=True,blank=True)
     engg_contact = models.CharField(validators=[phone_regex], max_length=17,null=True,blank=True)
-    call_status = models.CharField(choices=GENDER_CHOICES, default=1,max_length=7,null=True,blank=True)
+    call_status = models.CharField(choices=CALL_CHOICES, default=1,max_length=7,null=True,blank=True)
     call_type = models.CharField(max_length=7,null=True,blank=True)
     cust_city = models.CharField(max_length=20,null=True,blank=True)
-    end = models.DateField(null=True,blank=True)
+    end = models.DateTimeField(null=True,blank=True)
     call_tat = models.IntegerField(null=True,blank=True)
     call_note = models.CharField(max_length=100,null=True,blank=True)
-    complaint_no = models.IntegerField(null=True,blank=True)
     product = models.CharField(max_length=100,null=True,blank=True)
     call_prioriy = models.CharField(max_length=7,null=True,blank=True)
     caller_name = models.CharField(max_length=50,null=True,blank=True)
-    engg_name = models.CharField(max_length=100,null=True,blank=True)
+    engg_name = models.CharField(max_length=7,null=True,blank=True)
     engg_id = models.IntegerField(null=True,blank=True)
+    engg_status = models.CharField(max_length=100,null=True,blank=True)
 
 
 class coadmin(models.Model):
@@ -90,14 +95,15 @@ class engg(models.Model):
     engg_city = models.CharField(max_length=70,null=True,blank=True)
     engg_branch_code = models.CharField(max_length=100,null=True,blank=True)
     engg_gender = models.CharField(choices=GENDER_CHOICES, default=1,max_length=12,null=True,blank=True)
-    engg_bdate = models.DateTimeField(null=True,blank=True)
+    engg_bdate = models.DateField(null=True,blank=True)
     engg_age = models.IntegerField(null=True, blank=True)
-    engg_joining_date = models.DateTimeField(null=True,blank=True)
+    engg_joining_date = models.DateField(null=True,blank=True)
     engg_qual = models.CharField(max_length=50,null=True,blank=True)
     engg_designation = models.CharField(max_length=50,null=True,blank=True)
     engg_skill=models.CharField(max_length=20,null=True,blank=True)
     engg_pass = models.CharField(max_length=16,null=True,blank=True)
     engg_conf_pass = models.CharField(max_length=16,null=True,blank=True)
+    engg_status = models.CharField(choices=STATUS_CHOICES, default=1,max_length=12,null=True,blank=True)
 
 
 class enggperformance(models.Model):
@@ -114,3 +120,18 @@ class enggperformance(models.Model):
     punchin_time = models.TimeField(null=True,blank=True)
     punchout_time = models.TimeField(null=True,blank=True)
     online_status = models.BooleanField()
+
+class stock(models.Model):
+    product_name = models.CharField(max_length=20,null=True,blank=True)
+    product_size = models.CharField(max_length=20,null=True,blank=True)
+    product_quantity = models.IntegerField(null=True,blank=True)
+    product_code = models.IntegerField(null=True,blank=True)
+    product_recieved_date = models.DateField(null=True,blank=True)
+    product_provider_name = models.CharField(max_length=20,null=True,blank=True)
+    Total_product_quantity = models.IntegerField(null=True,blank=True)
+    product_serial_no = models.IntegerField(null=True,blank=True)
+    product_model = models.CharField(max_length=20,null=True,blank=True)
+    product_model_id = models.IntegerField(null=True,blank=True)
+    product_description = models.CharField(max_length=500,null=True,blank=True)
+    product_warranty = models.IntegerField(null=True,blank=True)
+    #stock.objects.aggregate(Sum('product_quantity'))

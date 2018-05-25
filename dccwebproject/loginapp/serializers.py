@@ -24,3 +24,9 @@ class EventCallSerializer(serializers.ModelSerializer):
         'end',
         'description',
         ]
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = engg
+        fields = '__all__'

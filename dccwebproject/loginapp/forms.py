@@ -1,10 +1,14 @@
 from django import forms
 from django.forms import ModelChoiceField
 from loginapp.choices import *
+from . import views
+from . models import engg,stock
 from django.contrib.admin import widgets
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+
+
 
 class RegisterForm(forms.Form):
   name = forms.CharField(max_length=20)
@@ -23,6 +27,7 @@ class RegisterForm(forms.Form):
   password = forms.CharField(widget=forms.PasswordInput)
   confirm_password = forms.CharField(widget=forms.PasswordInput)
   address = forms.CharField(max_length=100,widget=forms.Textarea)
+
 
 class EnggRegisterForm(forms.Form):
   engg_id = forms.IntegerField(required=True)
@@ -45,6 +50,7 @@ class EnggRegisterForm(forms.Form):
   skills = forms.CharField(max_length = 20)
   password = forms.CharField(widget=forms.PasswordInput)
   confirm_password = forms.CharField(widget=forms.PasswordInput)
+  status = forms.ChoiceField(choices = STATUS_CHOICES, label="status", initial='Offline', widget=forms.Select())
 
 class CustomerRegisterForm(forms.Form):
    name = forms.CharField(max_length=100)
@@ -77,13 +83,18 @@ class CallAllocateForm(forms.Form):
     engg_name = forms.CharField(max_length=100)
     engg_id = forms.IntegerField()
     engg_contact = forms.CharField(validators=[phone_regex], max_length=17)
+    engg_status = forms.ChoiceField(choices = ENGG_CHOICES, label="engg status", initial='O', widget=forms.Select())
     call_status = forms.ChoiceField(choices = CALL_CHOICES, label="call status", initial='O', widget=forms.Select())
     call_type = forms.CharField(max_length=7)
     company_city = forms.CharField(max_length=20)
     call_auto_close_date = forms.DateField()
     call_TAT = forms.IntegerField()
     call_note = forms.CharField(max_length=100)
-    complaint_no = forms.IntegerField()
     product = forms.CharField(max_length=100)
     call_priority = forms.CharField(max_length=7)
     caller_name = forms.CharField(max_length=50)
+
+class StockEntry(forms.ModelForm):
+    class Meta:
+        model = stock
+        fields = '__all__'

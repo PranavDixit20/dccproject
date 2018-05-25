@@ -9,9 +9,19 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
+#FOR GMAIL SENDING MAIL
+from .email_info import EMAIL_USE_TLS,EMAIL_HOST,EMAIL_HOST_USER,EMAIL_HOST_PASSWORD,EMAIL_PORT
+EMAIL_USE_TLS = EMAIL_USE_TLS
+EMAIL_HOST = EMAIL_HOST
+EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+EMAIL_PORT = EMAIL_PORT
 
 import os
 from decouple import config,Csv
+from django.conf import settings
+from django.conf.urls.static import static
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,10 +52,27 @@ INSTALLED_APPS = [
     'bootstrap3',
     'import_export',
     'loginapp',
+
 ]
+
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+
+# Channel layer definitions
+# http://channels.readthedocs.org/en/latest/deploying.html#setting-up-a-channel-backend
+CHANNEL_LAYERS = {
+    "default": {
+        # This example app uses the Redis channel layer implementation asgi_redis
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(redis_host, 6379)],
+        },
+       "ROUTING": "multichat.routing.channel_routing", # We will create it in a moment
+    },
+}
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -69,6 +96,8 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -129,6 +158,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'loginapp/media')
+PROJECT_DIR  = os.path.dirname(__file__)
+
+STATIC_URL = '/dccproject/dccwebproject/loginapp/static/'
+STATIC_ROOT = os.path.join(PROJECT_DIR,'static')
+STATICFILES_DIR = [
+    os.path.join(PROJECT_DIR, 'staticfiles'),'/dccproject/dccwebproject/loginapp/static',
+]
+
+MEDIA_URL = '/dccproject/dccwebproject/dccwebproject/loginapp/media/'
+MEDIA_ROOT = os.path.join(PROJECT_DIR,'media')

@@ -15,15 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url,include
-from django.urls import path
 from . import views
 from loginapp import views
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework import routers
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url('admin/', admin.site.urls),
     url(r'^',include('loginapp.urls')),
     url(r'callallocation/',views.calllist.as_view()),
-    url(r'engineers/',views.engglist.as_view()),
     url(r'eventcall/',views.eventcall.as_view()),
+	#url(r'engineers/',include(router.urls)),
 
 ]
