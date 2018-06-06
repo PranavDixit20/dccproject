@@ -28,6 +28,6 @@ urlpatterns = [
     url(r'^',include('loginapp.urls')),
     url(r'callallocation/',views.calllist.as_view()),
     url(r'eventcall/',views.eventcall.as_view()),
-	#url(r'engineers/',include(router.urls)),
+	url(r'^files/', include('db_file_storage.urls')),
 
 ]

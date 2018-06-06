@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Customer List</title>
+  <title>Engineers List</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -312,27 +312,19 @@
 
           </a>
           </li>
-          <li>
-            <a href="{% url 'loginapp:regcustom' %}">
-          <i class="fa fa-files-o"></i> <span>Add Customer</span>
-        </a>
-          </li>
+
           <li>
           <a href="{% url 'loginapp:enggmap' %}">
             <i class="fa fa-files-o"></i> <span>Track Engineers</span>
           </a>
         </li>
 
-          <li>
+          <li class="active">
           <a href="{% url 'loginapp:getengg' %}">
             <i class="fa fa-files-o"></i> <span>Engineers List</span>
           </a>
         </li>
-        <li class="active">
-        <a href="{% url 'loginapp:getcustomer' %}">
-          <i class="fa fa-files-o"></i> <span>Customer List</span>
-        </a>
-        </li>
+
 
         <li>
         <a href="{% url 'loginapp:getcalllist' %}">
@@ -345,6 +337,8 @@
           <i class="fa fa-files-o"></i> <span>Call Allocation</span>
         </a>
         </li>
+
+
           <li>
             <a href="{% url 'loginapp:calendar' %}">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
@@ -364,8 +358,7 @@
               </span>
             </a>
           </li>
-          
-      </section>
+          </section>
       <!-- /.sidebar -->
     </aside>
 
@@ -384,22 +377,25 @@
       </section>
             <div class="container">
               <div class="register-logo ">
-                <b>Customer List</b>
+                <a href="#"><b>Engineer List</b></a>
               </div>
               <div class="row">
                      <div class="col-xs-12">
                        <div class="box">
                          <div class="box-header">
-                           <h3 class="box-title">Customer List</h3>
+                           <h3 class="box-title">Engineers List</h3>
 
                            <div class="box-tools">
+                                <form method="GET" action="">
                              <div class="input-group input-group-sm" style="width: 150px;">
-                               <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
 
+                               <input type="text" name="q" class="form-control pull-right" placeholder="Search">
                                <div class="input-group-btn">
                                  <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
                                </div>
-                             </div>
+
+                               </div>
+                             </form>
                            </div>
                          </div>
                          <!-- /.box-header -->
@@ -411,20 +407,12 @@
                                <th>User</th>
                                <th>Contact</th>
                                <th>City</th>
-                                <th>Email</th>
-                               <th>Fax</th>
+                                <th>Branch Code</th>
+                               <th>Status</th>
+                               <th>Address</th>
+                                <th>Edit</th>
                              </tr>
-                              {% for list in customobj %}
-                             <tr>
-                               <td>{{list.id}}</td>
-                               <td><a href="{% url 'loginapp:customerdetail' list.id %}">{{list.customer_name}}</a></td>
-                               <td>{{list.customer_contact_no}}</td>
-                                <td>{{list.customer_city}}</td>
-                                  <td>{{list.customer_email}}</td>
-                               <td>{{list.cutomer_fax}}</td>
-                               <td><a href="{% url 'loginapp:customerupdate' list.id %}">update</a></td>
-                             </tr>
-                                 {%endfor%}
+                            
                            </table>
 
                          </div>

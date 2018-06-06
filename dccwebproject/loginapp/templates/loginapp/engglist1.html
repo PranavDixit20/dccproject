@@ -360,20 +360,13 @@
           <li>
             <a href="{% url 'loginapp:calendars' %}">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-red">3</small>
-                <small class="label pull-right bg-blue">17</small>
-              </span>
+
             </a>
           </li>
           <li>
             <a href="pages/mailbox/mailbox.html">
               <i class="fa fa-envelope"></i> <span>Mailbox</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-yellow">12</small>
-                <small class="label pull-right bg-green">16</small>
-                <small class="label pull-right bg-red">5</small>
-              </span>
+
             </a>
           </li>
 
@@ -394,6 +387,10 @@
           <li class="active">Dashboard</li>
         </ol>
       </section>
+      <div class="col-sm-2">
+        <a href ="{% url 'loginapp:export_xls'%}"><button type="submit" class="btn btn-primary btn-block btn-flat">export to excel</button></a>
+
+        </div>
             <div class="container">
               <div class="register-logo ">
                 <b>Engineers List</b>
@@ -406,6 +403,7 @@
 
                            <div class="box-tools">
                              <div class="input-group input-group-sm" style="width: 150px;">
+
                                <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
 
                                <div class="input-group-btn">

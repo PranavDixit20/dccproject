@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db.models import Sum
+import xlwt
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -19,8 +20,9 @@ from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAlloc
 from . models import engg,enggperformance
 from . models import callallocate
 from . models import coadmin
-from . models import customer,stock
+from . models import customer,stock,Room
 import json
+import datetime
 from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
@@ -30,15 +32,73 @@ city = "scv"
 def index(request):
     return render(request,'loginapp/login.html')
 
+def adminchat(request):
+    rooms = Room.objects.order_by("title")
+
+    # Render that in the index template
+    return render(request, "loginapp/index.html", {
+        "rooms": rooms,
+    })
+    #return render(request,'loginapp/index.html')
+
+def export_xls(request):
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=engineer.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet("EnggSheet")
+
+    row_num = 0
+
+    columns = [
+        "engg_id",
+        "engg_name",
+        "engg_address",
+        "engg_email",
+        "engg_contact_number",
+        "engg_city",
+        "engg_branch_code",
+        "engg_gender",
+        "engg_bdate",
+        "engg_age",
+        "engg_joining_date",
+        "engg_qual",
+        "engg_designation",
+        "engg_skill",
+
+    ]
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num][0], font_style)
+        # set column width
+
+
+    font_style = xlwt.XFStyle()
+    font_style.alignment.wrap = 1
+    rows = engg.objects.all().values_list('engg_id','engg_name','engg_address','engg_email','engg_contact_number','engg_city','engg_branch_code','engg_gender','engg_bdate','engg_age','engg_joining_date','engg_qual','engg_designation','engg_skill')
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+export_xls.short_description = u"Export XLS"
+
 @login_required
 def dash(request):
-    return render(request,'loginapp/loggin/index.html')
+    return render(request,'loginapp/index.html')
 
 def androidlogin(request):
     return render(request,'loginapp/index3.html')
 
 
 def log_out(request):
+    del request.session['city']
     logout(request)
     return render(request,'loginapp/login.html')
 
@@ -205,105 +265,30 @@ def regenggs(request):
         if request.method == 'POST':
             enggform = EnggRegisterForm(request.POST,request.FILES,prefix='enggform')
             if enggform.is_valid():
-                ename = enggform.cleaned_data['name']
-                eimage = enggform.cleaned_data['engg_photo']
-                eemail = enggform.cleaned_data['email']
-                emobile = enggform.cleaned_data['mobile_number']
-                etelephone = enggform.cleaned_data['telephone_number']
-                ecity = enggform.cleaned_data['city']
-                ebranch_code = enggform.cleaned_data['branch_code']
-                egender = enggform.cleaned_data['gender']
-                ebirthdate = enggform.cleaned_data['birth_date']
-                eage = enggform.cleaned_data['age']
-                ejoining_date = enggform.cleaned_data['joining_date']
-                equalification = enggform.cleaned_data['qualification']
-                edesignation = enggform.cleaned_data['designation']
-                eskill = enggform.cleaned_data['skills']
-                epassword = enggform.cleaned_data['password']
-                ecpassword = enggform.cleaned_data['confirm_password']
-                eaddress = enggform.cleaned_data['address']
-                pereaddress = enggform.cleaned_data['permanent_address']
-                eid = enggform.cleaned_data['engg_id']
-                estatus = enggform.cleaned_data['status']
+                ename = enggform.cleaned_data['engg_name']
+                eemail = enggform.cleaned_data['engg_email']
+                epassword = enggform.cleaned_data['engg_pass']
+                conpassword = enggform.cleaned_data['engg_conf_pass']
+                if epassword == conpassword:
+                 enggform.save()
+                 User.objects.create_user(ename, eemail, epassword)
+                 user = authenticate(username=ename, password=epassword)
+                 login(request, user)
+                 subject = 'Registration successfull!!'
+                 message = 'Your Registration is successfull!!\n your username is '+str(ename)+'password is '+'epassword'+''
 
-                engg.objects.create(
-                engg_id = eid,
-                engg_pic = eimage,
-                engg_name = ename,
-                engg_email = eemail,
-                engg_address = eaddress,
-                engg_permanent_address = pereaddress,
-                engg_contact_number = emobile,
-                engg_tell_no = etelephone,
-                engg_city = ecity,
-                engg_branch_code = ebranch_code,
-                engg_gender = egender,
-                engg_bdate = ebirthdate,
-                engg_age = eage,
-                engg_joining_date = ejoining_date,
-                engg_qual = equalification,
-                engg_designation = edesignation,
-                engg_skill = eskill,
-                engg_pass = epassword,
-                engg_conf_pass = ecpassword,
-                engg_status = estatus,
-                ).save()
-                User.objects.create_user(ename, eemail, epassword)
-                user = authenticate(username=ename, password=epassword)
-                login(request, user)
+                 from_email = settings.EMAIL_HOST_USER
+                 to_list = [eemail,settings.EMAIL_HOST_USER]
+                 send_mail(subject,message,from_email,to_list,fail_silently = True)
 
-                return render(request,'loginapp/register1.html',{'enggform':enggform,})
+                 return render(request,'loginapp/register1.html',{'enggform':enggform,})
+                else:
+                    return HttpResponse("<div>passwords do not match!!!</div>")
+
         else:
             enggform = EnggRegisterForm(prefix='enggform')
         return render(request,'loginapp/register1.html',{'enggform':enggform,})
 
-def regcustom(request):
-
-    if request.method == 'POST':
-        customform = CustomerRegisterForm(request.POST,prefix='customform')
-
-        if customform.is_valid():
-            cuname = customform.cleaned_data['name']
-            cuarea = customform.cleaned_data['area']
-            culandmark = customform.cleaned_data['landmark']
-            cucity = customform.cleaned_data['city']
-            cupincode = customform.cleaned_data['pincode']
-            cufaxno = customform.cleaned_data['fax_no']
-            cucomptype = customform.cleaned_data['company_Type']
-            cudoc = customform.cleaned_data['date_of_creation']
-            cuemail = customform.cleaned_data['email']
-            cucontact = customform.cleaned_data['contact_number']
-            cuagreement = customform.cleaned_data['customer_agreement']
-            cuamnt = customform.cleaned_data['agreement_amount']
-            cupr1 = customform.cleaned_data['product1']
-            cupr2 = customform.cleaned_data['product2']
-            cupr3 = customform.cleaned_data['product3']
-            cupr4 = customform.cleaned_data['product4']
-
-            customer.objects.create(
-            customer_name = cuname,
-            customer_area = cuarea,
-            customer_landmark = culandmark,
-            customer_city = cucity,
-            customer_pincode = cupincode,
-            cutomer_fax = cufaxno,
-            customer_compay_type = cucomptype,
-            customer_doc = cudoc,
-            customer_email = cuemail,
-            customer_contact_no = cucontact,
-            customer_agreement = cuagreement,
-            customer_agreement_amount = cuamnt,
-            customer_product1 = cupr1,
-            customer_product2 = cupr2,
-            customer_product3 = cupr3,
-            customer_product4 = cupr4,
-            ).save()
-
-            return render(request,'loginapp/customregister.html',{'customform':customform,})
-
-    else:
-        customform = CustomerRegisterForm(prefix='customform')
-        return render(request,'loginapp/customregister.html',{'customform':customform,})
 
 def regcustoms(request):
 
@@ -311,41 +296,7 @@ def regcustoms(request):
         customform = CustomerRegisterForm(request.POST,prefix='customform')
 
         if customform.is_valid():
-            cuname = customform.cleaned_data['name']
-            cuarea = customform.cleaned_data['area']
-            culandmark = customform.cleaned_data['landmark']
-            cucity = customform.cleaned_data['city']
-            cupincode = customform.cleaned_data['pincode']
-            cufaxno = customform.cleaned_data['fax_no']
-            cucomptype = customform.cleaned_data['company_Type']
-            cudoc = customform.cleaned_data['date_of_creation']
-            cuemail = customform.cleaned_data['email']
-            cucontact = customform.cleaned_data['contact_number']
-            cuagreement = customform.cleaned_data['customer_agreement']
-            cuamnt = customform.cleaned_data['agreement_amount']
-            cupr1 = customform.cleaned_data['product1']
-            cupr2 = customform.cleaned_data['product2']
-            cupr3 = customform.cleaned_data['product3']
-            cupr4 = customform.cleaned_data['product4']
-
-            customer.objects.create(
-            customer_name = cuname,
-            customer_area = cuarea,
-            customer_landmark = culandmark,
-            customer_city = cucity,
-            customer_pincode = cupincode,
-            cutomer_fax = cufaxno,
-            customer_compay_type = cucomptype,
-            customer_doc = cudoc,
-            customer_email = cuemail,
-            customer_contact_no = cucontact,
-            customer_agreement = cuagreement,
-            customer_agreement_amount = cuamnt,
-            customer_product1 = cupr1,
-            customer_product2 = cupr2,
-            customer_product3 = cupr3,
-            customer_product4 = cupr4,
-            ).save()
+            customform.save()
 
             return render(request,'loginapp/customregister1.html',{'customform':customform,})
 
@@ -358,55 +309,12 @@ def callallocation(request):
 
     if request.method == 'POST':
         callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
-
+        cno = callallocateform.cleaned_data['complaint_no']
         if callallocateform.is_valid():
-            compname = callallocateform.cleaned_data['company_name']
-            compaddr = callallocateform.cleaned_data['company_address']
-            compemail = callallocateform.cleaned_data['company_email']
-            compcontact = callallocateform.cleaned_data['contact_number']
-            compprob = callallocateform.cleaned_data['company_problem']
-            calldate = callallocateform.cleaned_data['call_allocation_date']
-            calltime = callallocateform.cleaned_data['call_allocation_time']
-            enggname = callallocateform.cleaned_data['engg_name']
-            enggid = callallocateform.cleaned_data['engg_id']
-            enggstatus = callallocateform.cleaned_data['engg_status']
-            enggcontact = callallocateform.cleaned_data['engg_contact']
-            callstatus = callallocateform.cleaned_data['call_status']
-            calltype = callallocateform.cleaned_data['call_type']
-            compcty = callallocateform.cleaned_data['company_city']
-            callautoclose = callallocateform.cleaned_data['call_auto_close_date']
-            tat = callallocateform.cleaned_data['call_TAT']
-            note = callallocateform.cleaned_data['call_note']
-            prdct = callallocateform.cleaned_data['product']
-            priority = callallocateform.cleaned_data['call_priority']
-            caller = callallocateform.cleaned_data['caller_name']
-
-            print(compname)
-            callallocate.objects.create(
-            title = compname,
-            comp_address = compaddr,
-            comp_email = compemail,
-            phone_number = compcontact,
-            description = compprob,
-            start = calldate,
-            call_alloc_time = calltime,
-            engg_name = enggname,
-            engg_id = enggid,
-            engg_status = enggstatus,
-            engg_contact = enggcontact,
-            call_status = callstatus,
-            call_type = calltype,
-            cust_city = compcty,
-            end = callautoclose,
-            call_tat = tat,
-            call_note = note,
-            product = prdct,
-            call_prioriy = priority,
-            caller_name = caller,
-            ).save()
+            callallocateform.save()
 
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!!\n your complaint no. is '+str(cno)+''
+            message = 'Your call has been allocated successfully!!\n your complaint no. is '+cno+''
 
             from_email = settings.EMAIL_HOST_USER
             to_list = [compemail,settings.EMAIL_HOST_USER]
@@ -423,51 +331,21 @@ def callallocations(request):
         callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
 
         if callallocateform.is_valid():
-            compname = callallocateform.cleaned_data['company_name']
-            compaddr = callallocateform.cleaned_data['company_address']
-            compemail = callallocateform.cleaned_data['company_email']
-            compcontact = callallocateform.cleaned_data['contact_number']
-            compprob = callallocateform.cleaned_data['company_problem']
-            calldate = callallocateform.cleaned_data['call_allocation_date']
-            calltime = callallocateform.cleaned_data['call_allocation_time']
-            enggname = callallocateform.cleaned_data['engg_name']
-            enggid = callallocateform.cleaned_data['engg_id']
-            enggstatus = callallocateform.cleaned_data['engg_status']
-            enggcontact = callallocateform.cleaned_data['engg_contact']
-            callstatus = callallocateform.cleaned_data['call_status']
-            calltype = callallocateform.cleaned_data['call_type']
-            compcty = callallocateform.cleaned_data['company_city']
-            callautoclose = callallocateform.cleaned_data['call_auto_close_date']
-            tat = callallocateform.cleaned_data['call_TAT']
-            note = callallocateform.cleaned_data['call_note']
-            prdct = callallocateform.cleaned_data['product']
-            priority = callallocateform.cleaned_data['call_priority']
-            caller = callallocateform.cleaned_data['caller_name']
+            cudate = datetime.datetime.now()
+            #callid = callallocate.objects.get()
+            callallocateform.cleaned_data['complaint_id'] = cudate
+            callallocateform.save()
 
 
-            callallocate.objects.create(
-            title = compname,
-            comp_address = compaddr,
-            comp_email = compemail,
-            phone_number = compcontact,
-            description = compprob,
-            start = calldate,
-            call_alloc_time = calltime,
-            engg_name = enggname,
-            engg_id = enggid,
-            engg_status = enggstatus,
-            engg_contact = enggcontact,
-            call_status = callstatus,
-            call_type = calltype,
-            cust_city = compcty,
-            end = callautoclose,
-            call_tat = tat,
-            call_note = note,
-            product = prdct,
-            call_prioriy = priority,
-            caller_name = caller,
-            ).save()
-            print(compname)
+            print (cudate)
+            #print(callid)
+            compemail = callallocateform.cleaned_data['comp_email']
+            subject = 'Call Allocated'
+            message = 'Your call has been allocated successfully!!\n your complaint no. is '+str(cudate)+''
+
+            from_email = settings.EMAIL_HOST_USER
+            to_list = [compemail,settings.EMAIL_HOST_USER]
+            send_mail(subject,message,from_email,to_list,fail_silently = True)
 
             return render(request,'loginapp/calendar1.html')
     else:
@@ -532,6 +410,9 @@ class CallListView(generic.ListView):
     context_object_name = 'callobj'
 
     def get_queryset(self):
+        city=self.request.session.get('city')
+        if city:
+          return callallocate.objects.filter(cust_city=city)
         return callallocate.objects.all()
 
 class Call1ListView(generic.ListView):
@@ -590,12 +471,12 @@ class EnggListView(generic.ListView):
     template_name = 'loginapp/engglist.html'
     context_object_name = 'enggobj'
 
-
     def get_queryset(self):
         city=self.request.session.get('city')
         if city:
          return engg.objects.filter(engg_city=city)
         return engg.objects.all()
+
 
 class Engg1ListView(generic.ListView):
     template_name = 'loginapp/engglist1.html'
@@ -670,6 +551,11 @@ class engglist(APIView):
 
 class eventcall(APIView):
     def get(self,request):
-        callalloc = callallocate.objects.all()
-        serializer = EventCallSerializer(callalloc,many=True)
+        city=self.request.session.get('city')
+        if city:
+         callalloc =  callallocate.objects.filter(cust_city=city)
+         serializer = EventCallSerializer(callalloc,many=True)
+        else:
+            callalloc =  callallocate.objects.all()
+            serializer = EventCallSerializer(callalloc,many=True)
         return Response(serializer.data)

@@ -37,7 +37,7 @@ DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
-
+DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'bootstrapform',
     'bootstrap3',
     'import_export',
+    'db_file_storage',
+    'channels',
     'loginapp',
 
 ]
@@ -66,7 +68,7 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [(redis_host, 6379)],
         },
-       "ROUTING": "multichat.routing.channel_routing", # We will create it in a moment
+       "ROUTING": "dccwebproject.routing.channel_routing", # We will create it in a moment
     },
 }
 
@@ -105,6 +107,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dccwebproject.wsgi.application'
+ASGI_APPLICATION = 'dccwebproject.routing.application'
 
 
 # Database

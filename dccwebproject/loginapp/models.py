@@ -1,4 +1,8 @@
 from django.db import models
+from django.utils.six import python_2_unicode_compatible
+from channels import Group
+import json
+from .settings import MSG_TYPE_MESSAGE
 from datetime import datetime
 from django.db.models import Sum
 from loginapp.choices import *
@@ -10,32 +14,97 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
+class Chat(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User,on_delete = models.CASCADE)
+    message = models.TextField()
+
+    def __unicode__(self):
+        return self.message
+
+@python_2_unicode_compatible
+class Room(models.Model):
+    """
+    A room for people to chat in.
+    """
+
+    # Room title
+    title = models.CharField(max_length=255)
+
+    # If only "staff" users are allowed (is_staff on django's User)
+    staff_only = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def websocket_group(self):
+        """
+        Returns the Channels Group that sockets should subscribe to to get sent
+        messages as they are generated.
+        """
+        return Group("room-%s" % self.id)
+
+    def send_message(self, message, user, msg_type=MSG_TYPE_MESSAGE):
+        """
+        Called to send a message to the room on behalf of a user.
+        """
+        final_msg = {'room': str(self.id), 'message': message, 'username': user.username, 'msg_type': msg_type}
+
+        # Send out the message to everyone in the room
+        self.websocket_group.send(
+            {"text": json.dumps(final_msg)}
+        )
+
 class Visitor(models.Model):
     user = models.OneToOneField(User,on_delete = models.CASCADE)
     session_key = models.CharField(max_length=40,null=True, blank=True)
 
+class ConsolePicture(models.Model):
+    bytes = models.TextField()
+    filename = models.CharField(max_length=255)
+    mimetype = models.CharField(max_length=50)
+
 class callallocate(models.Model):
     title = models.CharField(max_length=200,null=True,blank=True)
+    complaint_no = models.IntegerField(null=True,blank=True)
     comp_address = models.TextField(null=True,blank=True)
     comp_email = models.CharField(max_length=200,null=True,blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
     description = models.TextField(null=True,blank=True)
-    start = models.DateTimeField(null=True,blank=True)
+    start = models.DateField(null=True,blank=True)
     call_alloc_time = models.TimeField(null=True,blank=True)
     engg_contact = models.CharField(validators=[phone_regex], max_length=17,null=True,blank=True)
-    call_status = models.CharField(choices=CALL_CHOICES, default=1,max_length=7,null=True,blank=True)
-    call_type = models.CharField(max_length=7,null=True,blank=True)
+    call_status = models.CharField(choices=CALL_CHOICES, default="Open",max_length=7,null=True,blank=True)
+    call_type = models.CharField(choices=CALL_TYPE_CHOICES, default="Hardware",max_length=15,null=True,blank=True)
     cust_city = models.CharField(max_length=20,null=True,blank=True)
-    end = models.DateTimeField(null=True,blank=True)
+    end = models.DateField(null=True,blank=True)
     call_tat = models.IntegerField(null=True,blank=True)
     call_note = models.CharField(max_length=100,null=True,blank=True)
-    product = models.CharField(max_length=100,null=True,blank=True)
-    call_prioriy = models.CharField(max_length=7,null=True,blank=True)
+    product = models.CharField(choices=PRODUCT_CHOICES, default="Desktop PC",max_length=100,null=True,blank=True)
+    call_priority = models.CharField(max_length=7,null=True,blank=True)
     caller_name = models.CharField(max_length=50,null=True,blank=True)
     engg_name = models.CharField(max_length=7,null=True,blank=True)
     engg_id = models.IntegerField(null=True,blank=True)
-    engg_status = models.CharField(max_length=100,null=True,blank=True)
+    engg_status = models.CharField(choices=ENGG_CHOICES,default="Engineer Assign",max_length=100,null=True,blank=True)
+    engg_lat = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
+    engg_long = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
+    engg_rating = models.DecimalField(max_digits=2, decimal_places=1,null=True,blank=True)
+    engg_part_pic = models.ImageField(upload_to='loginapp.ConsolePicture/bytes/filename/mimetype',null=True,blank=True)
+    engg_client_pic = models.ImageField(upload_to='loginapp.ConsolePicture/bytes/filename/mimetype',null=True,blank=True)
+    client_sign_pic = models.ImageField(upload_to='loginapp.ConsolePicture/bytes/filename/mimetype',null=True,blank=True)
+    engg_complaint_note = models.CharField(max_length=100,null=True,blank=True)
+    engg_transport_type = models.CharField(max_length=10,null=True,blank=True)
+    engg_start_reading = models.CharField(max_length=10,null=True,blank=True)
+    engg_end_reading = models.CharField(max_length=10,null=True,blank=True)
+    engg_ticket_no = models.CharField(max_length=10,null=True,blank=True)
+    engg_ticket_amnt = models.CharField(max_length=10,null=True,blank=True)
+    engg_total_distance = models.CharField(max_length=10,null=True,blank=True)
+    engg_bus_start = models.CharField(max_length=10,null=True,blank=True)
+    engg_bus_end = models.CharField(max_length=10,null=True,blank=True)
+
+
 
 
 class coadmin(models.Model):
@@ -75,16 +144,21 @@ class customer(models.Model):
     customer_contact_no = models.CharField(validators=[phone_curegex],max_length=17,null=True,blank=True)
     customer_agreement = models.IntegerField(null=True,blank=True)
     customer_agreement_amount = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
-    customer_product1 = models.CharField(max_length=50,null=True,blank=True)
+    gstin_curegex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="GSTIN number must be entered in the format: '999999999'. Up to 15 digits allowed.")
+    customer_GSTIN_no = models.CharField(validators=[gstin_curegex],max_length=20,null=True,blank=True)
+    customer_product1 = models.CharField(choices=GENDER_CHOICES, default='Desktop PC',max_length=50,null=True,blank=True)
     customer_product2 = models.CharField(max_length=50,null=True,blank=True)
     customer_product3 = models.CharField(max_length=50,null=True,blank=True)
     customer_product4 = models.CharField(max_length=50,null=True,blank=True)
+
+    def __str__(self):
+        return self.customer_name
 
 
 
 class engg(models.Model):
     engg_id = models.IntegerField(null=True,blank=True)
-    engg_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
+    engg_pic = models.ImageField(upload_to='loginapp.ConsolePicture/bytes/filename/mimetype',null=True,blank=True)
     engg_name = models.CharField(max_length=200,null=True,blank=True)
     engg_address = models.TextField(null=True,blank=True)
     engg_permanent_address=models.TextField(null=True,blank=True)
@@ -105,9 +179,20 @@ class engg(models.Model):
     engg_conf_pass = models.CharField(max_length=16,null=True,blank=True)
     engg_status = models.CharField(choices=STATUS_CHOICES, default=1,max_length=12,null=True,blank=True)
 
+    def __str__(self):
+        return self.engg_name
+
+    def save(self, *args, **kwargs):
+        #delete_file_if_needed(self, 'picture')
+        super(engg, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        super(engg, self).delete(*args, **kwargs)
+        delete_file(self, 'picture')
+
 
 class enggperformance(models.Model):
-    engg_id = models.ForeignKey(engg, on_delete = models.CASCADE)
+    engg_id = models.IntegerField(null=True,blank=True)
     calls_closed = models.IntegerField(null=True,blank=True)
     avg_rating = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
     mode_of_transport = models.CharField(max_length=20,null=True,blank=True)
@@ -120,6 +205,8 @@ class enggperformance(models.Model):
     punchin_time = models.TimeField(null=True,blank=True)
     punchout_time = models.TimeField(null=True,blank=True)
     online_status = models.BooleanField()
+
+
 
 class stock(models.Model):
     product_name = models.CharField(max_length=20,null=True,blank=True)
