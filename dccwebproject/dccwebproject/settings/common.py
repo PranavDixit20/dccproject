@@ -37,7 +37,6 @@ DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
-DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,26 +50,10 @@ INSTALLED_APPS = [
     'bootstrapform',
     'bootstrap3',
     'import_export',
-    'db_file_storage',
-    'channels',
     'loginapp',
 
 ]
 
-redis_host = os.environ.get('REDIS_HOST', 'localhost')
-
-# Channel layer definitions
-# http://channels.readthedocs.org/en/latest/deploying.html#setting-up-a-channel-backend
-CHANNEL_LAYERS = {
-    "default": {
-        # This example app uses the Redis channel layer implementation asgi_redis
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(redis_host, 6379)],
-        },
-       "ROUTING": "dccwebproject.routing.channel_routing", # We will create it in a moment
-    },
-}
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 LOGIN_REDIRECT_URL = '/'
@@ -107,7 +90,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dccwebproject.wsgi.application'
-ASGI_APPLICATION = 'dccwebproject.routing.application'
+
 
 
 # Database

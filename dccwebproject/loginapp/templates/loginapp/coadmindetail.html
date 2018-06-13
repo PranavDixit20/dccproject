@@ -299,7 +299,7 @@
     <aside class="main-sidebar">
       <!-- sidebar: style can be found in sidebar.less -->
       <section class="sidebar">
-        
+
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">MAIN NAVIGATION</li>
@@ -327,6 +327,16 @@
           <a href="{% url 'loginapp:enggmaps' %}">
             <i class="fa fa-files-o"></i> <span>Track Engineers</span>
           </a>
+        </li>
+        <li>
+        <a href="{% url 'loginapp:stockentry' %}">
+          <i class="fa fa-files-o"></i> <span>Stock Entry</span>
+        </a>
+        </li>
+        <li>
+        <a href="{% url 'loginapp:stocklist' %}">
+          <i class="fa fa-files-o"></i> <span>Stock List</span>
+        </a>
         </li>
         <li class="active">
         <a href="{% url 'loginapp:getcoadmin' %}">

@@ -493,15 +493,7 @@
           <script src="//cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
           <script src="{% static 'loginapp/js/main.js' %}"></script>
           <!-- Chat box -->
-          <div>
-            <ul class="rooms">
-      {% for room in rooms %}
-          <li class="room-link" data-room-id="{{ room.id }}">{{ room }}</li>
-      {% empty %}
-          <p class="empty">No chat rooms defined. Maybe make some in the <a href="{% url 'loginapp:adminchat' %}">admin</a>?</p>
-      {% endfor %}
-  </ul>
-          </div>
+        
           <div class="box box-success">
             <div class="box-header">
               <i class="fa fa-comments-o"></i>
@@ -552,7 +544,7 @@
                     <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:15</small>
                     Admin
                   </a>
-                  
+
                 </p>
               </div>
               <!-- /.item -->

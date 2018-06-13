@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db.models import Sum
-import xlwt
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -16,78 +15,141 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect,HttpResponse
-from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm,StockEntry
+from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm,StockEntry,Product
 from . models import engg,enggperformance
-from . models import callallocate
+from . models import callallocate,products
 from . models import coadmin
-from . models import customer,stock,Room
+from . models import customer,stock
 import json
 import datetime
 from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
-#coadcity = "abc"
-city = "scv"
+from tablib import Dataset
+from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource
+
 
 def index(request):
     return render(request,'loginapp/login.html')
 
-def adminchat(request):
-    rooms = Room.objects.order_by("title")
-
-    # Render that in the index template
-    return render(request, "loginapp/index.html", {
-        "rooms": rooms,
-    })
-    #return render(request,'loginapp/index.html')
-
-def export_xls(request):
-
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=engineer.xls'
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet("EnggSheet")
-
-    row_num = 0
-
-    columns = [
-        "engg_id",
-        "engg_name",
-        "engg_address",
-        "engg_email",
-        "engg_contact_number",
-        "engg_city",
-        "engg_branch_code",
-        "engg_gender",
-        "engg_bdate",
-        "engg_age",
-        "engg_joining_date",
-        "engg_qual",
-        "engg_designation",
-        "engg_skill",
-
-    ]
-
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num][0], font_style)
-        # set column width
-
-
-    font_style = xlwt.XFStyle()
-    font_style.alignment.wrap = 1
-    rows = engg.objects.all().values_list('engg_id','engg_name','engg_address','engg_email','engg_contact_number','engg_city','engg_branch_code','engg_gender','engg_bdate','engg_age','engg_joining_date','engg_qual','engg_designation','engg_skill')
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, row[col_num], font_style)
-
-    wb.save(response)
+def callallocateexport_xls(request):
+    person_resource = CallallocateResource()
+    query = callallocate.objects.all()
+    dataset = person_resource.export(query)
+    response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="callallocate.xls"'
     return response
+    render(request,'loginapp/calllist1.html')
 
-export_xls.short_description = u"Export XLS"
+def callallocateimport_xls(request):
+        if request.method == 'POST':
+            callallocate_resource = CallallocateResource()
+            dataset = Dataset()
+            new_persons = request.FILES['myfile']
+
+            imported_data = dataset.load(new_persons.read())
+            result = callallocate_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+            if not result.has_errors():
+                callallocate_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+        return render(request, 'loginapp/stocklist.html')
+
+def stockexport_xls(request):
+    person_resource = StockResource()
+    query = stock.objects.all()
+    dataset = person_resource.export(query)
+    response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="stock.xls"'
+    return response
+    render(request,'loginapp/stocklist.html')
+
+def stockimport_xls(request):
+        if request.method == 'POST':
+            stock_resource = StockResource()
+            dataset = Dataset()
+            new_persons = request.FILES['myfile']
+
+            imported_data = dataset.load(new_persons.read())
+            result = stock_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+            if not result.has_errors():
+                stock_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+        return render(request, 'loginapp/stocklist.html')
+
+def coadminexport_xls(request):
+    person_resource = CoadminResource()
+    query = coadmin.objects.all()
+    dataset = person_resource.export(query)
+    response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="coadmin.xls"'
+    return response
+    render(request,'loginapp/coadmin_list.html')
+
+def coadminimport_xls(request):
+        if request.method == 'POST':
+            coadmin_resource = CoadminResource()
+            dataset = Dataset()
+            new_persons = request.FILES['myfile']
+
+            imported_data = dataset.load(new_persons.read())
+            result = coadmin_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+            if not result.has_errors():
+                coadmin_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+        return render(request, 'loginapp/coadmin_list.html')
+
+def customerexport_xls(request):
+    person_resource = CustomerResource()
+    query = customer.objects.all()
+    dataset = person_resource.export(query)
+    response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="customer.xls"'
+    return response
+    render(request,'loginapp/customerlist1.html')
+
+def customerimport_xls(request):
+        if request.method == 'POST':
+            customer_resource = CustomerResource()
+            dataset = Dataset()
+            new_persons = request.FILES['myfile']
+
+            imported_data = dataset.load(new_persons.read())
+            result = customer_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+            if not result.has_errors():
+                customer_resource.import_data(dataset, dry_run=False)  # Actually import now
+                return render(request, 'loginapp/customerlist1.html')
+        return render(request, 'loginapp/customerlist1.html')
+
+
+def enggexport_xls(request):
+
+    person_resource = EnggResource()
+    query = engg.objects.all()
+    dataset = person_resource.export(query)
+    response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="persons.xls"'
+    return response
+    render(request,'loginapp/engglist1.html')
+
+
+
+def enggimport_xls(request):
+    if request.method == 'POST':
+        engg_resource = EnggResource()
+        dataset = Dataset()
+        new_persons = request.FILES['myfile']
+
+        imported_data = dataset.load(new_persons.read())
+        result = engg_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+        if not result.has_errors():
+            engg_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+    return render(request, 'loginapp/engglist1.html')
 
 @login_required
 def dash(request):
@@ -304,6 +366,18 @@ def regcustoms(request):
         customform = CustomerRegisterForm(prefix='customform')
         return render(request,'loginapp/customregister1.html',{'customform':customform,})
 
+def productsave(request):
+        if request.method == 'POST':
+            form = Product(request.POST)
+            if form.is_valid():
+                form.save()
+                prodobj = products.objects.all()
+                return render(request,'loginapp/product_form.html',{'form':form,'prodobj':prodobj})
+        else:
+            form = Product()
+            prodobj = products.objects.all()
+            return render(request,'loginapp/product_form.html',{'form':form,'prodobj':prodobj})
+
 
 def callallocation(request):
 
@@ -377,9 +451,10 @@ class StockDetailView(generic.DetailView):
 
 class StockUpdateView(UpdateView):
     model = stock
+    form_class = StockEntry
     template_name = 'loginapp/stockupdate.html'
     success_url = reverse_lazy('loginapp:stocklist')
-    fields = '__all__'
+
 
 class StockDeleteView(DeleteView):
     model = stock
@@ -447,17 +522,12 @@ class Customer1DetailView(generic.DetailView):
     model = customer
     template_name = 'loginapp/customerdetail1.html'
 
-class CustomerUpdateView(UpdateView):
-    model = customer
-    template_name = 'loginapp/customer_update.html'
-    success_url = reverse_lazy('loginapp:getcustomer')
-    fields = '__all__'
 
 class Customer1UpdateView(UpdateView):
     model = customer
     template_name = 'loginapp/customer_update1.html'
     success_url = reverse_lazy('loginapp:getcustomers')
-    fields = '__all__'
+    form_class = CustomerRegisterForm
 
 class CustomerDeleteView(DeleteView):
     model = customer
@@ -504,14 +574,14 @@ class EnggUpdateView(UpdateView):
     model = engg
     template_name = 'loginapp/engg_update.html'
     success_url = reverse_lazy('loginapp:getengg')
-    fields = '__all__'
+    form_class = EnggRegisterForm
     success_message = 'data updated successfully!!!!'
 
 class Engg1UpdateView(UpdateView):
     model = engg
     template_name = 'loginapp/engg_update1.html'
     success_url = reverse_lazy('loginapp:getenggs')
-    fields = '__all__'
+    form_class = EnggRegisterForm
     success_message = 'data updated successfully!!!!'
 
 class EnggDeleteView(DeleteView):
@@ -529,9 +599,10 @@ class CoadminDetailView(generic.DetailView):
 
 class CoadminUpdateView(UpdateView):
     model = coadmin
+    form_class = RegisterForm
     template_name = 'loginapp/coadmin_update.html'
     success_url = reverse_lazy('loginapp:getcoadmin')
-    fields = '__all__'
+
 
 class CoadminDeleteView(DeleteView):
     model = coadmin

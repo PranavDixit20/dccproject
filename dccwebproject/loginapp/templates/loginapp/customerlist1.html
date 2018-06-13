@@ -394,6 +394,16 @@
           <li class="active">Dashboard</li>
         </ol>
       </section>
+      <div class="col-sm-2">
+        <a href ="{% url 'loginapp:customerexport_xls'%}"><button type="submit" class="btn btn-primary btn-block btn-flat">export to excel</button></a>
+        </div>
+        <div class="col-sm-2">
+        <form method="post" action="{% url 'loginapp:customerimport_xls' %}" enctype="multipart/form-data">
+     {% csrf_token %}
+     <input type="file" name="myfile">
+     <button type="submit" class="btn btn-primary btn-block btn-flat">Upload</button>
+   </form>
+ </div>
             <div class="container">
               <div class="row">
                 <div class="register-logo ">

@@ -422,7 +422,7 @@
                          </div>
                          <!-- /.box-header -->
                          <div class="box-body table-responsive no-padding">
-                      <form method="POST" action="{% url 'loginapp:customerdelete' customer.id %}">
+                      <form method="POST" action="{% url 'loginapp:customerdeletes' customer.id %}">
                               {% csrf_token %}
                            <table class="table table-hover">
                              <tr>

@@ -328,6 +328,16 @@
     </a>
   </li>
   <li>
+  <a href="{% url 'loginapp:stockentry' %}">
+    <i class="fa fa-files-o"></i> <span>Stock Entry</span>
+  </a>
+  </li>
+  <li>
+  <a href="{% url 'loginapp:stocklist' %}">
+    <i class="fa fa-files-o"></i> <span>Stock List</span>
+  </a>
+  </li>
+  <li>
   <a href="{% url 'loginapp:getcoadmin' %}">
     <i class="fa fa-files-o"></i> <span>Coadmin List</span>
   </a>
@@ -417,6 +427,12 @@
                       </div>
 
                     </div>
+                  <script>  $(".datepicker").datepicker({
+    format: 'dd/mm/yyyy',
+    autoclose: true,
+    changeYear: true,
+    changeMonth: true
+  });</script>
 
                     <div class="row">
 
