@@ -14,10 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf.urls import url,include
+from django.conf.urls import url, include
 from . import views
+from loginapp.views import ChartData
 from loginapp import views
-from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
@@ -25,8 +25,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url('admin/', admin.site.urls),
-    url(r'^',include('loginapp.urls')),
-    url(r'callallocation/',views.calllist.as_view()),
-    url(r'eventcall/',views.eventcall.as_view()),
-
-]
+    url(r'^', include('loginapp.urls')),
+    url(r'callallocation/', views.calllist.as_view()),
+    url(r'eventcall/', views.eventcall.as_view()),
+    url(r'^api/chart/data/$', ChartData.as_view()),
+    
+            ]

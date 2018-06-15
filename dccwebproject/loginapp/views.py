@@ -14,7 +14,7 @@ from django.views.generic.edit import UpdateView,DeleteView,CreateView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.http import HttpResponseRedirect,HttpResponse
+from django.http import HttpResponseRedirect,HttpResponse,JsonResponse
 from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm,StockEntry,Product
 from . models import engg,enggperformance
 from . models import callallocate,products
@@ -22,13 +22,14 @@ from . models import coadmin
 from . models import customer,stock
 import json
 import datetime
-from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer
+from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer,ChartSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
 from tablib import Dataset
 from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource
 
-
+def update(request):
+    return render(request,'loginapp/updateinfo.php')
 def index(request):
     return render(request,'loginapp/login.html')
 
@@ -165,7 +166,7 @@ def log_out(request):
     return render(request,'loginapp/login.html')
 
 def dash2(request):
-    print(city)
+
     return render(request,'loginapp/index2.html')
 
 def dash1(request):
@@ -501,6 +502,7 @@ class CustomerListView(generic.ListView):
     template_name = 'loginapp/customerlist.html'
     context_object_name = 'customobj'
 
+
     def get_queryset(self):
         city=self.request.session.get('city')
         if city:
@@ -540,20 +542,37 @@ class Customer1DeleteView(DeleteView):
 class EnggListView(generic.ListView):
     template_name = 'loginapp/engglist.html'
     context_object_name = 'enggobj'
+    model = engg
 
     def get_queryset(self):
-        city=self.request.session.get('city')
-        if city:
-         return engg.objects.filter(engg_city=city)
-        return engg.objects.all()
+         name = ''
+         try:
+            name = self.request.GET.get('q')
+         except:
+            name = ''
+         if (name != ''):
+            object_list = self.model.objects.filter(engg_name__icontains=name)
+         else:
+            city = self.request.session.get('city')
+            object_list = engg.objects.filter(engg_city=city)
+         return object_list
 
 
 class Engg1ListView(generic.ListView):
     template_name = 'loginapp/engglist1.html'
     context_object_name = 'enggobjs'
+    model = engg
 
     def get_queryset(self):
-        return engg.objects.all()
+
+         name = self.request.GET.get('q')
+         
+         if (name != ''):
+            object_list = self.model.objects.filter(engg_name__icontains= self.request.GET.get('q'))
+         else:
+            object_list = self.model.objects.all()
+         return object_list
+
 
 class DetailView(generic.DetailView):
     model = engg
@@ -619,6 +638,28 @@ class engglist(APIView):
         callalloc = engg.objects.all()
         serializer = EnggSerializer(callalloc,many=True)
         return Response(serializer.data)
+
+class eventcall(APIView):
+    def get(self,request):
+        city=self.request.session.get('city')
+        if city:
+         callalloc =  callallocate.objects.filter(cust_city=city)
+         serializer = EventCallSerializer(callalloc,many=True)
+        else:
+            callalloc =  callallocate.objects.all()
+            serializer = EventCallSerializer(callalloc,many=True)
+        return Response(serializer.data)
+
+
+class ChartData(APIView):
+
+    authentication_classes = ()
+    permission_classes = ()
+    def get(self, request):
+
+        chartdata = customer.objects.all().count()
+
+        return Response(chartdata)
 
 class eventcall(APIView):
     def get(self,request):

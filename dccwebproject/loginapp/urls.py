@@ -7,6 +7,7 @@ from django.contrib.auth.views import login
 
 app_name = 'loginapp'
 urlpatterns = [
+url(r'^update/$',views.update,name='update'),
  url(r'^androidlogin/$',views.androidlogin,name='androidlogin'),
  url(r'^$',views.index,name='index'),
  url(r'customregisters/productsave/$',views.productsave,name='productsave'),
@@ -24,7 +25,7 @@ urlpatterns = [
  url(r'^customregisters/$',views.regcustoms,name='regcustoms'),
  url(r'engglist/$',views.EnggListView.as_view(),name='getengg'),
  url(r'dash1/stocklist/$',views.StockListView.as_view(),name='stocklist'),
- url(r'^engglist1/$',views.Engg1ListView.as_view(),name='getenggs'),
+ url(r'^engglist1/$', views.Engg1ListView.as_view(), name='getenggs'),
  url(r'enggdetail/(?P<pk>[0-9]+)/$',views.DetailView.as_view(),name='enggdetail'),
  url(r'dash1/stockdetail/(?P<pk>[0-9]+)/$',views.StockDetailView.as_view(),name='stockdetail'),
  url(r'dash1/stockupdate/(?P<pk>[0-9]+)/$',views.StockUpdateView.as_view(),name='stockupdate'),

@@ -1,11 +1,8 @@
 from django import forms
 from django.forms import ModelChoiceField
-from loginapp.choices import *
-from . import views
-from . models import engg,stock,callallocate,customer,products,coadmin
-from django.contrib.admin import widgets
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from . models import engg, stock, callallocate, customer, products, coadmin
+
+
 
 
 
@@ -35,13 +32,13 @@ class EnggRegisterForm(forms.ModelForm):
 
 class CustomerRegisterForm(forms.ModelForm):
     q = products.objects.all()
-    customer_product=forms.ModelChoiceField(queryset=q)
+    customer_product = forms.ModelChoiceField(queryset=q)
     class Meta:
         model = customer
         exclude = []
         fields = '__all__'
         widgets = {
-            'customer_doc':forms.DateInput(attrs={'type':'date'}),
+            'customer_doc': forms.DateInput(attrs={'type': 'date'},),
         }
 
 
@@ -73,9 +70,9 @@ class CallAllocateForm(forms.ModelForm):
         ]
         fields = '__all__'
         widgets = {
-            'call_alloc_time':forms.TimeInput(attrs={'type':'time'}),
-            'start':forms.DateInput(attrs={'type':'date'}),
-            'end':forms.TimeInput(attrs={'type':'date'}),
+            'call_alloc_time': forms.TimeInput(attrs={'type':'time'}),
+            'start': forms.DateInput(attrs={'type':'date'}),
+            'end': forms.TimeInput(attrs={'type':'date'}),
         }
 
 class StockEntry(forms.ModelForm):
@@ -83,10 +80,11 @@ class StockEntry(forms.ModelForm):
         model = stock
         fields = '__all__'
         widgets = {
-            'product_recieved_date':forms.DateInput(attrs={'type':'date'}),
+            'product_recieved_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
 class Product(forms.ModelForm):
+
     class Meta:
         model = products
         fields = "__all__"

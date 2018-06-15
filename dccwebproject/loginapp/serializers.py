@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import callallocate,engg
+from . models import callallocate,engg,customer
 
 class CallAllocateSerializer(serializers.ModelSerializer):
 
@@ -25,8 +25,8 @@ class EventCallSerializer(serializers.ModelSerializer):
         'description',
         ]
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class ChartSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = engg
+        model = customer
         fields = '__all__'
