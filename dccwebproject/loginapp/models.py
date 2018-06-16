@@ -118,7 +118,7 @@ class engg(models.Model):
     engg_phone_coregex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     engg_contact_number = models.CharField(validators=[engg_phone_coregex], max_length=17, blank=True)
     engg_tell_no = models.CharField(max_length=17,blank=True)
-    engg_city = models.CharField(max_length=70,null=True,blank=True)
+    engg_city = models.CharField(max_length=70, null=True, blank=True)
     engg_branch_code = models.CharField(max_length=100,null=True,blank=True)
     engg_gender = models.CharField(choices=GENDER_CHOICES, default=1,max_length=12,null=True,blank=True)
     engg_bdate = models.DateField(null=True,blank=True)

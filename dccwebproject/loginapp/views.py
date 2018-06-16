@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Sum
+from django.db.models import Q
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -161,8 +161,12 @@ def androidlogin(request):
 
 
 def log_out(request):
-    del request.session['city']
-    logout(request)
+    session = request.session.get('city')
+    if session:
+        del request.session['city']
+        logout(request)
+    else:
+        logout(request)
     return render(request,'loginapp/login.html')
 
 def dash2(request):
@@ -182,12 +186,17 @@ def coregister(request):
     return render(request,'loginapp/coadmin_form.html')
 
 def enggmap(request):
-    data = enggperformance.objects.all()
+    city = request.session.get('city')
+    data = callallocate.objects.filter(cust_city = city)
     return render(request,'loginapp/enggmap.html',{'data':data})
 
 def enggmaps(request):
-    data = enggperformance.objects.all()
+    data = callallocate.objects.all()
     return render(request,'loginapp/enggmap1.html',{'data':data})
+
+def enggtrack(request,pk):
+    data = callallocate.objects.filter(id=pk)
+    return render(request,'loginapp/enggtrack.html',{'data':data})
 
 
 
@@ -200,22 +209,26 @@ def loggin(request):
 
 
             #return render(request,'loginapp/index2.html')
-        if form.is_valid() :
+        if form.is_valid():
             usernm = authenticate(username=user,password=pas)
             if coadmin.objects.filter(co_name=user).exists() and coadmin.objects.filter(co_conf_pass=pas).exists() and coadmin.objects.filter(co_city=city).exists():
 
-                request.session['city']=city
-                print(city)
-                return render(request,'loginapp/index2.html',)
+                request.session['city'] = city
+
+                return render(request, 'loginapp/index2.html',)
 
             elif usernm.is_superuser:
-                return render(request,'loginapp/index.html')
+                return render(request, 'loginapp/index.html')
+
+            else:
+                #messages.error(request, "all fields are mandatory")
+                return render(request, 'loginapp/login.html', {'form': form})
 
 
 
         else:
                 form = AuthenticationForm()
-                return render(request,'loginapp/login.html',{'form':form})
+                return render(request, 'loginapp/login.html', {'form': form})
 
 def regcoadmin(request):
 
@@ -436,7 +449,7 @@ def stockentry(request):
             return render(request,'loginapp/stockentry.html',{'form':form})
     else:
         form = StockEntry()
-        form.fields['product_quantity'].queryset = stock.objects.aggregate(Sum('product_quantity'))
+        #form.fields['product_quantity'].queryset = stock.objects.aggregate(Sum('product_quantity'))
         return render(request,'loginapp/stockentry.html',{'form':form})
 
 class StockListView(generic.ListView):
@@ -484,19 +497,27 @@ class EventCall1DeleteView(DeleteView):
 class CallListView(generic.ListView):
     template_name = 'loginapp/calllist.html'
     context_object_name = 'callobj'
-
+    model = callallocate
     def get_queryset(self):
-        city=self.request.session.get('city')
-        if city:
-          return callallocate.objects.filter(cust_city=city)
-        return callallocate.objects.all()
+        name = self.request.GET.get('q')
+        if name:
+            object_list = self.model.objects.filter(Q(call_status__icontains=name))
+        else:
+          city=self.request.session.get('city')
+          object_list =  self.model.objects.filter(cust_city=city)
+        return object_list
 
 class Call1ListView(generic.ListView):
     template_name = 'loginapp/calllist1.html'
     context_object_name = 'callobjs'
-
+    model = callallocate
     def get_queryset(self):
-        return callallocate.objects.all()
+        name = self.request.GET.get('q')
+        if name:
+            object_list = self.model.objects.filter(Q(call_status__icontains=name))
+        else:
+            object_list = self.model.objects.all()
+        return object_list
 
 class CustomerListView(generic.ListView):
     template_name = 'loginapp/customerlist.html'
@@ -512,9 +533,14 @@ class CustomerListView(generic.ListView):
 class Customer1ListView(generic.ListView):
     template_name = 'loginapp/customerlist1.html'
     context_object_name = 'customobjs'
-
+    model = customer
     def get_queryset(self):
-        return customer.objects.all()
+        name = self.request.GET.get('q')
+        if name:
+            object_list = self.model.objects.filter(Q(customer_name__icontains=name))
+        else:
+            object_list = self.model.objects.all()
+        return object_list
 
 class CustomerDetailView(generic.DetailView):
     model = customer
@@ -545,13 +571,10 @@ class EnggListView(generic.ListView):
     model = engg
 
     def get_queryset(self):
-         name = ''
-         try:
-            name = self.request.GET.get('q')
-         except:
-            name = ''
-         if (name != ''):
-            object_list = self.model.objects.filter(engg_name__icontains=name)
+         name = self.request.GET.get('q')
+         if name:
+            object_list = self.model.objects.filter(Q(engg_name__contains=name)
+             | Q(engg_city__contains=name))
          else:
             city = self.request.session.get('city')
             object_list = engg.objects.filter(engg_city=city)
@@ -566,9 +589,9 @@ class Engg1ListView(generic.ListView):
     def get_queryset(self):
 
          name = self.request.GET.get('q')
-         
-         if (name != ''):
-            object_list = self.model.objects.filter(engg_name__icontains= self.request.GET.get('q'))
+
+         if name:
+            object_list = self.model.objects.filter(engg_name__icontains = name)
          else:
             object_list = self.model.objects.all()
          return object_list

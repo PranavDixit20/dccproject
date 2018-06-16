@@ -63,6 +63,7 @@ url(r'^update/$',views.update,name='update'),
  url(r'^callallocateimportexcelsheet/$',views.callallocateimport_xls,name='callallocateimport_xls'),
  url(r'^stockexcelsheet/$',views.stockexport_xls,name='stockexport_xls'),
  url(r'^stockimportexcelsheet/$',views.stockimport_xls,name='stockimport_xls'),
+ url(r'^enggtrack/(?P<pk>[0-9]+)/$',views.enggtrack,name='enggtrack'),
  #url(r'search/$',views.search,name='search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

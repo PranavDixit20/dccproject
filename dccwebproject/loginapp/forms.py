@@ -47,6 +47,8 @@ class CallAllocateForm(forms.ModelForm):
     p = products.objects.all()
     title = forms.ModelChoiceField(queryset=qset)
     product = forms.ModelChoiceField(queryset=p)
+    engg_lat = forms.DecimalField(initial=0.0)
+    engg_long = forms.DecimalField(initial=0.0)
 
     class Meta:
         model = callallocate
