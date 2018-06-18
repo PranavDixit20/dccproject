@@ -41,7 +41,7 @@ class callallocate(models.Model):
     engg_status = models.CharField(choices=ENGG_CHOICES,default="Engineer Assign",max_length=100,null=True,blank=True)
     engg_lat = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
     engg_long = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
-    engg_rating = models.DecimalField(max_digits=2, decimal_places=1,null=True,blank=True)
+    engg_rating = models.CharField(max_length=10,null=True,blank=True)
     engg_part_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
     engg_client_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
     client_sign_pic = models.ImageField(upload_to='co_pic',null=True,blank=True)
@@ -49,7 +49,7 @@ class callallocate(models.Model):
     engg_transport_type = models.CharField(max_length=10,null=True,blank=True)
     engg_start_reading = models.CharField(max_length=10,null=True,blank=True)
     engg_end_reading = models.CharField(max_length=10,null=True,blank=True)
-    engg_ticket_no = models.CharField(max_length=10,null=True,blank=True)
+    engg_solve = models.CharField(max_length=100,null=True,blank=True)
     engg_ticket_amnt = models.CharField(max_length=10,null=True,blank=True)
     engg_total_distance = models.CharField(max_length=10,null=True,blank=True)
     engg_bus_start = models.CharField(max_length=10,null=True,blank=True)
@@ -57,7 +57,9 @@ class callallocate(models.Model):
     engg_bike_no = models.CharField(max_length=10,null=True,blank=True)
     engg_part_name = models.CharField(max_length=10,null=True,blank=True)
     engg_part_no = models.CharField(max_length=10,null=True,blank=True)
-
+    engg_feedback = models.CharField(max_length=200,null=True,blank=True)
+    comp_rating = models.CharField(max_length=10,null=True,blank=True)
+    comp_feedback = models.CharField(max_length=200,null=True,blank=True)
 
 
 
