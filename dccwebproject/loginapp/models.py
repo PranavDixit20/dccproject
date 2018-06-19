@@ -56,7 +56,7 @@ class callallocate(models.Model):
     engg_bus_end = models.CharField(max_length=10,null=True,blank=True)
     engg_bike_no = models.CharField(max_length=10,null=True,blank=True)
     engg_part_name = models.CharField(max_length=10,null=True,blank=True)
-    engg_part_no = models.CharField(max_length=10,null=True,blank=True)
+    engg_part_no = models.CharField(max_length=30,null=True,blank=True)
     engg_feedback = models.CharField(max_length=200,null=True,blank=True)
     comp_rating = models.CharField(max_length=10,null=True,blank=True)
     comp_feedback = models.CharField(max_length=200,null=True,blank=True)

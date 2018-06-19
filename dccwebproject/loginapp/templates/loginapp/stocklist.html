@@ -408,13 +408,15 @@
       <div class="col-sm-2">
         <a href ="{% url 'loginapp:stockexport_xls'%}"><button type="submit" class="btn btn-primary btn-block btn-flat">export to excel</button></a>
         </div>
-        <div class="col-sm-2">
         <form method="post" action="{% url 'loginapp:stockimport_xls' %}" enctype="multipart/form-data">
-     {% csrf_token %}
-     <input type="file" name="myfile">
+        {% csrf_token %}
+        <div class="col-sm-4">
+     <input type="file" name="myfile" class="btn btn-primary btn-block btn-flat">
+   </div>
+     <div class="col-sm-2">
      <button type="submit" class="btn btn-primary btn-block btn-flat">Upload</button>
-    </form>
     </div>
+    </form>
 
         <div class="row ">
           <!-- Left col -->

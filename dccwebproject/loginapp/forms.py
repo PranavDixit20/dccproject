@@ -47,8 +47,8 @@ class CallAllocateForm(forms.ModelForm):
     p = products.objects.all()
     title = forms.ModelChoiceField(queryset=qset)
     product = forms.ModelChoiceField(queryset=p)
-    engg_lat = forms.DecimalField(initial=0.0)
-    engg_long = forms.DecimalField(initial=0.0)
+    e = engg.objects.filter(engg_status='online')
+    engg_name = forms.ModelChoiceField(queryset=e)
 
     class Meta:
         model = callallocate
@@ -69,6 +69,12 @@ class CallAllocateForm(forms.ModelForm):
         'engg_bus_start',
         'engg_bus_end',
         'engg_bike_no',
+        'engg_solve',
+        'engg_part_name',
+        'engg_part_no',
+        'engg_feedback',
+        'comp_rating',
+        'comp_feedback',
         ]
         fields = '__all__'
         widgets = {

@@ -39,8 +39,9 @@ def callallocateexport_xls(request):
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="callallocate.xls"'
-    return response
     render(request,'loginapp/calllist1.html')
+    return response
+
 
 def callallocateimport_xls(request):
         if request.method == 'POST':
@@ -51,10 +52,12 @@ def callallocateimport_xls(request):
             imported_data = dataset.load(new_persons.read())
             result = callallocate_resource.import_data(dataset, dry_run=True)  # Test the data import
 
+
             if not result.has_errors():
                 callallocate_resource.import_data(dataset, dry_run=False)  # Actually import now
+                return render(request,'loginapp/calllist1.html')
 
-        return render(request, 'loginapp/stocklist.html')
+        return render(request, 'loginapp/calllist1.html')
 
 def stockexport_xls(request):
     person_resource = StockResource()
@@ -62,8 +65,9 @@ def stockexport_xls(request):
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="stock.xls"'
-    return response
     render(request,'loginapp/stocklist.html')
+    return response
+
 
 def stockimport_xls(request):
         if request.method == 'POST':
@@ -85,8 +89,9 @@ def coadminexport_xls(request):
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="coadmin.xls"'
-    return response
     render(request,'loginapp/coadmin_list.html')
+    return response
+
 
 def coadminimport_xls(request):
         if request.method == 'POST':
@@ -108,8 +113,9 @@ def customerexport_xls(request):
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="customer.xls"'
-    return response
     render(request,'loginapp/customerlist1.html')
+    return response
+
 
 def customerimport_xls(request):
         if request.method == 'POST':
@@ -133,8 +139,9 @@ def enggexport_xls(request):
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="persons.xls"'
-    return response
     render(request,'loginapp/engglist1.html')
+    return response
+
 
 
 
@@ -208,7 +215,6 @@ def loggin(request):
             form = AuthenticationForm(data=request.POST)
 
 
-            #return render(request,'loginapp/index2.html')
         if form.is_valid():
             usernm = authenticate(username=user,password=pas)
             if coadmin.objects.filter(co_name=user).exists() and coadmin.objects.filter(co_conf_pass=pas).exists() and coadmin.objects.filter(co_city=city).exists():
@@ -273,7 +279,7 @@ def regcoadmin(request):
             user = authenticate(username=cname, password=cpassword)
             login(request, user)
             subject = 'Co-Admin added'
-            message = 'Co-Admin has been Registered successfully!!\n your name is '+str(cname)+' and password is '+str(cpassword)+''
+            message = 'Co-Admin has been Registered successfully!!\n your name is '+cname+' and password is '+cpassword+''
             from_email = settings.EMAIL_HOST_USER
             to_list = [compemail,settings.EMAIL_HOST_USER]
             send_mail(subject,message,from_email,to_list,fail_silently = True)
@@ -351,7 +357,7 @@ def regenggs(request):
                  user = authenticate(username=ename, password=epassword)
                  login(request, user)
                  subject = 'Registration successfull!!'
-                 message = 'Your Registration is successfull!!\n your username is '+str(ename)+'password is '+'epassword'+''
+                 message = 'Your Registration is successfull!!\n your username is '+ename+' and password is '+epassword+''
 
                  from_email = settings.EMAIL_HOST_USER
                  to_list = [eemail,settings.EMAIL_HOST_USER]
@@ -398,11 +404,18 @@ def callallocation(request):
     if request.method == 'POST':
         callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
         cno = callallocateform.cleaned_data['complaint_no']
+        prob = callallocationform.cleaned_data['description']
+        engg = callallocationform.cleaned_data['engg_name']
+        cont = callallocationform.cleaned_data['engg_contact']
+        dte = callallocationform.cleaned_data['start']
+        tme = callallocationform.cleaned_data['call_alloc_time']
+
+
         if callallocateform.is_valid():
             callallocateform.save()
 
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!!\n your complaint no. is '+cno+''
+            message = 'Your call has been allocated successfully!! on'+dte+' '+tme+'\n your complaint no. is '+cno+'. Your problem is '+prob+'. Your call has been assigned to '+engg+' his contact number is '+cont+''
 
             from_email = settings.EMAIL_HOST_USER
             to_list = [compemail,settings.EMAIL_HOST_USER]
@@ -420,16 +433,17 @@ def callallocations(request):
 
         if callallocateform.is_valid():
             cudate = datetime.datetime.now()
-            #callid = callallocate.objects.get()
-            callallocateform.cleaned_data['complaint_id'] = cudate
+            cudate.strftime('%m%d%Y')
             callallocateform.save()
-
-
-            print (cudate)
-            #print(callid)
+            #cno = callallocateform.cleaned_data['complaint_no']
+            prob = callallocateform.cleaned_data['description']
+            engg = callallocateform.cleaned_data['engg_name']
+            cont = callallocateform.cleaned_data['engg_contact']
+            dte = callallocateform.cleaned_data['start']
+            tme = callallocateform.cleaned_data['call_alloc_time']
             compemail = callallocateform.cleaned_data['comp_email']
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!!\n your complaint no. is '+str(cudate)+''
+            message = 'Your call has been allocated successfully!! on'+str(dte)+' '+str(tme)+'\n your complaint no. is '+str(cudate)+'. Your problem is '+prob+'. Your call has been assigned to '+str(engg)+' his contact number is '+str(cont)+' '
 
             from_email = settings.EMAIL_HOST_USER
             to_list = [compemail,settings.EMAIL_HOST_USER]
