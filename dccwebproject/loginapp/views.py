@@ -242,21 +242,21 @@ def regcoadmin(request):
         coadminform = RegisterForm(request.POST,prefix='coadminform')
 
         if coadminform .is_valid():
-            cname = coadminform.cleaned_data['name']
-            cemail = coadminform.cleaned_data['email']
-            cmobile = coadminform.cleaned_data['mobile_number']
-            ctelephone = coadminform.cleaned_data['telephone_number']
-            ccity = coadminform.cleaned_data['city']
+            cname = coadminform.cleaned_data['co_name']
+            cemail = coadminform.cleaned_data['co_email']
+            cmobile = coadminform.cleaned_data['contact_number']
+            ctelephone = coadminform.cleaned_data['tell_no']
+            ccity = coadminform.cleaned_data['co_city']
             cbranch_code = coadminform.cleaned_data['branch_code']
-            cgender = coadminform.cleaned_data['gender']
-            cbirthdate = coadminform.cleaned_data['birth_date']
-            cage = coadminform.cleaned_data['age']
-            cjoining_date = coadminform.cleaned_data['joining_date']
-            cqualification = coadminform.cleaned_data['qualification']
-            cdesignation = coadminform.cleaned_data['designation']
-            cpassword = coadminform.cleaned_data['password']
-            ccpassword = coadminform.cleaned_data['confirm_password']
-            caddress = coadminform.cleaned_data['address']
+            cgender = coadminform.cleaned_data['co_gender']
+            cbirthdate = coadminform.cleaned_data['co_bdate']
+            cage = coadminform.cleaned_data['co_age']
+            cjoining_date = coadminform.cleaned_data['co_joining_date']
+            cqualification = coadminform.cleaned_data['co_qual']
+            cdesignation = coadminform.cleaned_data['co_designation']
+            cpassword = coadminform.cleaned_data['co_pass']
+            ccpassword = coadminform.cleaned_data['co_conf_pass']
+            caddress = coadminform.cleaned_data['co_address']
 
             coadmin.objects.create(
             co_name = cname,
@@ -281,7 +281,7 @@ def regcoadmin(request):
             subject = 'Co-Admin added'
             message = 'Co-Admin has been Registered successfully!!\n your name is '+cname+' and password is '+cpassword+''
             from_email = settings.EMAIL_HOST_USER
-            to_list = [compemail,settings.EMAIL_HOST_USER]
+            to_list = [cemail,settings.EMAIL_HOST_USER]
             send_mail(subject,message,from_email,to_list,fail_silently = True)
             return render(request,'loginapp/coadmin_form.html',{'coadminform':coadminform ,})
     else:
