@@ -181,6 +181,8 @@ def dash2(request):
     return render(request,'loginapp/index2.html')
 
 def dash1(request):
+    data = customer.objects.filter(customer_name='INDIA INSTITUTE OF TROPICAL METROLOGY').values_list('customer_adrress')
+    print(data)
     return render(request,'loginapp/index.html')
 
 def calendar(request):
@@ -224,6 +226,7 @@ def loggin(request):
                 return render(request, 'loginapp/index2.html',)
 
             elif usernm.is_superuser:
+
                 return render(request, 'loginapp/index.html')
 
             else:
@@ -453,6 +456,13 @@ def callallocations(request):
     else:
         callallocateform = CallAllocateForm(prefix='callallocateform')
     return render(request,'loginapp/callallocate_form1.html',{'callallocateform':callallocateform,})
+
+    def clean_comp_address(self):
+        var = self.cleaned_data['title']
+        data = self.cleaned_data['comp_address']
+        data = self.customer.objects.filter(customer_name=var).values_list('customer_address')
+
+        return data
 
 def stockentry(request):
     if request.method == 'POST':

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'bootstrapform',
     'bootstrap3',
     'import_export',
+    'widget_tweaks',
     'loginapp',
 
 ]

@@ -1,5 +1,7 @@
 {%load staticfiles%}
 {%load bootstrap%}
+{%load widget_tweaks%}
+
 <!DOCTYPE html>
 <html>
 
@@ -414,25 +416,28 @@
 
                   <form method="POST" action="{% url 'loginapp:callallocations' %}" enctype="multipart/form-data">
                     {% csrf_token %}
+                      {{ form.non_field_errors }}
 
                     <div class="col-lg-12">
                       <b></b>
 
                       <div class="form-group has-feedback table-responsive">
                       <table class="table">
-
                         {{ callallocateform|bootstrap }}
                       </table>
 
                       </div>
 
                     </div>
-                  <script>  $(".datepicker").datepicker({
-    format: 'dd/mm/yyyy',
-    autoclose: true,
-    changeYear: true,
-    changeMonth: true
-  });</script>
+                  <script> $(document).ready(function(){
+    $("#id_name").change(function() {
+        // Find your different fields you want to populate and set the values here.
+        // Example would be
+        if ($("#id_name").val() == "Some value") {
+            $("#id_command_prefix").val("Whatever you want to populate with.")
+        }
+    });
+});</script>
 
                     <div class="row">
 

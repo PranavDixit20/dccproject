@@ -23,6 +23,7 @@ class callallocate(models.Model):
     comp_email = models.CharField(max_length=200,null=True,blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    product = models.CharField(max_length=100,null=True,blank=True)
     description = models.TextField(null=True,blank=True)
     start = models.DateField(null=True,blank=True)
     call_alloc_time = models.TimeField(null=True,blank=True)
@@ -33,7 +34,6 @@ class callallocate(models.Model):
     end = models.DateField(null=True,blank=True)
     call_tat = models.IntegerField(null=True,blank=True)
     call_note = models.CharField(max_length=100,null=True,blank=True)
-    product = models.CharField(max_length=100,null=True,blank=True)
     call_priority = models.CharField(choices=PRIORITY_CHOICES, default="High",max_length=7,null=True,blank=True)
     caller_name = models.CharField(max_length=50,null=True,blank=True)
     engg_name = models.CharField(max_length=7,null=True,blank=True)
@@ -88,8 +88,7 @@ class coadmin(models.Model):
 
 class customer(models.Model):
     customer_name = models.CharField(max_length=100,null=True,blank=True)
-    customer_area = models.CharField(max_length=500,null=True,blank=True)
-    customer_landmark = models.CharField(max_length=500,null=True,blank=True)
+    customer_adrress = models.CharField(max_length=500,null=True,blank=True)
     customer_city = models.CharField(max_length=500,null=True,blank=True)
     customer_pincode = models.IntegerField(null=True,blank=True)
     cutomer_fax = models.CharField(max_length=11,null=True,blank=True)
@@ -175,7 +174,7 @@ class stock(models.Model):
     product_model_id = models.IntegerField(null=True,blank=True)
     product_description = models.CharField(max_length=500,null=True,blank=True)
     product_warranty = models.IntegerField(null=True,blank=True)
-    #stock.objects.aggregate(Sum('product_quantity'))
+
 
 class products(models.Model):
     product_name = models.CharField(max_length=100,null=True,blank=True)

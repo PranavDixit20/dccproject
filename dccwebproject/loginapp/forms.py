@@ -45,9 +45,9 @@ class CustomerRegisterForm(forms.ModelForm):
 class CallAllocateForm(forms.ModelForm):
     qset = customer.objects.all()
     p = products.objects.all()
+    e = engg.objects.all()
     title = forms.ModelChoiceField(queryset=qset)
     product = forms.ModelChoiceField(queryset=p)
-    e = engg.objects.filter(engg_status='online')
     engg_name = forms.ModelChoiceField(queryset=e)
 
     class Meta:
