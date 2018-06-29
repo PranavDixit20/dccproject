@@ -7,10 +7,12 @@ from django.contrib.auth.views import login
 
 app_name = 'loginapp'
 urlpatterns = [
-url(r'^update/$',views.update,name='update'),
+ url(r'^quickmail/$',views.qmail,name='qmail'),
+ url(r'^quickmail2/$',views.qmail2,name='qmail2'),
  url(r'^androidlogin/$',views.androidlogin,name='androidlogin'),
  url(r'^$',views.index,name='index'),
  url(r'customregisters/productsave/$',views.productsave,name='productsave'),
+ url(r'productdelete/(?P<pk>[0-9]+)/$',views.deleteprod,name='deleteprod'),
  url(r'^loggin/$',views.loggin, name='loggin'),
  url(r'^dash/$',views.dash ,name='dash'),
  url(r'^logout/$',views.log_out ,name='logout'),

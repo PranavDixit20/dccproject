@@ -15,11 +15,11 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangodatabase',
-        'USERNAME' : 'root',
-        'PASSWORD' : '',
-        'HOST' : 'localhost',
-        'PORT' : '3306',
+        'DB_NAME': 'djangodatabase',
+        'DB_USERNAME' : 'root',
+        'DB_PASSWORD' : '',
+        'DB_HOST' : '192.168.0.7',
+        'DB_PORT' : '3306',
     }
 }
 

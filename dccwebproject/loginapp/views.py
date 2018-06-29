@@ -4,6 +4,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.urls import reverse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views import generic
 from rest_framework.views import APIView
@@ -28,8 +29,39 @@ from django.forms.models import model_to_dict
 from tablib import Dataset
 from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource
 
-def update(request):
-    return render(request,'loginapp/updateinfo.php')
+
+
+def qmail(request):
+
+    if request.method == 'POST':
+
+         email = request.POST.get('emailto')
+         sub = request.POST.get('subject')
+         mes = request.POST.get('msg')
+         from_email = settings.EMAIL_HOST_USER
+         to_list = [email,settings.EMAIL_HOST_USER]
+         send_mail(sub,mes,from_email,to_list,fail_silently = True)
+         return HttpResponseRedirect(reverse('loginapp:dash1'))
+
+    else:
+         return HttpResponseRedirect(reverse('loginapp:dash1'))
+
+def qmail2(request):
+
+    if request.method == 'POST':
+
+         email = request.POST.get('emailto')
+         sub = request.POST.get('subject')
+         mes = request.POST.get('msg')
+         from_email = settings.EMAIL_HOST_USER
+         to_list = [email,settings.EMAIL_HOST_USER]
+         send_mail(sub,mes,from_email,to_list,fail_silently = True)
+         return HttpResponseRedirect(reverse('loginapp:dash2'))
+
+    else:
+         return HttpResponseRedirect(reverse('loginapp:dash2'))
+
+
 def index(request):
     return render(request,'loginapp/login.html')
 
@@ -38,7 +70,7 @@ def callallocateexport_xls(request):
     query = callallocate.objects.all()
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="callallocate.xls"'
+    response['Content-Disposition'] = 'attachment; filename="call report.xls"'
     render(request,'loginapp/calllist1.html')
     return response
 
@@ -57,7 +89,7 @@ def callallocateimport_xls(request):
                 callallocate_resource.import_data(dataset, dry_run=False)  # Actually import now
                 return render(request,'loginapp/calllist1.html')
 
-        return render(request, 'loginapp/calllist1.html')
+        return HttpResponseRedirect(reverse('loginapp:calllists'))
 
 def stockexport_xls(request):
     person_resource = StockResource()
@@ -81,14 +113,14 @@ def stockimport_xls(request):
             if not result.has_errors():
                 stock_resource.import_data(dataset, dry_run=False)  # Actually import now
 
-        return render(request, 'loginapp/stocklist.html')
+        return HttpResponseRedirect(reverse('loginapp:stocklist'))
 
 def coadminexport_xls(request):
     person_resource = CoadminResource()
     query = coadmin.objects.all()
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="coadmin.xls"'
+    response['Content-Disposition'] = 'attachment; filename="coadmins.xls"'
     render(request,'loginapp/coadmin_list.html')
     return response
 
@@ -105,14 +137,14 @@ def coadminimport_xls(request):
             if not result.has_errors():
                 coadmin_resource.import_data(dataset, dry_run=False)  # Actually import now
 
-        return render(request, 'loginapp/coadmin_list.html')
+        return HttpResponseRedirect(reverse('loginapp:getcoadmin'))
 
 def customerexport_xls(request):
     person_resource = CustomerResource()
     query = customer.objects.all()
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="customer.xls"'
+    response['Content-Disposition'] = 'attachment; filename="customers.xls"'
     render(request,'loginapp/customerlist1.html')
     return response
 
@@ -129,7 +161,7 @@ def customerimport_xls(request):
             if not result.has_errors():
                 customer_resource.import_data(dataset, dry_run=False)  # Actually import now
                 return render(request, 'loginapp/customerlist1.html')
-        return render(request, 'loginapp/customerlist1.html')
+        return HttpResponseRedirect(reverse('loginapp:getcustomers'))
 
 
 def enggexport_xls(request):
@@ -138,7 +170,7 @@ def enggexport_xls(request):
     query = engg.objects.all()
     dataset = person_resource.export(query)
     response = HttpResponse(dataset.xls, content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="persons.xls"'
+    response['Content-Disposition'] = 'attachment; filename="engineers.xls"'
     render(request,'loginapp/engglist1.html')
     return response
 
@@ -157,7 +189,7 @@ def enggimport_xls(request):
         if not result.has_errors():
             engg_resource.import_data(dataset, dry_run=False)  # Actually import now
 
-    return render(request, 'loginapp/engglist1.html')
+    return HttpResponseRedirect(reverse('loginapp:getenggs'))
 
 @login_required
 def dash(request):
@@ -177,13 +209,12 @@ def log_out(request):
     return render(request,'loginapp/login.html')
 
 def dash2(request):
-
-    return render(request,'loginapp/index2.html')
+    session = request.session.get('city')
+    return render(request,'loginapp/index2.html',coadcontext(request,session))
 
 def dash1(request):
-    data = customer.objects.filter(customer_name='INDIA INSTITUTE OF TROPICAL METROLOGY').values_list('customer_adrress')
-    print(data)
-    return render(request,'loginapp/index.html')
+
+    return render(request,'loginapp/index.html',admincontext(request))
 
 def calendar(request):
     return render(request,'loginapp/calendar.html')
@@ -207,6 +238,52 @@ def enggtrack(request,pk):
     data = callallocate.objects.filter(id=pk)
     return render(request,'loginapp/enggtrack.html',{'data':data})
 
+def coadcontext(request,city):
+
+    custom = customer.objects.filter(customer_city=city).count()
+    call = callallocate.objects.filter(cust_city=city).count()
+    coad = coadmin.objects.filter(co_city=city).count()
+    eng = engg.objects.filter(engg_city=city).count()
+    open = callallocate.objects.filter(call_status='open').filter(cust_city=city).count()
+    pending = callallocate.objects.filter(call_status='pending').filter(cust_city=city).count()
+    closed = callallocate.objects.filter(call_status='closed').filter(cust_city=city).count()
+
+    context = {
+    'city':city,
+    'custom':custom,
+    'call':call,
+    'coad':coad,
+    'eng':eng,
+    'open':open,
+    'pending':pending,
+    'closed':closed,
+    }
+
+    return context
+
+def admincontext(request):
+    custom = customer.objects.all().count()
+    call = callallocate.objects.all().count()
+    coad = coadmin.objects.all().count()
+    eng = engg.objects.all().count()
+    open = callallocate.objects.filter(call_status='open').count()
+    pending = callallocate.objects.filter(call_status='pending').count()
+    closed = callallocate.objects.filter(call_status='closed').count()
+    mydate = datetime.datetime.now().strftime('%Y%m%d')
+
+
+    context = {
+    'custom':custom,
+    'call':call,
+    'coad':coad,
+    'eng':eng,
+    'open':open,
+    'pending':pending,
+    'closed':closed,
+    'mydate':mydate,
+    }
+
+    return context
 
 
 def loggin(request):
@@ -214,24 +291,24 @@ def loggin(request):
             user = request.POST.get('username')
             pas = request.POST.get('password')
             city = request.POST.get('city')
+
+
             form = AuthenticationForm(data=request.POST)
 
+            if form.is_valid():
+                usernm = authenticate(username=user,password=pas);
+                if coadmin.objects.filter(co_name=user).exists() and coadmin.objects.filter(co_conf_pass=pas).exists() and coadmin.objects.filter(co_city=city).exists():
 
-        if form.is_valid():
-            usernm = authenticate(username=user,password=pas)
-            if coadmin.objects.filter(co_name=user).exists() and coadmin.objects.filter(co_conf_pass=pas).exists() and coadmin.objects.filter(co_city=city).exists():
+                    request.session['city'] = city
 
-                request.session['city'] = city
+                    return render(request, 'loginapp/index2.html',coadcontext(request,city))
 
-                return render(request, 'loginapp/index2.html',)
+                elif usernm.is_superuser:
+                    return render(request, 'loginapp/index.html',admincontext(request))
 
-            elif usernm.is_superuser:
+                else:
 
-                return render(request, 'loginapp/index.html')
-
-            else:
-                #messages.error(request, "all fields are mandatory")
-                return render(request, 'loginapp/login.html', {'form': form})
+                    return render(request, 'loginapp/login.html', {'form': form})
 
 
 
@@ -390,6 +467,7 @@ def regcustoms(request):
         return render(request,'loginapp/customregister1.html',{'customform':customform,})
 
 def productsave(request):
+
         if request.method == 'POST':
             form = Product(request.POST)
             if form.is_valid():
@@ -400,6 +478,11 @@ def productsave(request):
             form = Product()
             prodobj = products.objects.all()
             return render(request,'loginapp/product_form.html',{'form':form,'prodobj':prodobj})
+
+def deleteprod(request,pk):
+     object = products.objects.get(id=pk)
+     object.delete()
+     return HttpResponseRedirect(reverse('loginapp:productsave'))
 
 
 def callallocation(request):
@@ -430,23 +513,26 @@ def callallocation(request):
     return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
 
 def callallocations(request):
-
+    instance = customer.objects.filter(id=1).first()
     if request.method == 'POST':
         callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
 
         if callallocateform.is_valid():
-            cudate = datetime.datetime.now()
-            cudate.strftime('%m%d%Y')
+            cudate = datetime.datetime.now().strftime('%Y%m%d')
+            a=0
+            a=a+1
+            c=int(cudate)+a
             callallocateform.save()
-            #cno = callallocateform.cleaned_data['complaint_no']
+
             prob = callallocateform.cleaned_data['description']
             engg = callallocateform.cleaned_data['engg_name']
             cont = callallocateform.cleaned_data['engg_contact']
             dte = callallocateform.cleaned_data['start']
             tme = callallocateform.cleaned_data['call_alloc_time']
             compemail = callallocateform.cleaned_data['comp_email']
+
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!! on'+str(dte)+' '+str(tme)+'\n your complaint no. is '+str(cudate)+'. Your problem is '+prob+'. Your call has been assigned to '+str(engg)+' his contact number is '+str(cont)+' '
+            message = 'Your call has been allocated successfully!! on'+str(dte)+' '+str(tme)+'\n your complaint no. is '+str(c)+'. Your problem is '+prob+'. Your call has been assigned to '+str(engg)+' his contact number is '+str(cont)+' '
 
             from_email = settings.EMAIL_HOST_USER
             to_list = [compemail,settings.EMAIL_HOST_USER]
@@ -454,7 +540,7 @@ def callallocations(request):
 
             return render(request,'loginapp/calendar1.html')
     else:
-        callallocateform = CallAllocateForm(prefix='callallocateform')
+        callallocateform = CallAllocateForm(instance=instance,prefix='callallocateform')
     return render(request,'loginapp/callallocate_form1.html',{'callallocateform':callallocateform,})
 
     def clean_comp_address(self):
@@ -656,6 +742,7 @@ class EnggDeleteView(DeleteView):
 
 class Engg1DeleteView(DeleteView):
     model = engg
+    template_name = 'loginapp/engglist1.html'
     success_url = reverse_lazy('loginapp:getenggs')
 
 class CoadminDetailView(generic.DetailView):
@@ -704,17 +791,67 @@ class ChartData(APIView):
     permission_classes = ()
     def get(self, request):
 
-        chartdata = customer.objects.all().count()
-
-        return Response(chartdata)
-
-class eventcall(APIView):
-    def get(self,request):
-        city=self.request.session.get('city')
-        if city:
-         callalloc =  callallocate.objects.filter(cust_city=city)
-         serializer = EventCallSerializer(callalloc,many=True)
-        else:
-            callalloc =  callallocate.objects.all()
-            serializer = EventCallSerializer(callalloc,many=True)
+        chartdata = customer.objects.all()
+        serializer = ChartSerializer(chartdata,many=True)
         return Response(serializer.data)
+
+@csrf_exempt
+def user_list(request, pk=None):
+    """
+    List all required messages, or create a new message.
+    """
+    if request.method == 'GET':
+        if pk:
+            users = User.objects.filter(id=pk)
+        else:
+            users = User.objects.all()
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@csrf_exempt
+def message_list(request, sender=None, receiver=None):
+    """
+    List all required messages, or create a new message.
+    """
+    if request.method == 'GET':
+        messages = Message.objects.filter(sender_id=sender, receiver_id=receiver, is_read=False)
+        serializer = MessageSerializer(messages, many=True, context={'request': request})
+        for message in messages:
+            message.is_read = True
+            message.save()
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = MessageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+def chat_view(request):
+
+    if request.method == "GET":
+        return render(request, 'chat/chat.html',
+                      {'users': User.objects.exclude(username=request.user.username)})
+
+
+def message_view(request, sender, receiver):
+    if not request.user.is_authenticated:
+        return redirect('index')
+    if request.method == "GET":
+        return render(request, "chat/messages.html",
+                      {'users': User.objects.exclude(username=request.user.username),
+                       'receiver': User.objects.get(id=receiver),
+                       'messages': Message.objects.filter(sender_id=sender, receiver_id=receiver) |
+                                   Message.objects.filter(sender_id=receiver, receiver_id=sender)})

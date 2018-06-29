@@ -310,6 +310,11 @@
               <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
           </li>
           <li>
+          <a href="{% url 'loginapp:productsave' %}">
+            <i class="fa fa-files-o"></i> <span>Add Products</span>
+          </a>
+        </li>
+          <li>
           <a href="{% url 'loginapp:regcoadmin' %}">
             <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
           </a>
@@ -425,7 +430,10 @@
                       <table class="table">
                         {{ callallocateform|bootstrap }}
                       </table>
-
+                      <!-- <div class="form-row">
+         {{ callallocateform.instance.field3.errors }}
+         {{ callallocateform.instance.field3.label_tag }} {{ callallocateform.instance.field3 }}
+     </div> -->
                       </div>
 
                     </div>

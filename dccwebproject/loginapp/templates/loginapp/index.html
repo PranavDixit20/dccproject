@@ -140,127 +140,40 @@
           <li class="dropdown notifications-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
-              <span class="label label-warning">10</span>
+              <span class="label label-warning">{{call}}</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have 10 notifications</li>
+              <li class="header">You have {{call}} notifications</li>
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
                   <li>
                     <a href="#">
-                      <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                      <i class="fa fa-users text-aqua"></i> {{open}} new calls opened
                     </a>
                   </li>
                   <li>
                     <a href="#">
-                      <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
-                      page and may cause design problems
+                      <i class="fa fa-warning text-yellow"></i> {{pending}} calls are pending
                     </a>
                   </li>
                   <li>
                     <a href="#">
-                      <i class="fa fa-users text-red"></i> 5 new members joined
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-shopping-cart text-green"></i> 25 sales made
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa fa-user text-red"></i> You changed your username
+                      <i class="fa fa-users text-red"></i>{{closed}} calls have been closed
                     </a>
                   </li>
                 </ul>
               </li>
-              <li class="footer"><a href="#">View all</a></li>
+
             </ul>
           </li>
           <!-- Tasks: style can be found in dropdown.less -->
-          <li class="dropdown tasks-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-flag-o"></i>
-              <span class="label label-danger">9</span>
-            </a>
-            <ul class="dropdown-menu">
-              <li class="header">You have 9 tasks</li>
-              <li>
-                <!-- inner menu: contains the actual data -->
-                <ul class="menu">
-                  <li><!-- Task item -->
-                    <a href="#">
-                      <h3>
-                        Design some buttons
-                        <small class="pull-right">20%</small>
-                      </h3>
-                      <div class="progress xs">
-                        <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar"
-                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                          <span class="sr-only">20% Complete</span>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- end task item -->
-                  <li><!-- Task item -->
-                    <a href="#">
-                      <h3>
-                        Create a nice theme
-                        <small class="pull-right">40%</small>
-                      </h3>
-                      <div class="progress xs">
-                        <div class="progress-bar progress-bar-green" style="width: 40%" role="progressbar"
-                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                          <span class="sr-only">40% Complete</span>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- end task item -->
-                  <li><!-- Task item -->
-                    <a href="#">
-                      <h3>
-                        Some task I need to do
-                        <small class="pull-right">60%</small>
-                      </h3>
-                      <div class="progress xs">
-                        <div class="progress-bar progress-bar-red" style="width: 60%" role="progressbar"
-                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                          <span class="sr-only">60% Complete</span>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- end task item -->
-                  <li><!-- Task item -->
-                    <a href="#">
-                      <h3>
-                        Make beautiful transitions
-                        <small class="pull-right">80%</small>
-                      </h3>
-                      <div class="progress xs">
-                        <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar"
-                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                          <span class="sr-only">80% Complete</span>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <!-- end task item -->
-                </ul>
-              </li>
-              <li class="footer">
-                <a href="#">View all tasks</a>
-              </li>
-            </ul>
-          </li>
+
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="{% static 'loginapp/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image">
-              <span class="hidden-xs">Admin</span>
+              <span class="hidden-xs">{{ request.user.username }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
@@ -298,15 +211,14 @@
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">MAIN NAVIGATION</li>
         <li class="active treeview">
-          <a href="#">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
           <ul class="treeview-menu">
-            <li><a href="#"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
+            <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
           </ul>
+        </li>
+        <li>
+        <a href="{% url 'loginapp:productsave' %}">
+          <i class="fa fa-files-o"></i> <span>Add Products</span>
+        </a>
         </li>
         <li>
         <a href="{% url 'loginapp:regcoadmin' %}">
@@ -365,25 +277,9 @@
   <i class="fa fa-files-o"></i> <span>Call Allocation</span>
 </a>
 </li>
-<li>
-<a href="{% url 'loginapp:productsave' %}">
-  <i class="fa fa-files-o"></i> <span>Products</span>
-</a>
-</li>
-
         <li>
           <a href="{% url 'loginapp:calendars' %}">
             <i class="fa fa-calendar"></i> <span>Calendar</span>
-          </a>
-        </li>
-        <li>
-          <a href="pages/mailbox/mailbox.html">
-            <i class="fa fa-envelope"></i> <span>Mailbox</span>
-            <span class="pull-right-container">
-              <small class="label pull-right bg-yellow">12</small>
-              <small class="label pull-right bg-green">16</small>
-              <small class="label pull-right bg-red">5</small>
-            </span>
           </a>
         </li>
 
@@ -413,7 +309,7 @@
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3>150</h3>
+              <h3>{{call}}</h3>
 
               <p>Call List</p>
             </div>
@@ -428,7 +324,8 @@
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
-              <h3>53<sup style="font-size: 20px">%</sup></h3>
+
+              <h3>{{eng}}</h3>
 
               <p>Engineers Location</p>
             </div>
@@ -443,7 +340,7 @@
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>44</h3>
+              <h3>{{custom}}</h3>
 
               <p>Client Registrations</p>
             </div>
@@ -458,7 +355,7 @@
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>65</h3>
+              <h3>{{call}}</h3>
 
               <p>New Call Allocation</p>
             </div>
@@ -478,18 +375,49 @@
           <!-- Custom tabs (Charts with tabs)-->
           <div class="nav-tabs-custom">
             <!-- Tabs within a box -->
-            <ul class="nav nav-tabs pull-right">
-              <li class="active"><a href="#revenue-chart" data-toggle="tab">Area</a></li>
-              <li><a href="#sales-chart" data-toggle="tab">Donut</a></li>
-              <li class="pull-left header"><i class="fa fa-inbox"></i>Annual Statistics</li>
-            </ul>
-            <div class="tab-content no-padding">
-              <!-- Morris chart - Sales -->
-              <div class="chart tab-pane active" id="revenue-chart" style="position: relative; height: 300px;"></div>
-              <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;"></div>
-            </div>
+            <canvas id="myChart" width="400" height="400"></canvas>
+<script>
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx,{
+    type: 'bar',
+    data: {
+        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+</script>
           </div>
           <!-- /.nav-tabs-custom -->
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
           <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
           <script src="//cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
           <script src="{% static 'loginapp/js/main.js' %}"></script>
@@ -497,6 +425,20 @@
 
           <div class="box box-success">
             <div class="box-header">
+              <div class="col s3">
+       <div class="card">
+           <div class="collection">
+               {% for user in users %}
+               <a href="{% url 'chat' request.user.id user.id %}" id="user{{ user.id }}" class="collection-item row">
+
+                   <div class="col s8">
+                   <span class="title" style="font-weight: bolder">{{ user.username }}</span>
+                   </div>
+               </a>
+               {% endfor %}
+           </div>
+       </div>
+       </div>
               <i class="fa fa-comments-o"></i>
 
               <h3 class="box-title">Chat</h3>
@@ -513,55 +455,10 @@
             <div class="box-body chat" id="chat-box">
               <!-- chat item -->
               <div class="item">
-                <img src="{% static 'loginapp/dist/img/user4-128x128.jpg' %}" alt="user image" class="online">
 
-                <p class="message">
-                  <a href="#" class="name">
-                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 2:15</small>
-                    Mike Doe
-                  </a>
 
-                </p>
-                <div class="attachment">
-                  <h4>Attachments:</h4>
-
-                  <p class="filename">
-                    Theme-thumbnail-image.jpg
-                  </p>
-
-                  <div class="pull-right">
-                    <button type="button" class="btn btn-primary btn-sm btn-flat">Open</button>
-                  </div>
-                </div>
-                <!-- /.attachment -->
-              </div>
-              <!-- /.item -->
-              <!-- chat item -->
               <div class="item">
-                <img src="{% static 'loginapp/dist/img/user3-128x128.jpg' %}" alt="user image" class="offline">
 
-                <p class="message">
-                  <a href="#" class="name">
-                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:15</small>
-                    Admin
-                  </a>
-
-                </p>
-              </div>
-              <!-- /.item -->
-              <!-- chat item -->
-              <div class="item">
-                <img src="{% static 'loginapp/dist/img/user2-160x160.jpg' %}" alt="user image" class="offline">
-
-                <p class="message">
-                  <a href="#" class="name">
-                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> 5:30</small>
-                    Susan Doe
-                  </a>
-                  I would like to meet you to discuss the latest news about
-                  the arrival of the new theme. They say it is going to be one the
-                  best themes on the market
-                </p>
               </div>
               <!-- /.item -->
             </div>
@@ -596,23 +493,25 @@
               <!-- /. tools -->
             </div>
             <div class="box-body">
-              <form action="#" method="post">
+              <form action="{% url 'loginapp:qmail' %}" method="post">
+                {% csrf_token %}
                 <div class="form-group">
-                  <input type="email" class="form-control" name="emailto" placeholder="Email to:">
+                  <input type="email" class="form-control" name="emailto" placeholder="Email to:" required="true">
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject">
+                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="true">
                 </div>
                 <div>
-                  <textarea class="textarea" placeholder="Message"
+                  <textarea class="form-group" name="msg" placeholder="Message" required="true"
                             style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                </div>
+                <div class="box-footer clearfix">
+                  <button type="submit" class="pull-right btn btn-default" id="sendEmail">Send
+                    <i class="fa fa-arrow-circle-right"></i></button>
                 </div>
               </form>
             </div>
-            <div class="box-footer clearfix">
-              <button type="button" class="pull-right btn btn-default" id="sendEmail">Send
-                <i class="fa fa-arrow-circle-right"></i></button>
-            </div>
+
           </div>
 
         </section>
@@ -782,21 +681,21 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKi-pc0FZh74Ub5mSQCSfK0-l
             <div class="box-footer no-border">
               <div class="row">
                 <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
-                  <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
+                  <input type="text" class="knob" data-readonly="true" value="{{open}}" data-width="60" data-height="60"
                          data-fgColor="#39CCCC">
 
                   <div class="knob-label">Open</div>
                 </div>
                 <!-- ./col -->
                 <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
-                  <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
+                  <input type="text" class="knob" data-readonly="true" value="{{closed}}" data-width="60" data-height="60"
                          data-fgColor="#39CCCC">
 
                   <div class="knob-label">Closed</div>
                 </div>
                 <!-- ./col -->
                 <div class="col-xs-4 text-center">
-                  <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
+                  <input type="text" class="knob" data-readonly="true" value="{{pending}}" data-width="60" data-height="60"
                          data-fgColor="#39CCCC">
 
                   <div class="knob-label">Pending</div>

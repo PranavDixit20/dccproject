@@ -309,6 +309,11 @@
               <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
           </li>
           <li class="active">
+          <a href="{% url 'loginapp:productsave' %}">
+            <i class="fa fa-files-o"></i> <span>Add Products</span>
+          </a>
+          </li>
+          <li >
           <a href="{% url 'loginapp:regcoadmin' %}">
             <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
           </a>
@@ -428,6 +433,7 @@
                             <tr>
                               <td>{{list.id}}</td>
                               <td>{{list.product_name}}</td>
+                                <td><a href="{% url 'loginapp:deleteprod' list.id %}">Delete</a></td>
                             </tr>
                                 {%endfor%}
                           </table>

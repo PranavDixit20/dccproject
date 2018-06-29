@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import json
 from datetime import datetime
 from django.db.models import Sum
@@ -10,7 +11,19 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+    message = models.CharField(max_length=1200)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.message
+
+    class Meta:
+        ordering = ('timestamp',)
+        
 class Visitor(models.Model):
     user = models.OneToOneField(User,on_delete = models.CASCADE)
     session_key = models.CharField(max_length=40,null=True, blank=True)
@@ -36,7 +49,7 @@ class callallocate(models.Model):
     call_note = models.CharField(max_length=100,null=True,blank=True)
     call_priority = models.CharField(choices=PRIORITY_CHOICES, default="High",max_length=7,null=True,blank=True)
     caller_name = models.CharField(max_length=50,null=True,blank=True)
-    engg_name = models.CharField(max_length=7,null=True,blank=True)
+    engg_name = models.CharField(max_length=10,null=True,blank=True)
     engg_id = models.IntegerField(null=True,blank=True)
     engg_status = models.CharField(choices=ENGG_CHOICES,default="Engineer Assign",max_length=100,null=True,blank=True)
     engg_lat = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
@@ -48,12 +61,15 @@ class callallocate(models.Model):
     engg_complaint_note = models.CharField(max_length=100,null=True,blank=True)
     engg_transport_type = models.CharField(max_length=10,null=True,blank=True)
     engg_start_reading = models.CharField(max_length=10,null=True,blank=True)
+    engg_start_reading = models.ImageField(upload_to='co_pic/',null=True,blank=True)
     engg_end_reading = models.CharField(max_length=10,null=True,blank=True)
+    engg_end_reading = models.ImageField(upload_to='co_pic/',null=True,blank=True)
     engg_solve = models.CharField(max_length=100,null=True,blank=True)
     engg_ticket_amnt = models.CharField(max_length=10,null=True,blank=True)
     engg_total_distance = models.CharField(max_length=10,null=True,blank=True)
     engg_bus_start = models.CharField(max_length=10,null=True,blank=True)
     engg_bus_end = models.CharField(max_length=10,null=True,blank=True)
+    engg_bus_ticket_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
     engg_bike_no = models.CharField(max_length=10,null=True,blank=True)
     engg_part_name = models.CharField(max_length=10,null=True,blank=True)
     engg_part_no = models.CharField(max_length=30,null=True,blank=True)
@@ -105,13 +121,13 @@ class customer(models.Model):
 
 
     def __str__(self):
-        return self.customer_name
+        return '%s %s' %(self.customer_name,self.customer_city)
 
 
 
 class engg(models.Model):
     engg_id = models.IntegerField(null=True,blank=True)
-    engg_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
+    engg_pic = models.ImageField(upload_to='co_pic\\',null=True,blank=True)
     engg_name = models.CharField(max_length=200,null=True,blank=True)
     engg_address = models.TextField(null=True,blank=True)
     engg_permanent_address=models.TextField(null=True,blank=True)
@@ -133,7 +149,7 @@ class engg(models.Model):
     engg_status = models.CharField(choices=STATUS_CHOICES, default=1,max_length=12,null=True,blank=True)
 
     def __str__(self):
-        return self.engg_name
+        return '%s %s' %(self.engg_name,self.engg_id)
 
     def save(self, *args, **kwargs):
         #delete_file_if_needed(self, 'picture')

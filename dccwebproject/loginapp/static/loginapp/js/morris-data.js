@@ -15,35 +15,7 @@ $.ajax({
 })
     Morris.Area({
         element: 'morris-area-chart',
-        data: [{
-            period:count ,
-
-        },
-         {
-            period: '2010 Q3',
-
-        }, {
-            period: '2010 Q4',
-
-        }, {
-            period: '2011 Q1',
-
-        }, {
-            period: '2011 Q2',
-
-        }, {
-            period: '2011 Q3',
-
-        }, {
-            period: '2011 Q4',
-
-        }, {
-            period: '2012 Q1',
-
-        }, {
-            period: '2012 Q2',
-
-        }],
+        data:count
         xkey: 'period',
         ykeys: ,
         labels: ,

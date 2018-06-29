@@ -7,6 +7,7 @@ from . models import engg, stock, callallocate, customer, products, coadmin
 
 
 
+
 class RegisterForm(forms.ModelForm):
   class Meta:
       model = coadmin
@@ -46,9 +47,9 @@ class CallAllocateForm(forms.ModelForm):
     qset = customer.objects.all()
     p = products.objects.all()
     e = engg.objects.all()
-    title = forms.ModelChoiceField(queryset=qset)
-    product = forms.ModelChoiceField(queryset=p)
-    engg_name = forms.ModelChoiceField(queryset=e)
+    title = forms.ModelChoiceField(queryset=qset,initial=0)
+    product = forms.ModelChoiceField(queryset=p,initial=0)
+    engg_name = forms.ModelChoiceField(queryset=e,initial=0)
 
     class Meta:
         model = callallocate
@@ -75,13 +76,18 @@ class CallAllocateForm(forms.ModelForm):
         'engg_feedback',
         'comp_rating',
         'comp_feedback',
+        'engg_part_pic',
         ]
         fields = '__all__'
         widgets = {
             'call_alloc_time': forms.TimeInput(attrs={'type':'time'}),
             'start': forms.DateInput(attrs={'type':'date'}),
             'end': forms.TimeInput(attrs={'type':'date'}),
+
         }
+
+
+
 
 class StockEntry(forms.ModelForm):
     class Meta:
