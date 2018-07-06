@@ -1,6 +1,8 @@
 from django import forms
 from django.forms import ModelChoiceField
 from . models import engg, stock, callallocate, customer, products, coadmin
+from django.contrib.admin import widgets
+import datetime
 
 
 
@@ -47,9 +49,13 @@ class CallAllocateForm(forms.ModelForm):
     qset = customer.objects.all()
     p = products.objects.all()
     e = engg.objects.all()
+    cudate = datetime.datetime.now().strftime('%Y%m%d')
+    c=cudate+""+str(callallocate.id)
+    print(c)
     title = forms.ModelChoiceField(queryset=qset,initial=0)
     product = forms.ModelChoiceField(queryset=p,initial=0)
     engg_name = forms.ModelChoiceField(queryset=e,initial=0)
+    complaint_no = forms.CharField(widget=forms.HiddenInput(), initial=c)
 
     class Meta:
         model = callallocate
@@ -77,15 +83,19 @@ class CallAllocateForm(forms.ModelForm):
         'comp_rating',
         'comp_feedback',
         'engg_part_pic',
+        'engg_bus_ticket_pic',
         ]
         fields = '__all__'
+
         widgets = {
             'call_alloc_time': forms.TimeInput(attrs={'type':'time'}),
-            'start': forms.DateInput(attrs={'type':'date'}),
+            'start': forms.TimeInput(attrs={'type':'date'}),
             'end': forms.TimeInput(attrs={'type':'date'}),
 
         }
-
+        def __init__(self, *args, **kwargs):
+             super(ProductForm, self).__init__(*args, **kwargs)
+             self.fields['comp_address'] = company.objects.filter(customer_name=title).values_list('customer_address')
 
 
 

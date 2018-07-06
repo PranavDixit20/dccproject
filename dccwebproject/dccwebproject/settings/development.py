@@ -19,7 +19,7 @@ DATABASES = {
         'NAME': 'djangodatabase',
         'USERNAME' : 'root',
         'PASSWORD' : '',
-        'HOST' : '192.168.0.7',
+        'HOST' : 'localhost',
         'PORT' : '3306',
     }
 }

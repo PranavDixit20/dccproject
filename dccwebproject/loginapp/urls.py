@@ -7,6 +7,8 @@ from django.contrib.auth.views import login
 
 app_name = 'loginapp'
 urlpatterns = [
+ url(r'^post/$', views.Post, name='post'),
+ url(r'^messages/$', views.Messages, name='messages'),
  url(r'^quickmail/$',views.qmail,name='qmail'),
  url(r'^quickmail2/$',views.qmail2,name='qmail2'),
  url(r'^androidlogin/$',views.androidlogin,name='androidlogin'),

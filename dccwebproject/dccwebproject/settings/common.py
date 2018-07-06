@@ -55,7 +55,7 @@ INSTALLED_APPS = [
 
 ]
 
-
+CONVERSEJS_BOSH_SERVICE_URL = 'https://my-bosh-service.com'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -71,6 +71,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'dccwebproject.urls'
+
+CONVERSEJS_AUTO_REGISTER = 'ganakcomputers.xmpp.jp'
 
 TEMPLATES = [
     {

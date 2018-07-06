@@ -23,13 +23,43 @@ from . models import coadmin
 from . models import customer,stock
 import json
 import datetime
-from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer,ChartSerializer
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer,ChartSerializer, UserSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
 from tablib import Dataset
 from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource
+from . models import Chat
 
 
+
+
+def Post(request):
+    if request.method == "POST":
+        msg = request.POST.get('msgbox',None)
+
+        c = Chat(user=request.user, message=msg)
+
+        #if(msg[0:6] == "Robot:"):
+        #callRobot(msg, request)
+
+
+        msg = c.user.username+": "+msg
+
+        c = Chat(user=request.user, message=msg)
+
+        if msg != '':
+            c.save()
+        #mg = src="https://scontent-ord1-1.xx.fbcdn.net/hprofile-xaf1/v/t1.0-1/p160x160/11070096_10204126647988048_6580328996672664529_n.jpg?oh=f9b916e359cd7de9871d8d8e0a269e3d&oe=576F6F12"
+        return JsonResponse({ 'msg': msg, 'user': c.user.username})
+    else:
+        return HttpResponse('Request must be POST.')
+
+def Messages(request):
+    c = Chat.objects.all()
+
+    return render(request, 'loginapp/messages.html', {'chat': c})
 
 def qmail(request):
 
@@ -213,7 +243,7 @@ def dash2(request):
     return render(request,'loginapp/index2.html',coadcontext(request,session))
 
 def dash1(request):
-
+    print(User)
     return render(request,'loginapp/index.html',admincontext(request))
 
 def calendar(request):
@@ -247,7 +277,7 @@ def coadcontext(request,city):
     open = callallocate.objects.filter(call_status='open').filter(cust_city=city).count()
     pending = callallocate.objects.filter(call_status='pending').filter(cust_city=city).count()
     closed = callallocate.objects.filter(call_status='closed').filter(cust_city=city).count()
-
+    c = Chat.objects.all()
     context = {
     'city':city,
     'custom':custom,
@@ -257,6 +287,8 @@ def coadcontext(request,city):
     'open':open,
     'pending':pending,
     'closed':closed,
+    'home': 'active',
+    'chat':c,
     }
 
     return context
@@ -270,6 +302,7 @@ def admincontext(request):
     pending = callallocate.objects.filter(call_status='pending').count()
     closed = callallocate.objects.filter(call_status='closed').count()
     mydate = datetime.datetime.now().strftime('%Y%m%d')
+    c = Chat.objects.all()
 
 
     context = {
@@ -281,6 +314,8 @@ def admincontext(request):
     'pending':pending,
     'closed':closed,
     'mydate':mydate,
+    'home': 'active',
+    'chat':c,
     }
 
     return context
@@ -355,7 +390,7 @@ def regcoadmin(request):
             co_conf_pass = ccpassword,
             co_address = caddress,
             ).save()
-            User.objects.create_user(cname, cemail, cpassword)
+            User.objects.create_user(cname, cemail, cpassword,is_staff=True)
             user = authenticate(username=cname, password=cpassword)
             login(request, user)
             subject = 'Co-Admin added'
@@ -372,52 +407,20 @@ def regcoadmin(request):
 def regengg(request):
 
         if request.method == 'POST':
-            enggform = EnggRegisterForm(request.POST,request.FILES,prefix='enggform')
-            if enggform.is_valid():
-                ename = enggform.cleaned_data['name']
-                eimage = enggform.cleaned_data['engg_photo']
-                eemail = enggform.cleaned_data['email']
-                emobile = enggform.cleaned_data['mobile_number']
-                etelephone = enggform.cleaned_data['telephone_number']
-                ecity = city
-                ebranch_code = enggform.cleaned_data['branch_code']
-                egender = enggform.cleaned_data['gender']
-                ebirthdate = enggform.cleaned_data['birth_date']
-                eage = enggform.cleaned_data['age']
-                ejoining_date = enggform.cleaned_data['joining_date']
-                equalification = enggform.cleaned_data['qualification']
-                edesignation = enggform.cleaned_data['designation']
-                eskill = enggform.cleaned_data['skills']
-                epassword = enggform.cleaned_data['password']
-                ecpassword = enggform.cleaned_data['confirm_password']
-                eaddress = enggform.cleaned_data['address']
-                pereaddress = enggform.cleaned_data['permanent_address']
-                eid = enggform.cleaned_data['engg_id']
-
-                engg.objects.create(
-                engg_id = eid,
-                engg_pic = eimage,
-                engg_name = ename,
-                engg_email = eemail,
-                engg_address = eaddress,
-                engg_permanent_address = pereaddress,
-                engg_contact_number = emobile,
-                engg_tell_no = etelephone,
-                engg_city = ecity,
-                engg_branch_code = ebranch_code,
-                engg_gender = egender,
-                engg_bdate = ebirthdate,
-                engg_age = eage,
-                engg_joining_date = ejoining_date,
-                engg_qual = equalification,
-                engg_designation = edesignation,
-                engg_skill = eskill,
-                engg_pass = epassword,
-                engg_conf_pass = ecpassword,
-                ).save()
-
-
-                return render(request,'loginapp/register2.html',{'enggform':enggform,})
+            if request.method == 'POST':
+                enggform = EnggRegisterForm(request.POST,request.FILES,prefix='enggform')
+                if enggform.is_valid():
+                    ename = enggform.cleaned_data['engg_name']
+                    eemail = enggform.cleaned_data['engg_email']
+                    epassword = enggform.cleaned_data['engg_pass']
+                    conpassword = enggform.cleaned_data['engg_conf_pass']
+                    if epassword == conpassword:
+                     enggform.save()
+                     User.objects.create_user(ename, eemail, epassword,is_staff=True)
+                     user = authenticate(username=ename, password=epassword)
+                     login(request, user)
+                     regmail(enm=ename,passwd=epassword,eemail=eemail)
+                     return render(request,'loginapp/register2.html',{'enggform':enggform,})
         else:
             enggform = EnggRegisterForm(prefix='enggform')
         return render(request,'loginapp/register2.html',{'enggform':enggform,})
@@ -433,16 +436,16 @@ def regenggs(request):
                 conpassword = enggform.cleaned_data['engg_conf_pass']
                 if epassword == conpassword:
                  enggform.save()
-                 User.objects.create_user(ename, eemail, epassword)
+                 User.objects.create_user(ename, eemail, epassword,is_staff=True)
                  user = authenticate(username=ename, password=epassword)
                  login(request, user)
-                 subject = 'Registration successfull!!'
-                 message = 'Your Registration is successfull!!\n your username is '+ename+' and password is '+epassword+''
-
-                 from_email = settings.EMAIL_HOST_USER
-                 to_list = [eemail,settings.EMAIL_HOST_USER]
-                 send_mail(subject,message,from_email,to_list,fail_silently = True)
-
+                 # subject = 'Registration successfull!!'
+                 # message = 'Your Registration is successfull!!\n your username is '+ename+' and password is '+epassword+''
+                 #
+                 # from_email = settings.EMAIL_HOST_USER
+                 # to_list = [eemail,settings.EMAIL_HOST_USER]
+                 # send_mail(subject,message,from_email,to_list,fail_silently = True)
+                 regmail(enm=ename,passwd=epassword,eemail=eemail)
                  return render(request,'loginapp/register1.html',{'enggform':enggform,})
                 else:
                     return HttpResponse("<div>passwords do not match!!!</div>")
@@ -451,6 +454,13 @@ def regenggs(request):
             enggform = EnggRegisterForm(prefix='enggform')
         return render(request,'loginapp/register1.html',{'enggform':enggform,})
 
+def regmail(enm,passwd,eemail):
+    sub = 'Registration successfull!!'
+    msg = 'Your Registration is successfull!!\n your username is '+enm+' and password is '+passwd+''
+    from_email = settings.EMAIL_HOST_USER
+    to = [eemail,settings.EMAIL_HOST_USER]
+    send_mail(sub,msg,from_email,to,fail_silently = True)
+    return
 
 def regcustoms(request):
 
@@ -513,15 +523,11 @@ def callallocation(request):
     return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
 
 def callallocations(request):
-    instance = customer.objects.filter(id=1).first()
+
     if request.method == 'POST':
         callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
 
         if callallocateform.is_valid():
-            cudate = datetime.datetime.now().strftime('%Y%m%d')
-            a=0
-            a=a+1
-            c=int(cudate)+a
             callallocateform.save()
 
             prob = callallocateform.cleaned_data['description']
@@ -530,6 +536,7 @@ def callallocations(request):
             dte = callallocateform.cleaned_data['start']
             tme = callallocateform.cleaned_data['call_alloc_time']
             compemail = callallocateform.cleaned_data['comp_email']
+            c = callallocateform.cleaned_data['complaint_no']
 
             subject = 'Call Allocated'
             message = 'Your call has been allocated successfully!! on'+str(dte)+' '+str(tme)+'\n your complaint no. is '+str(c)+'. Your problem is '+prob+'. Your call has been assigned to '+str(engg)+' his contact number is '+str(cont)+' '
@@ -540,15 +547,8 @@ def callallocations(request):
 
             return render(request,'loginapp/calendar1.html')
     else:
-        callallocateform = CallAllocateForm(instance=instance,prefix='callallocateform')
+        callallocateform = CallAllocateForm(prefix='callallocateform')
     return render(request,'loginapp/callallocate_form1.html',{'callallocateform':callallocateform,})
-
-    def clean_comp_address(self):
-        var = self.cleaned_data['title']
-        data = self.cleaned_data['comp_address']
-        data = self.customer.objects.filter(customer_name=var).values_list('customer_address')
-
-        return data
 
 def stockentry(request):
     if request.method == 'POST':
@@ -783,6 +783,12 @@ class eventcall(APIView):
             callalloc =  callallocate.objects.all()
             serializer = EventCallSerializer(callalloc,many=True)
         return Response(serializer.data)
+
+class eventcall1(APIView):
+    def get(self,request):
+            callalloc =  callallocate.objects.all()
+            serializer = EventCallSerializer(callalloc,many=True)
+            return Response(serializer.data)
 
 
 class ChartData(APIView):

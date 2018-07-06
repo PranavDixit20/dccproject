@@ -11,19 +11,14 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
-class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
-    message = models.CharField(max_length=1200)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
+class Chat(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    message = models.TextField()
 
-    def __str__(self):
+    def __unicode__(self):
         return self.message
 
-    class Meta:
-        ordering = ('timestamp',)
-        
 class Visitor(models.Model):
     user = models.OneToOneField(User,on_delete = models.CASCADE)
     session_key = models.CharField(max_length=40,null=True, blank=True)
@@ -31,7 +26,7 @@ class Visitor(models.Model):
 
 class callallocate(models.Model):
     title = models.CharField(max_length=200,null=True,blank=True)
-    complaint_no = models.IntegerField(null=True,blank=True)
+    complaint_no = models.CharField(max_length=200,null=True,blank=True)
     comp_address = models.TextField(null=True,blank=True)
     comp_email = models.CharField(max_length=200,null=True,blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
@@ -149,7 +144,7 @@ class engg(models.Model):
     engg_status = models.CharField(choices=STATUS_CHOICES, default=1,max_length=12,null=True,blank=True)
 
     def __str__(self):
-        return '%s %s' %(self.engg_name,self.engg_id)
+        return '%s %s' %(self.engg_id,self.engg_name)
 
     def save(self, *args, **kwargs):
         #delete_file_if_needed(self, 'picture')
@@ -197,3 +192,10 @@ class products(models.Model):
 
     def __str__(self):
         return self.product_name
+
+class performance(models.Model):
+    r_id = models.ForeignKey(engg,on_delete=models.CASCADE)
+    total_open = models.IntegerField(null=True,blank=True)
+    total_closed = models.IntegerField(null=True,blank=True)
+    total_pending = models.IntegerField(null=True,blank=True)
+    stars = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
