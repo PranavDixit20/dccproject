@@ -50,9 +50,9 @@ class callallocate(models.Model):
     engg_lat = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
     engg_long = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
     engg_rating = models.CharField(max_length=10,null=True,blank=True)
-    engg_part_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
+    engg_part_pic = models.ImageField(upload_to='co_pic/part/',null=True,blank=True)
     engg_client_pic = models.ImageField(upload_to='co_pic/',null=True,blank=True)
-    client_sign_pic = models.ImageField(upload_to='co_pic',null=True,blank=True)
+    client_sign_pic = models.ImageField(upload_to='co_pic/sign/',null=True,blank=True)
     engg_complaint_note = models.CharField(max_length=100,null=True,blank=True)
     engg_transport_type = models.CharField(max_length=10,null=True,blank=True)
     engg_start_reading = models.CharField(max_length=10,null=True,blank=True)
@@ -122,7 +122,7 @@ class customer(models.Model):
 
 class engg(models.Model):
     engg_id = models.IntegerField(null=True,blank=True)
-    engg_pic = models.ImageField(upload_to='co_pic\\',null=True,blank=True)
+    engg_pic = models.ImageField(upload_to='co_pic/profile/',null=True,blank=True)
     engg_name = models.CharField(max_length=200,null=True,blank=True)
     engg_address = models.TextField(null=True,blank=True)
     engg_permanent_address=models.TextField(null=True,blank=True)
@@ -191,7 +191,7 @@ class products(models.Model):
     product_name = models.CharField(max_length=100,null=True,blank=True)
 
     def __str__(self):
-        return self.product_name
+         return self.product_name
 
 class performance(models.Model):
     r_id = models.ForeignKey(engg,on_delete=models.CASCADE)

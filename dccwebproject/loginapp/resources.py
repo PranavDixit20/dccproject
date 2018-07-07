@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import engg,customer,coadmin,callallocate,stock
+from .models import engg,customer,coadmin,callallocate,stock,products
 
 class EnggResource(resources.ModelResource):
     class Meta:
@@ -20,3 +20,7 @@ class CallallocateResource(resources.ModelResource):
 class StockResource(resources.ModelResource):
     class Meta:
         model = stock
+
+class ProductResource(resources.ModelResource):
+    class Meta:
+        model = products

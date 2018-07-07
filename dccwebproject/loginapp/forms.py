@@ -86,11 +86,30 @@ class CallAllocateForm(forms.ModelForm):
         'engg_bus_ticket_pic',
         ]
         fields = '__all__'
-
+        labels = {
+        'title':'Company Name',
+        'comp_address':'company address',
+        'comp_email':'company email',
+        'description':'problem description',
+        'start':'call start date',
+        'engg_contact':'engineer contact no',
+        'call_status':'status',
+        'call_type':'category',
+        'cust_city':'company city',
+        'call_tat':'TAT',
+        'call_note':'note',
+        'call_priority':'priority',
+        'caller_name':'name of caller',
+        'engg_name':'engineer name',
+        'engg_id':'engineer id',
+        'engg_status':'engineer status',
+        'end':'call end',
+        'call_alloc_time':'allocation time'
+        }
         widgets = {
             'call_alloc_time': forms.TimeInput(attrs={'type':'time'}),
-            'start': forms.TimeInput(attrs={'type':'date'}),
-            'end': forms.TimeInput(attrs={'type':'date'}),
+            'start': forms.DateInput(attrs={'type':'date'}),
+            'end': forms.DateInput(attrs={'type':'date'}),
 
         }
         def __init__(self, *args, **kwargs):

@@ -1,12 +1,16 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from . models import callallocate,coadmin,customer,engg,callallocate,stock
+from . models import callallocate,coadmin,customer,engg,callallocate,stock,products
 from . models import Chat
 
 admin.site.register(Chat)
 
 
 
+
+@admin.register(products)
+class ProductsAdmin(ImportExportModelAdmin):
+    pass
 
 @admin.register(engg)
 class EnggAdmin(ImportExportModelAdmin):

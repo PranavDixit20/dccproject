@@ -29,7 +29,7 @@ from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSeriali
 from django.core import serializers
 from django.forms.models import model_to_dict
 from tablib import Dataset
-from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource
+from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource,ProductResource
 from . models import Chat
 
 
@@ -51,10 +51,13 @@ def Post(request):
 
         if msg != '':
             c.save()
-        #mg = src="https://scontent-ord1-1.xx.fbcdn.net/hprofile-xaf1/v/t1.0-1/p160x160/11070096_10204126647988048_6580328996672664529_n.jpg?oh=f9b916e359cd7de9871d8d8e0a269e3d&oe=576F6F12"
+
         return JsonResponse({ 'msg': msg, 'user': c.user.username})
+
+        
     else:
         return HttpResponse('Request must be POST.')
+
 
 def Messages(request):
     c = Chat.objects.all()
@@ -221,6 +224,32 @@ def enggimport_xls(request):
 
     return HttpResponseRedirect(reverse('loginapp:getenggs'))
 
+def productexport_xls(request):
+    person_resource = ProductResource()
+    query = products.objects.all()
+    dataset = person_resource.export(query)
+    response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="products.xls"'
+    HttpResponseRedirect(reverse('loginapp:productsave'))
+    return response
+
+
+
+
+def productimport_xls(request):
+    if request.method == 'POST':
+        engg_resource = ProductResource()
+        dataset = Dataset()
+        new_persons = request.FILES['myfile']
+
+        imported_data = dataset.load(new_persons.read())
+        result = engg_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+        if not result.has_errors():
+            engg_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+    return HttpResponseRedirect(reverse('loginapp:productsave'))
+
 @login_required
 def dash(request):
     return render(request,'loginapp/index.html')
@@ -334,11 +363,14 @@ def loggin(request):
                 usernm = authenticate(username=user,password=pas);
                 if coadmin.objects.filter(co_name=user).exists() and coadmin.objects.filter(co_conf_pass=pas).exists() and coadmin.objects.filter(co_city=city).exists():
 
-                    request.session['city'] = city
+                    login(request,usernm)
+                    #request.session['city'] = city
 
                     return render(request, 'loginapp/index2.html',coadcontext(request,city))
 
                 elif usernm.is_superuser:
+
+                    login(request,usernm)
                     return render(request, 'loginapp/index.html',admincontext(request))
 
                 else:
@@ -714,6 +746,8 @@ class DetailView(generic.DetailView):
 class Detail1View(generic.DetailView):
     model = engg
     template_name = 'loginapp/enggdetail1.html'
+
+
 
 class CoadminListView(generic.ListView):
     template_name = 'loginapp/coadmin_list.html'

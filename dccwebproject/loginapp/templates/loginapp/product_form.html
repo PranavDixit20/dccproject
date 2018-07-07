@@ -333,6 +333,16 @@
       <i class="fa fa-files-o"></i> <span>Track Engineers</span>
     </a>
   </li>
+  <li>
+  <a href="{% url 'loginapp:stockentry' %}">
+    <i class="fa fa-files-o"></i> <span>Stock Entry</span>
+  </a>
+  </li>
+  <li>
+  <a href="{% url 'loginapp:stocklist' %}">
+    <i class="fa fa-files-o"></i> <span>Stock List</span>
+  </a>
+  </li>
     <li>
     <a href="{% url 'loginapp:getcoadmin' %}">
       <i class="fa fa-files-o"></i> <span>Coadmin List</span>
@@ -363,24 +373,10 @@
           <li>
             <a href="{% url 'loginapp:calendars' %}">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-red">3</small>
-                <small class="label pull-right bg-blue">17</small>
-              </span>
-            </a>
-          </li>
-          <li>
-            <a href="pages/mailbox/mailbox.html">
-              <i class="fa fa-envelope"></i> <span>Mailbox</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-yellow">12</small>
-                <small class="label pull-right bg-green">16</small>
-                <small class="label pull-right bg-red">5</small>
-              </span>
-            </a>
-          </li>
 
-      </section>
+            </a>
+          </li>
+        </section>
       <!-- /.sidebar -->
     </aside>
 
@@ -390,14 +386,26 @@
       <section class="content-header">
         <h1>
           Dashboard
-          <small>Registration</small>
+          <small>Add Products</small>
         </h1>
         <ol class="breadcrumb">
           <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-dashboard"></i> Home</a></li>
           <li class="active">Product List</li>
         </ol>
       </section>
+      <div class="col-sm-2">
+        <a href ="{% url 'loginapp:productexport_xls'%}"><button type="submit" class="btn btn-primary btn-block btn-flat">export to excel</button></a>
+        </div>
+        <form method="post" action="{% url 'loginapp:productimport_xls' %}" enctype="multipart/form-data">
+     {% csrf_token %}
+        <div class="col-sm-4">
 
+     <input type="file" name="myfile" class="btn btn-primary btn-block btn-flat">
+      </div>
+     <div class="col-sm-2">
+     <button type="submit" class="btn btn-primary btn-block btn-flat">Import</button>
+     </form>
+    </div>
             <div class="container">
               <div class="row">
                 <div class="register-logo ">
