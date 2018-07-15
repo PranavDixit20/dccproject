@@ -453,7 +453,11 @@
                                <td>{{list.contact_number}}</td>
                                 <td>{{list.co_city}}</td>
                                   <td>{{list.branch_code}}</td>
-                               <td><span class="label label-success">Online</span></td>
+                                  {% ifequal list.co_status 'Online' %}
+                               <td><span class="label label-success">{{list.co_status}}</span></td>
+                                   {%else%}
+                                     <td><span class="label label-danger">{{list.co_status}}</span></td>
+                                   {%endifequal%}
                                <td>{{list.co_address}}</td>
                                <td><a href="{% url 'loginapp:coadminupdate' list.id %}">update</a></td>
 

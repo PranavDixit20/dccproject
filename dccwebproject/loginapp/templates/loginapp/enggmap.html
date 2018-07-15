@@ -5,6 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="refresh" content="10">
   <title>Engineer Tracking</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -325,7 +326,7 @@
             <i class="fa fa-files-o"></i> <span>Engineers List</span>
           </a>
         </li>
-        
+
 
         <li>
         <a href="{% url 'loginapp:getcalllist' %}">
@@ -410,8 +411,8 @@
                   {% for list in data %}
                 {
 
-                coords: { lat:{{list.latitude}},lng:{{list.longitude}} },
-                content:'<p>abc</p>'
+                coords: { lat:{{list.engg_lat}},lng:{{list.engg_long}} },
+                content:'{{list.cust_city}}'
 
               },
                   {%endfor%}

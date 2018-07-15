@@ -12,12 +12,7 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
-  <script type="text/javascript" src="/my_admin/jsi18n/"></script>
-<script type="text/javascript" src="/media/admin/js/core.js"></script>
-<link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css"/>
-<link rel="stylesheet" type="text/css" href="/media/admin/css/base.css"/>
-<link rel="stylesheet" type="text/css" href="/media/admin/css/global.css"/>
-<link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
+
   <link rel="stylesheet" href="{% static 'loginapp/bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{% static 'loginapp/bower_components/font-awesome/css/font-awesome.min.css' %}">
@@ -384,7 +379,7 @@
               <i class="fa fa-calendar"></i> <span>Calendar</span>
             </a>
           </li>
-        
+
 
       </section>
       <!-- /.sidebar -->
@@ -423,22 +418,11 @@
                       <table class="table">
                         {{ callallocateform|bootstrap}}
                       </table>
-                      <!-- <div class="form-row">
-         {{ callallocateform.instance.field3.errors }}
-         {{ callallocateform.instance.field3.label_tag }} {{ callallocateform.instance.field3 }}
-     </div> -->
+                    
                       </div>
 
                     </div>
-                  <script> $(document).ready(function(){
-    $("#id_name").change(function() {
-        // Find your different fields you want to populate and set the values here.
-        // Example would be
-        if ($("#id_name").val() == "Some value") {
-            $("#id_command_prefix").val("Whatever you want to populate with.")
-        }
-    });
-});</script>
+
 
                     <div class="row">
 

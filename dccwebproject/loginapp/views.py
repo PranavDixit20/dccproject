@@ -1,9 +1,13 @@
 from django.conf import settings
+import random
+from django.template import Context
+from django.template.loader import get_template
+from django.db.models import Avg
 from django.db.models import Q
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.core.mail import send_mail
+from django.core.mail import send_mail,EmailMessage
 from django.urls import reverse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views import generic
@@ -54,7 +58,7 @@ def Post(request):
 
         return JsonResponse({ 'msg': msg, 'user': c.user.username})
 
-        
+
     else:
         return HttpResponse('Request must be POST.')
 
@@ -250,55 +254,54 @@ def productimport_xls(request):
 
     return HttpResponseRedirect(reverse('loginapp:productsave'))
 
-@login_required
-def dash(request):
-    return render(request,'loginapp/index.html')
-
-def androidlogin(request):
-    return render(request,'loginapp/index3.html')
 
 
 def log_out(request):
     session = request.session.get('city')
     if session:
+        coadmin.objects.filter(co_name=request.user.username).update(co_status='Offline')
         del request.session['city']
         logout(request)
     else:
         logout(request)
     return render(request,'loginapp/login.html')
-
+@login_required
 def dash2(request):
     session = request.session.get('city')
     return render(request,'loginapp/index2.html',coadcontext(request,session))
-
+@login_required
 def dash1(request):
-    print(User)
     return render(request,'loginapp/index.html',admincontext(request))
-
+@login_required
 def calendar(request):
     return render(request,'loginapp/calendar.html')
-
+@login_required
 def calendars(request):
     return render(request,'loginapp/calendar1.html')
-
+@login_required
 def coregister(request):
     return render(request,'loginapp/coadmin_form.html')
-
+@login_required
 def enggmap(request):
     city = request.session.get('city')
     data = callallocate.objects.filter(cust_city = city)
     return render(request,'loginapp/enggmap.html',{'data':data})
-
+@login_required
 def enggmaps(request):
     data = callallocate.objects.all()
     return render(request,'loginapp/enggmap1.html',{'data':data})
+@login_required
+def enggtrack1(request,pk):
+    data = callallocate.objects.filter(engg_id_id=pk)
+    return render(request,'loginapp/enggtrack1.html',{'data':data})
 
+@login_required
 def enggtrack(request,pk):
-    data = callallocate.objects.filter(id=pk)
+    data = callallocate.objects.filter(engg_id_id=pk)
     return render(request,'loginapp/enggtrack.html',{'data':data})
 
 def coadcontext(request,city):
-
+    #mydate = datetime.date.now()
     custom = customer.objects.filter(customer_city=city).count()
     call = callallocate.objects.filter(cust_city=city).count()
     coad = coadmin.objects.filter(co_city=city).count()
@@ -306,7 +309,6 @@ def coadcontext(request,city):
     open = callallocate.objects.filter(call_status='open').filter(cust_city=city).count()
     pending = callallocate.objects.filter(call_status='pending').filter(cust_city=city).count()
     closed = callallocate.objects.filter(call_status='closed').filter(cust_city=city).count()
-    c = Chat.objects.all()
     context = {
     'city':city,
     'custom':custom,
@@ -316,13 +318,13 @@ def coadcontext(request,city):
     'open':open,
     'pending':pending,
     'closed':closed,
-    'home': 'active',
-    'chat':c,
+
     }
 
     return context
 
 def admincontext(request):
+    mydate = datetime.datetime.now()
     custom = customer.objects.all().count()
     call = callallocate.objects.all().count()
     coad = coadmin.objects.all().count()
@@ -330,10 +332,6 @@ def admincontext(request):
     open = callallocate.objects.filter(call_status='open').count()
     pending = callallocate.objects.filter(call_status='pending').count()
     closed = callallocate.objects.filter(call_status='closed').count()
-    mydate = datetime.datetime.now().strftime('%Y%m%d')
-    c = Chat.objects.all()
-
-
     context = {
     'custom':custom,
     'call':call,
@@ -343,8 +341,7 @@ def admincontext(request):
     'pending':pending,
     'closed':closed,
     'mydate':mydate,
-    'home': 'active',
-    'chat':c,
+
     }
 
     return context
@@ -356,7 +353,6 @@ def loggin(request):
             pas = request.POST.get('password')
             city = request.POST.get('city')
 
-
             form = AuthenticationForm(data=request.POST)
 
             if form.is_valid():
@@ -364,8 +360,8 @@ def loggin(request):
                 if coadmin.objects.filter(co_name=user).exists() and coadmin.objects.filter(co_conf_pass=pas).exists() and coadmin.objects.filter(co_city=city).exists():
 
                     login(request,usernm)
-                    #request.session['city'] = city
-
+                    coadmin.objects.filter(co_name=user).update(co_status='Online')
+                    request.session['city'] = city
                     return render(request, 'loginapp/index2.html',coadcontext(request,city))
 
                 elif usernm.is_superuser:
@@ -377,12 +373,11 @@ def loggin(request):
 
                     return render(request, 'loginapp/login.html', {'form': form})
 
-
-
         else:
                 form = AuthenticationForm()
                 return render(request, 'loginapp/login.html', {'form': form})
 
+@login_required
 def regcoadmin(request):
 
     if request.method == 'POST':
@@ -404,64 +399,104 @@ def regcoadmin(request):
             cpassword = coadminform.cleaned_data['co_pass']
             ccpassword = coadminform.cleaned_data['co_conf_pass']
             caddress = coadminform.cleaned_data['co_address']
+            if cpassword == ccpassword:
+                coadmin.objects.create(
+                co_name = cname,
+                co_email = cemail,
+                contact_number = cmobile,
+                tell_no = ctelephone,
+                co_city = ccity,
+                branch_code = cbranch_code,
+                co_gender = cgender,
+                co_bdate = cbirthdate,
+                co_age = cage,
+                co_joining_date = cjoining_date,
+                co_qual = cqualification,
+                co_designation = cdesignation,
+                co_pass = cpassword,
+                co_conf_pass = ccpassword,
+                co_address = caddress,
+                ).save()
+                User.objects.create_user(cname, cemail, cpassword,is_staff=True)
+                user = authenticate(username=cname, password=cpassword)
 
-            coadmin.objects.create(
-            co_name = cname,
-            co_email = cemail,
-            contact_number = cmobile,
-            tell_no = ctelephone,
-            co_city = ccity,
-            branch_code = cbranch_code,
-            co_gender = cgender,
-            co_bdate = cbirthdate,
-            co_age = cage,
-            co_joining_date = cjoining_date,
-            co_qual = cqualification,
-            co_designation = cdesignation,
-            co_pass = cpassword,
-            co_conf_pass = ccpassword,
-            co_address = caddress,
-            ).save()
-            User.objects.create_user(cname, cemail, cpassword,is_staff=True)
-            user = authenticate(username=cname, password=cpassword)
-            login(request, user)
-            subject = 'Co-Admin added'
-            message = 'Co-Admin has been Registered successfully!!\n your name is '+cname+' and password is '+cpassword+''
-            from_email = settings.EMAIL_HOST_USER
-            to_list = [cemail,settings.EMAIL_HOST_USER]
-            send_mail(subject,message,from_email,to_list,fail_silently = True)
-            return render(request,'loginapp/coadmin_form.html',{'coadminform':coadminform ,})
+                subject = 'Co-Admin added'
+                message = 'Co-Admin has been Registered successfully!!\n your name is '+cname+' and password is '+cpassword+''
+                from_email = settings.EMAIL_HOST_USER
+                to_list = [cemail,settings.EMAIL_HOST_USER]
+                send_mail(subject,message,from_email,to_list,fail_silently = True)
+                custom = customer.objects.all().count()
+                call = callallocate.objects.all().count()
+                coad = coadmin.objects.all().count()
+                eng = engg.objects.all().count()
+                open = callallocate.objects.filter(call_status='open').count()
+                pending = callallocate.objects.filter(call_status='pending').count()
+                closed = callallocate.objects.filter(call_status='closed').count()
+                context = {
+                'custom':custom,
+                'call':call,
+                'coad':coad,
+                'eng':eng,
+                'open':open,
+                'pending':pending,
+                'closed':closed,
+                'coadminform':coadminform,
+                }
+                return render(request,'loginapp/coadmin_form.html',context)
+            else:
+                    return HttpResponse("<div>passwords do not match!!!</div>")
+
     else:
         coadminform = RegisterForm(prefix='coadminform')
-    return render(request,'loginapp/coadmin_form.html',{'coadminform':coadminform })
+        custom = customer.objects.all().count()
+        call = callallocate.objects.all().count()
+        coad = coadmin.objects.all().count()
+        eng = engg.objects.all().count()
+        open = callallocate.objects.filter(call_status='open').count()
+        pending = callallocate.objects.filter(call_status='pending').count()
+        closed = callallocate.objects.filter(call_status='closed').count()
+        context = {
+        'custom':custom,
+        'call':call,
+        'coad':coad,
+        'eng':eng,
+        'open':open,
+        'pending':pending,
+        'closed':closed,
+        'coadminform':coadminform,
+        }
+    return render(request,'loginapp/coadmin_form.html',context)
 
-
+@login_required
 def regengg(request):
 
         if request.method == 'POST':
-            if request.method == 'POST':
                 enggform = EnggRegisterForm(request.POST,request.FILES,prefix='enggform')
                 if enggform.is_valid():
+                    eid = enggform.cleaned_data['engg_id']
                     ename = enggform.cleaned_data['engg_name']
                     eemail = enggform.cleaned_data['engg_email']
                     epassword = enggform.cleaned_data['engg_pass']
                     conpassword = enggform.cleaned_data['engg_conf_pass']
                     if epassword == conpassword:
-                     enggform.save()
-                     User.objects.create_user(ename, eemail, epassword,is_staff=True)
-                     user = authenticate(username=ename, password=epassword)
-                     login(request, user)
-                     regmail(enm=ename,passwd=epassword,eemail=eemail)
-                     return render(request,'loginapp/register2.html',{'enggform':enggform,})
+                      enggform.save()
+                      User.objects.create_user(ename, eemail, epassword,is_staff=True)
+                      user = authenticate(username=ename, password=epassword)
+                      regmail(enm=str(eid),passwd=epassword,eemail=eemail)
+                      return render(request,'loginapp/register2.html',{'enggform':enggform,})
+                    else:
+                         return HttpResponse("<div>passwords do not match!!!</div><a href='/register2.html/'>back</a>")
         else:
             enggform = EnggRegisterForm(prefix='enggform')
         return render(request,'loginapp/register2.html',{'enggform':enggform,})
 
+@login_required
 def regenggs(request):
 
         if request.method == 'POST':
             enggform = EnggRegisterForm(request.POST,request.FILES,prefix='enggform')
             if enggform.is_valid():
+                eid = enggform.cleaned_data['engg_id']
                 ename = enggform.cleaned_data['engg_name']
                 eemail = enggform.cleaned_data['engg_email']
                 epassword = enggform.cleaned_data['engg_pass']
@@ -470,14 +505,7 @@ def regenggs(request):
                  enggform.save()
                  User.objects.create_user(ename, eemail, epassword,is_staff=True)
                  user = authenticate(username=ename, password=epassword)
-                 login(request, user)
-                 # subject = 'Registration successfull!!'
-                 # message = 'Your Registration is successfull!!\n your username is '+ename+' and password is '+epassword+''
-                 #
-                 # from_email = settings.EMAIL_HOST_USER
-                 # to_list = [eemail,settings.EMAIL_HOST_USER]
-                 # send_mail(subject,message,from_email,to_list,fail_silently = True)
-                 regmail(enm=ename,passwd=epassword,eemail=eemail)
+                 regmail(enm=eid,passwd=epassword,eemail=eemail)
                  return render(request,'loginapp/register1.html',{'enggform':enggform,})
                 else:
                     return HttpResponse("<div>passwords do not match!!!</div>")
@@ -487,13 +515,14 @@ def regenggs(request):
         return render(request,'loginapp/register1.html',{'enggform':enggform,})
 
 def regmail(enm,passwd,eemail):
-    sub = 'Registration successfull!!'
-    msg = 'Your Registration is successfull!!\n your username is '+enm+' and password is '+passwd+''
+    sub = 'Engineer Registration successfull!!'
+    msg = 'Your Engineer Registration is successfull!!\n your id is '+enm+' and password is '+passwd+''
     from_email = settings.EMAIL_HOST_USER
     to = [eemail,settings.EMAIL_HOST_USER]
     send_mail(sub,msg,from_email,to,fail_silently = True)
     return
 
+@login_required
 def regcustoms(request):
 
     if request.method == 'POST':
@@ -502,12 +531,13 @@ def regcustoms(request):
         if customform.is_valid():
             customform.save()
 
-            return render(request,'loginapp/customregister1.html',{'customform':customform,})
+            return HttpResponseRedirect(reverse('loginapp:regcustoms'))
 
     else:
         customform = CustomerRegisterForm(prefix='customform')
         return render(request,'loginapp/customregister1.html',{'customform':customform,})
 
+@login_required
 def productsave(request):
 
         if request.method == 'POST':
@@ -521,65 +551,182 @@ def productsave(request):
             prodobj = products.objects.all()
             return render(request,'loginapp/product_form.html',{'form':form,'prodobj':prodobj})
 
+@login_required
 def deleteprod(request,pk):
      object = products.objects.get(id=pk)
      object.delete()
      return HttpResponseRedirect(reverse('loginapp:productsave'))
 
-
+@login_required
 def callallocation(request):
-
-    if request.method == 'POST':
-        callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
-        cno = callallocateform.cleaned_data['complaint_no']
-        prob = callallocationform.cleaned_data['description']
-        engg = callallocationform.cleaned_data['engg_name']
-        cont = callallocationform.cleaned_data['engg_contact']
-        dte = callallocationform.cleaned_data['start']
-        tme = callallocationform.cleaned_data['call_alloc_time']
-
-
+        city = request.session.get('city',True)
+        print(city)
+        callallocateform = CallAllocateForm(city,request.POST)
+        cudate = datetime.datetime.now().strftime('%Y%m%d')
+        c=cudate+""+str(random.randint(0,10000))
+        print(c)
         if callallocateform.is_valid():
-            callallocateform.save()
 
+            cid = callallocateform.cleaned_data['customer_id']
+            pro = callallocateform.cleaned_data['product']
+            prob = callallocateform.cleaned_data['description']
+            cstatus = callallocateform.cleaned_data['call_status']
+            ctype = callallocateform.cleaned_data['call_type']
+            cend = callallocateform.cleaned_data['end']
+            tat = callallocateform.cleaned_data['call_tat']
+            cnote = callallocateform.cleaned_data['call_note']
+            cpri = callallocateform.cleaned_data['call_priority']
+            cname = callallocateform.cleaned_data['caller_name']
+            enid = callallocateform.cleaned_data['engg_id']
+            estat = callallocateform.cleaned_data['engg_status']
+            engg = callallocateform.cleaned_data['engg_name']
+            cont = callallocateform.cleaned_data['engg_contact']
+            dte = callallocateform.cleaned_data['start']
+
+
+            qs = customer.objects.values_list('customer_adrress',flat=True).get(id=cid.id)
+            cn = customer.objects.values_list('customer_name',flat=True).get(id=cid.id)
+            ce = customer.objects.values_list('customer_email',flat=True).get(id=cid.id)
+            pn = customer.objects.values_list('customer_contact_no',flat=True).get(id=cid.id)
+            ct = customer.objects.values_list('customer_city',flat=True).get(id=cid.id)
+
+            eid = engg.objects.values_list('engg_id',flat=True).get(id=enid.id)
+            en = engg.objects.values_list('engg_name',flat=True).get(id=enid.id)
+            ec = engg.objects.values_list('engg_contact_number',flat=True).get(enid.id)
+
+
+            csave = callallocate(
+            customer_id_id = cid.id,
+            title = cn,
+            comp_address = qs,
+            phone_number = pn,
+            product = pro,
+            description = prob,
+            start = dte,
+            call_status = cstatus,
+            complaint_no = c,
+            call_type = ctype,
+            cust_city = ct,
+            end = cend,
+            call_tat = tat,
+            call_note = cnote,
+            call_priority = cpri,
+            caller_name = cname,
+            engg_id_id = enid.id,
+            engineer_id = eid,
+            engg_status = estat,
+            engg_name = en,
+            engg_contact = ec,
+            call_alloc_time = tme,
+            comp_email = ce,
+
+            )
+            csave.save()
+            #print(addr)
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!! on'+dte+' '+tme+'\n your complaint no. is '+cno+'. Your problem is '+prob+'. Your call has been assigned to '+engg+' his contact number is '+cont+''
+            message = 'Your call has been allocated successfully!! on'+' '+str(dte)+'\n your complaint no. is '+str(c)+'. Your problem is '+prob+'. Your call has been assigned to '+str(en)+' his contact number is '+str(ec)+' '
 
             from_email = settings.EMAIL_HOST_USER
-            to_list = [compemail,settings.EMAIL_HOST_USER]
+            to_list = [ce,settings.EMAIL_HOST_USER]
             send_mail(subject,message,from_email,to_list,fail_silently = True)
+
             return render(request,'loginapp/calendar.html')
 
-    else:
-        callallocateform = CallAllocateForm(prefix='callallocateform')
-    return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
+        else:
+          city = request.session.get('city',True)
+          print(city)
+          callallocateform = CallAllocateForm(city)
+          return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
 
 def callallocations(request):
 
     if request.method == 'POST':
-        callallocateform = CallAllocateForm(request.POST,prefix='callallocateform')
-
+        callallocateform = CallAllocateForm(None,request.POST,prefix='callallocateform')
+        cudate = datetime.datetime.now().strftime('%Y%m%d')
+        c=cudate+""+str(random.randint(0,10000))
+        print(c)
         if callallocateform.is_valid():
-            callallocateform.save()
-
+            #name = callallocateform.cleaned_data['title']
+            cid = callallocateform.cleaned_data['customer_id']
+            pro = callallocateform.cleaned_data['product']
             prob = callallocateform.cleaned_data['description']
-            engg = callallocateform.cleaned_data['engg_name']
-            cont = callallocateform.cleaned_data['engg_contact']
-            dte = callallocateform.cleaned_data['start']
-            tme = callallocateform.cleaned_data['call_alloc_time']
-            compemail = callallocateform.cleaned_data['comp_email']
-            c = callallocateform.cleaned_data['complaint_no']
+            cstatus = callallocateform.cleaned_data['call_status']
+            ctype = callallocateform.cleaned_data['call_type']
+            cend = callallocateform.cleaned_data['end']
+            tat = callallocateform.cleaned_data['call_tat']
+            cnote = callallocateform.cleaned_data['call_note']
+            cpri = callallocateform.cleaned_data['call_priority']
+            cname = callallocateform.cleaned_data['caller_name']
+            enid = callallocateform.cleaned_data['engg_id']
+            estat = callallocateform.cleaned_data['engg_status']
+            #engg = callallocateform.cleaned_data['engg_name']
+
+            #dte = callallocateform.cleaned_data['start']
+            #tme = callallocateform.cleaned_data['call_alloc_time']
+
+            qs = customer.objects.values_list('customer_adrress',flat=True).get(id=cid.id)
+            cn = customer.objects.values_list('customer_name',flat=True).get(id=cid.id)
+            ce = customer.objects.values_list('customer_email',flat=True).get(id=cid.id)
+            pn = customer.objects.values_list('customer_contact_no',flat=True).get(id=cid.id)
+            ct = customer.objects.values_list('customer_city',flat=True).get(id=cid.id)
+
+            eid = engg.objects.values_list('engg_id',flat=True).get(id=enid.id)
+            en = engg.objects.values_list('engg_name',flat=True).get(id=enid.id)
+            ec = engg.objects.values_list('engg_contact_number',flat=True).get(id=enid.id)
+
+
+            csave = callallocate(
+            customer_id_id = cid.id,
+            title = cn,
+            comp_address = qs,
+            phone_number = pn,
+            product = pro,
+            description = prob,
+            call_status = cstatus,
+            complaint_no = c,
+            call_type = ctype,
+            cust_city = ct,
+            end = cend,
+            call_tat = tat,
+            call_note = cnote,
+            call_priority = cpri,
+            caller_name = cname,
+            engg_id_id = enid.id,
+            engineer_id = eid,
+            engg_status = estat,
+            engg_name = en,
+            engg_contact = ec,
+            comp_email = ce,
+
+            )
+            csave.save()
 
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!! on'+str(dte)+' '+str(tme)+'\n your complaint no. is '+str(c)+'. Your problem is '+prob+'. Your call has been assigned to '+str(engg)+' his contact number is '+str(cont)+' '
+            ctx = {
+            'complid':str(c),
+            'custname':cn,
+            'addr':qs,
+            'ename':en,
+            'econt':ec,
+            'prod':pro.product_name,
+            'prob':prob,
+            'note':cnote,
+            'calnme':cname,
+            'stat':cstatus,
+            }
+            message = get_template('loginapp/email.html').render(ctx)
 
             from_email = settings.EMAIL_HOST_USER
-            to_list = [compemail,settings.EMAIL_HOST_USER]
-            send_mail(subject,message,from_email,to_list,fail_silently = True)
+            to_list = [ce,settings.EMAIL_HOST_USER]
+            msg = EmailMessage(subject,message,to=to_list,from_email=from_email)
+            msg.content_subtype = 'html'
+            msg.send()
+            #send_mail(subject,message,from_email,to_list,fail_silently = True)
 
             return render(request,'loginapp/calendar1.html')
     else:
-        callallocateform = CallAllocateForm(prefix='callallocateform')
+
+        callallocateform = CallAllocateForm(None)
     return render(request,'loginapp/callallocate_form1.html',{'callallocateform':callallocateform,})
 
 def stockentry(request):
@@ -724,6 +871,7 @@ class EnggListView(generic.ListView):
 
 
 class Engg1ListView(generic.ListView):
+
     template_name = 'loginapp/engglist1.html'
     context_object_name = 'enggobjs'
     model = engg
@@ -895,3 +1043,27 @@ def message_view(request, sender, receiver):
                        'receiver': User.objects.get(id=receiver),
                        'messages': Message.objects.filter(sender_id=sender, receiver_id=receiver) |
                                    Message.objects.filter(sender_id=receiver, receiver_id=sender)})
+
+def enggperf1(request,engg_id):
+    name = engg.objects.get(engg_id=engg_id)
+    callcheck =  callallocate.objects.filter(engineer_id=name.engg_id)
+    print(name.engg_id)
+    if callcheck.exists():
+        callopen = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Open').count()
+        callclosed = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Closed').count()
+        callpending = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Pending').count()
+        return render(request,'loginapp/enggperformance1.html',{'name':name,'callopen':callopen,'callclosed':callclosed,'callpending':callpending})
+    else:
+        return HttpResponseRedirect(reverse('loginapp:getenggs'))
+
+def enggperf(request,engg_id):
+    name = engg.objects.get(engg_id=engg_id)
+    callcheck =  callallocate.objects.filter(engineer_id=name.engg_id)
+    print(name.engg_id)
+    if callcheck.exists():
+        callopen = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Open').count()
+        callclosed = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Closed').count()
+        callpending = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Pending').count()
+        return render(request,'loginapp/enggperformance.html',{'name':name,'callopen':callopen,'callclosed':callclosed,'callpending':callpending})
+    else:
+        return HttpResponseRedirect(reverse('loginapp:getengg'))

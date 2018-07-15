@@ -442,10 +442,13 @@
                                <th>Problem</th>
                                <th>Call Status</th>
                                <th>Engineer Name</th>
+                               <th>Engineer Contact Number</th>
+                               <th>Engineer Status</th>
+                                <th>Battery percentage</th>
                              </tr>
                               {% for list in callobjs %}
                              <tr>
-                               <td>{{list.id}}</td>
+                               <td>{{list.complaint_no}}</td>
                                <td><a href="{% url 'loginapp:eventupdates' list.id %}">{{list.title}}</a></td>
                                <td>{{list.phone_number}}</td>
                                 <td>{{list.cust_city}}</td>
@@ -453,6 +456,10 @@
                                <td>{{list.description}}</td>
                                <td>{{list.call_status}}</td>
                                <td>{{list.engg_name}}</td>
+                               <td>{{list.engg_contact}}</td>
+                               <td>{{list.engg_status}}</td>
+                               <td>{{list.battery_percentage}}%</td>
+
 
                              </tr>
                                  {%endfor%}

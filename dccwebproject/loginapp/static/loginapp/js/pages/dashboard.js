@@ -49,19 +49,19 @@ $(function () {
   $('.knob').knob();
 
   // jvectormap data
-  var visitorsData = {
-    US: 398, // USA
-    SA: 400, // Saudi Arabia
-    CA: 1000, // Canada
-    DE: 500, // Germany
-    FR: 760, // France
-    CN: 300, // China
-    AU: 700, // Australia
-    BR: 600, // Brazil
-    IN: 800, // India
-    GB: 320, // Great Britain
-    RU: 3000 // Russia
-  };
+  // var visitorsData = {
+  //   US: 398, // USA
+  //   SA: 400, // Saudi Arabia
+  //   CA: 1000, // Canada
+  //   DE: 500, // Germany
+  //   FR: 760, // France
+  //   CN: 300, // China
+  //   AU: 700, // Australia
+  //   BR: 600, // Brazil
+  //   IN: 800, // India
+  //   GB: 320, // Great Britain
+  //   RU: 3000 // Russia
+  // };
   // World map by jvectormap
   $('#world-map').vectorMap({
     map              : 'world_mill_en',
@@ -124,87 +124,124 @@ $(function () {
     height: '250px'
   });
 
+  var ctx = document.getElementById("myChart").getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+          datasets: [{
+              label: '# of Votes',
+              data: [12, 19, 3, 5, 2, 3],
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255,99,132,1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero:true
+                  }
+              }]
+          }
+      }
+  });
   /* Morris.js Charts */
   // Sales chart
-  var area = new Morris.Area({
-    element   : 'revenue-chart',
-    resize    : true,
-    data      : [
-      { y: '2011 Q1', item1: 2666, item2: 2666 },
-      { y: '2011 Q2', item1: 2778, item2: 2294 },
-      { y: '2011 Q3', item1: 4912, item2: 1969 },
-      { y: '2011 Q4', item1: 3767, item2: 3597 },
-      { y: '2012 Q1', item1: 6810, item2: 1914 },
-      { y: '2012 Q2', item1: 5670, item2: 4293 },
-      { y: '2012 Q3', item1: 4820, item2: 3795 },
-      { y: '2012 Q4', item1: 15073, item2: 5967 },
-      { y: '2013 Q1', item1: 10687, item2: 4460 },
-      { y: '2013 Q2', item1: 8432, item2: 5713 }
-    ],
-    xkey      : 'y',
-    ykeys     : ['item1', 'item2'],
-    labels    : ['Item 1', 'Item 2'],
-    lineColors: ['#a0d0e0', '#3c8dbc'],
-    hideHover : 'auto'
-  });
-  var line = new Morris.Line({
-    element          : 'line-chart',
-    resize           : true,
-    data             : [
-      { y: '2011 Q1', item1: 2666 },
-      { y: '2011 Q2', item1: 2778 },
-      { y: '2011 Q3', item1: 4912 },
-      { y: '2011 Q4', item1: 3767 },
-      { y: '2012 Q1', item1: 6810 },
-      { y: '2012 Q2', item1: 5670 },
-      { y: '2012 Q3', item1: 4820 },
-      { y: '2012 Q4', item1: 15073 },
-      { y: '2013 Q1', item1: 10687 },
-      { y: '2013 Q2', item1: 8432 }
-    ],
-    xkey             : 'y',
-    ykeys            : ['item1'],
-    labels           : ['Item 1'],
-    lineColors       : ['#efefef'],
-    lineWidth        : 2,
-    hideHover        : 'auto',
-    gridTextColor    : '#fff',
-    gridStrokeWidth  : 0.4,
-    pointSize        : 4,
-    pointStrokeColors: ['#efefef'],
-    gridLineColor    : '#efefef',
-    gridTextFamily   : 'Open Sans',
-    gridTextSize     : 10
-  });
-
-  // Donut Chart
-  var donut = new Morris.Donut({
-    element  : 'sales-chart',
-    resize   : true,
-    colors   : ['#3c8dbc', '#f56954', '#00a65a'],
-    data     : [
-      { label: 'Download Sales', value: 12 },
-      { label: 'In-Store Sales', value: 30 },
-      { label: 'Mail-Order Sales', value: 20 }
-    ],
-    hideHover: 'auto'
-  });
+  // var area = new Morris.Area({
+  //   element   : 'revenue-chart',
+  //   resize    : true,
+  //   data      : [
+  //     { y: '2011 Q1', item1: 2666, item2: 2666 },
+  //     { y: '2011 Q2', item1: 2778, item2: 2294 },
+  //     { y: '2011 Q3', item1: 4912, item2: 1969 },
+  //     { y: '2011 Q4', item1: 3767, item2: 3597 },
+  //     { y: '2012 Q1', item1: 6810, item2: 1914 },
+  //     { y: '2012 Q2', item1: 5670, item2: 4293 },
+  //     { y: '2012 Q3', item1: 4820, item2: 3795 },
+  //     { y: '2012 Q4', item1: 15073, item2: 5967 },
+  //     { y: '2013 Q1', item1: 10687, item2: 4460 },
+  //     { y: '2013 Q2', item1: 8432, item2: 5713 }
+  //   ],
+  //   xkey      : 'y',
+  //   ykeys     : ['item1', 'item2'],
+  //   labels    : ['Item 1', 'Item 2'],
+  //   lineColors: ['#a0d0e0', '#3c8dbc'],
+  //   hideHover : 'auto'
+  // });
+  // var line = new Morris.Line({
+  //   element          : 'line-chart',
+  //   resize           : true,
+  //   data             : [
+  //     { y: '2011 Q1', item1: 2666 },
+  //     { y: '2011 Q2', item1: 2778 },
+  //     { y: '2011 Q3', item1: 4912 },
+  //     { y: '2011 Q4', item1: 3767 },
+  //     { y: '2012 Q1', item1: 6810 },
+  //     { y: '2012 Q2', item1: 5670 },
+  //     { y: '2012 Q3', item1: 4820 },
+  //     { y: '2012 Q4', item1: 15073 },
+  //     { y: '2013 Q1', item1: 10687 },
+  //     { y: '2013 Q2', item1: 8432 }
+  //   ],
+  //   xkey             : 'y',
+  //   ykeys            : ['item1'],
+  //   labels           : ['Item 1'],
+  //   lineColors       : ['#efefef'],
+  //   lineWidth        : 2,
+  //   hideHover        : 'auto',
+  //   gridTextColor    : '#fff',
+  //   gridStrokeWidth  : 0.4,
+  //   pointSize        : 4,
+  //   pointStrokeColors: ['#efefef'],
+  //   gridLineColor    : '#efefef',
+  //   gridTextFamily   : 'Open Sans',
+  //   gridTextSize     : 10
+  // });
+  //
+  // // Donut Chart
+  // var donut = new Morris.Donut({
+  //   element  : 'sales-chart',
+  //   resize   : true,
+  //   colors   : ['#3c8dbc', '#f56954', '#00a65a'],
+  //   data     : [
+  //     { label: 'Download Sales', value: 12 },
+  //     { label: 'In-Store Sales', value: 30 },
+  //     { label: 'Mail-Order Sales', value: 20 }
+  //   ],
+  //   hideHover: 'auto'
+  // });
 
   // Fix for charts under tabs
-  $('.box ul.nav a').on('shown.bs.tab', function () {
-    area.redraw();
-    donut.redraw();
-    line.redraw();
-  });
-
-  /* The todo list plugin */
-  $('.todo-list').todoList({
-    onCheck  : function () {
-      window.console.log($(this), 'The element has been checked');
-    },
-    onUnCheck: function () {
-      window.console.log($(this), 'The element has been unchecked');
-    }
-  });
+  // $('.box ul.nav a').on('shown.bs.tab', function () {
+  //   area.redraw();
+  //   donut.redraw();
+  //   line.redraw();
+  // });
+  //
+  // /* The todo list plugin */
+  // $('.todo-list').todoList({
+  //   onCheck  : function () {
+  //     window.console.log($(this), 'The element has been checked');
+  //   },
+  //   onUnCheck: function () {
+  //     window.console.log($(this), 'The element has been unchecked');
+  //   }
+  // });
 
 });

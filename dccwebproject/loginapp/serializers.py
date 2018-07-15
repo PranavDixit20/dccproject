@@ -22,7 +22,6 @@ class EventCallSerializer(serializers.ModelSerializer):
         'id',
         'title',
         'start',
-        'call_alloc_time',
         'end',
         'description',
         ]

@@ -146,44 +146,33 @@
             <!-- Notifications: style can be found in dropdown.less -->
             <li class="dropdown notifications-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bell-o"></i>
-                <span class="label label-warning">10</span>
-              </a>
-              <ul class="dropdown-menu">
-                <li class="header">You have 10 notifications</li>
-                <li>
-                  <!-- inner menu: contains the actual data -->
-                  <ul class="menu">
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
-                        page and may cause design problems
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-users text-red"></i> 5 new members joined
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-shopping-cart text-green"></i> 25 sales made
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i class="fa fa-user text-red"></i> You changed your username
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="footer"><a href="#">View all</a></li>
-              </ul>
+                  <i class="fa fa-bell-o"></i>
+                  <span class="label label-warning">{{call}}</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have {{call}} notifications</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i> {{open}} new calls opened
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-warning text-yellow"></i> {{pending}} calls are pending
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-red"></i>{{closed}} calls have been closed
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+
+                </ul>
             </li>
             <!-- Tasks: style can be found in dropdown.less -->
             <li class="dropdown tasks-menu">
@@ -437,20 +426,8 @@
                 <!-- /.form-box -->
               </div>
             </div>
-            <!-- /.register-box -->
-
-
-
-          </section>
-          <!-- /.Left col -->
-
         </div>
         <!-- /.row (main row) -->
-
-      </section>
-      <!-- /.content -->
-    </div>
-    <!-- /.content-wrapper -->
     <footer class="main-footer">
       <div class="pull-right hidden-xs">
         <b>Version</b> 1.1.0
@@ -675,13 +652,13 @@
   <!-- Bootstrap 3.3.7 -->
   <script src="{% static 'loginapp/bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
   <!-- Morris.js charts -->
-  <script src="{% static 'loginapp/bower_components/raphael/raphael.min.js' %}"></script>
-  <script src="{% static 'loginapp/bower_components/morris.js/morris.min.js' %}"></script>
+  <!-- <script src="{% static 'loginapp/bower_components/raphael/raphael.min.js' %}"></script>
+  <script src="{% static 'loginapp/bower_components/morris.js/morris.min.js' %}"></script> -->
   <!-- Sparkline -->
   <script src="{% static 'loginapp/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js' %}"></script>
   <!-- jvectormap -->
-  <script src="{% static 'loginapp/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js' %}"></script>
-  <script src="{% static 'loginapp/plugins/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+  <!-- <script src="{% static 'loginapp/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js' %}"></script>
+  <script src="{% static 'loginapp/plugins/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script> -->
   <!-- jQuery Knob Chart -->
   <script src="{% static 'loginapp/bower_components/jquery-knob/dist/jquery.knob.min.js' %}"></script>
   <!-- daterangepicker -->
@@ -698,18 +675,10 @@
   <!-- AdminLTE App -->
   <script src="{% static 'loginapp/dist/js/adminlte.min.js' %}"></script>
   <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-  <script src="{% static 'loginapp/dist/js/pages/dashboard.js' %}"></script>
+  <!-- <script src="{% static 'loginapp/dist/js/pages/dashboard.js' %}"></script> -->
   <!-- AdminLTE for demo purposes -->
   <script src="{% static 'loginapp/dist/js/demo.js' %}"></script>
-  <script>
-    $(function () {
-      $('input').iCheck({
-        checkboxClass: 'icheckbox_square-blue',
-        radioClass: 'iradio_square-blue',
-        increaseArea: '20%', /* optional */
-      });
-    });
-  </script>
+
 </body>
 
 </html>

@@ -5,7 +5,8 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Admin Engineer Tracking</title>
+  <meta http-equiv="refresh" content="10">
+  <title>Engineer Tracking</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -52,9 +53,9 @@
       <!-- Logo -->
       <a href="#" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>Admin</b></span>
+        <span class="logo-mini"><b>Co-Admin</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>Admin</b></span>
+        <span class="logo-lg"><b>Co-Admin</b></span>
       </a>
       <!-- Header Navbar: style can be found in header.less -->
       <nav class="navbar navbar-static-top">
@@ -267,7 +268,7 @@
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <img src="{% static 'loginapp/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image">
-                <span class="hidden-xs">Admin</span>
+                <span class="hidden-xs">Co-Admin</span>
               </a>
               <ul class="dropdown-menu">
                 <!-- User image -->
@@ -305,87 +306,48 @@
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">MAIN NAVIGATION</li>
           <li class="treeview">
-            <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
+            <li><a href="{% url 'loginapp:dash2' %}"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
           </li>
+
           <li>
-          <a href="{% url 'loginapp:regcoadmin' %}">
-            <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
-          </a>
-        </li>
-          <li>
-            <a href="{% url 'loginapp:regenggs' %}">
+            <a href="{% url 'loginapp:regengg' %}">
             <i class="fa fa-files-o"></i> <span>Add Engineer</span>
 
           </a>
           </li>
-          <li>
-            <a href="{% url 'loginapp:regcustoms' %}">
-          <i class="fa fa-files-o"></i> <span>Add Customer</span>
-        </a>
-          </li>
           <li class="active">
-          <a href="{% url 'loginapp:enggmaps' %}">
+          <a href="{% url 'loginapp:enggmap' %}">
             <i class="fa fa-files-o"></i> <span>Track Engineers</span>
           </a>
         </li>
-        <li>
-        <a href="{% url 'loginapp:stockentry' %}">
-          <i class="fa fa-files-o"></i> <span>Stock Entry</span>
-        </a>
-        </li>
-        <li>
-        <a href="{% url 'loginapp:stocklist' %}">
-          <i class="fa fa-files-o"></i> <span>Stock List</span>
-        </a>
-        </li>
+
           <li>
-          <a href="{% url 'loginapp:getcoadmin' %}">
-            <i class="fa fa-files-o"></i> <span>Coadmin List</span>
-          </a>
-        </li>
-          <li>
-          <a href="{% url 'loginapp:getenggs' %}">
+          <a href="{% url 'loginapp:getengg' %}">
             <i class="fa fa-files-o"></i> <span>Engineers List</span>
           </a>
         </li>
-        <li>
-        <a href="{% url 'loginapp:getcustomers' %}">
-          <i class="fa fa-files-o"></i> <span>Customer List</span>
-        </a>
-        </li>
+
 
         <li>
-        <a href="{% url 'loginapp:getcalllists' %}">
+        <a href="{% url 'loginapp:getcalllist' %}">
           <i class="fa fa-files-o"></i> <span>Call List</span>
         </a>
         </li>
 
         <li>
-        <a href="{% url 'loginapp:callallocations' %}">
+        <a href="{% url 'loginapp:callallocation' %}">
           <i class="fa fa-files-o"></i> <span>Call Allocation</span>
         </a>
         </li>
 
 
           <li>
-            <a href="{% url 'loginapp:calendars' %}">
+            <a href="{% url 'loginapp:calendar' %}">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-red">3</small>
-                <small class="label pull-right bg-blue">17</small>
-              </span>
+
             </a>
           </li>
-          <li>
-            <a href="pages/mailbox/mailbox.html">
-              <i class="fa fa-envelope"></i> <span>Mailbox</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-yellow">12</small>
-                <small class="label pull-right bg-green">16</small>
-                <small class="label pull-right bg-red">5</small>
-              </span>
-            </a>
-          </li>
+          
 
       </section>
       <!-- /.sidebar -->
@@ -415,7 +377,7 @@
             <div class="container">
               <div class="row">
                 <div class="register-logo ">
-                  <b>Admin Engineer Tracking System</b>
+                  <b>Engineer Tracking System</b>
                 </div>
                   <div  id="map" style="height: 1000px; width: 1250px;">
                    <script>

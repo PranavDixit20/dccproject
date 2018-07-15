@@ -3,6 +3,7 @@ from django.forms import ModelChoiceField
 from . models import engg, stock, callallocate, customer, products, coadmin
 from django.contrib.admin import widgets
 import datetime
+import random
 
 
 
@@ -25,9 +26,15 @@ class RegisterForm(forms.ModelForm):
 class EnggRegisterForm(forms.ModelForm):
     class Meta:
         model = engg
-        exclude = []
+        exclude = [
+        'engg_lat',
+        'engg_long',
+        'complaint_id',
+        'battery_percentage',
+        ]
         fields = '__all__'
         widgets = {
+
             'engg_bdate':forms.DateInput(attrs={'type':'date'}),
             'engg_joining_date':forms.DateInput(attrs={'type':'date'}),
 
@@ -42,25 +49,37 @@ class CustomerRegisterForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'customer_doc': forms.DateInput(attrs={'type': 'date'},),
+            'customer_agreement_from': forms.DateInput(attrs={'type': 'date'},),
+            'customer_agreement_to': forms.DateInput(attrs={'type': 'date'},),
         }
 
 
 class CallAllocateForm(forms.ModelForm):
-    qset = customer.objects.all()
+    def __init__(self,city, *args, **kwargs):
+         super(CallAllocateForm, self).__init__(*args, **kwargs)
+         if city:
+             #print(city)
+             self.fields['customer_id'].queryset = customer.objects.filter(customer_city=city)
+             self.fields['engg_id'].queryset = engg.objects.filter(engg_city=city)
+         else:
+
+            self.fields['customer_id'].queryset = customer.objects.all()
+            self.fields['engg_id'].queryset = engg.objects.all()
+
     p = products.objects.all()
     e = engg.objects.all()
-    cudate = datetime.datetime.now().strftime('%Y%m%d')
-    c=cudate+""+str(callallocate.id)
-    print(c)
-    title = forms.ModelChoiceField(queryset=qset,initial=0)
     product = forms.ModelChoiceField(queryset=p,initial=0)
-    engg_name = forms.ModelChoiceField(queryset=e,initial=0)
-    complaint_no = forms.CharField(widget=forms.HiddenInput(), initial=c)
-
     class Meta:
         model = callallocate
         exclude = [
+        'title',
+        'comp_email',
+        'phone_number',
+        'cust_city',
         'complaint_no',
+        'comp_address',
+        'engg_name',
+        'engg_contact',
         'engg_lat',
         'engg_long',
         'engg_rating',
@@ -84,7 +103,11 @@ class CallAllocateForm(forms.ModelForm):
         'comp_feedback',
         'engg_part_pic',
         'engg_bus_ticket_pic',
-        ]
+        'battery_percentage',
+        'engg_start_reading_pic',
+        'engg_end_reading_pic',
+         ]
+
         fields = '__all__'
         labels = {
         'title':'Company Name',
@@ -104,7 +127,7 @@ class CallAllocateForm(forms.ModelForm):
         'engg_id':'engineer id',
         'engg_status':'engineer status',
         'end':'call end',
-        'call_alloc_time':'allocation time'
+
         }
         widgets = {
             'call_alloc_time': forms.TimeInput(attrs={'type':'time'}),
@@ -112,9 +135,10 @@ class CallAllocateForm(forms.ModelForm):
             'end': forms.DateInput(attrs={'type':'date'}),
 
         }
-        def __init__(self, *args, **kwargs):
-             super(ProductForm, self).__init__(*args, **kwargs)
-             self.fields['comp_address'] = company.objects.filter(customer_name=title).values_list('customer_address')
+
+
+
+
 
 
 

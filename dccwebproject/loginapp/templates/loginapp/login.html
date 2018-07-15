@@ -37,10 +37,11 @@
 
 .bg {
     /* The image used */
-    background-image: url("{% static 'loginapp/dist/img/dcc-logo.jpg' %}");
+    background-image: url("{% static 'loginapp/dist/img/hardware.jpg' %}");
 
     /* Full height */
     height:  100%;
+    width: auto;
 
 
     /* Center and scale the image nicely */
@@ -48,19 +49,34 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+/* .panel-body {
+background:#F4FABF;} */
+.responsive {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+    width: 50%;
+    max-width: 200px;
+    height: 50%;
+    margin: auto;
+    padding: 20px;
+
+
+}
 </style>
     </head>
     <body>
-        <div class="container bg">
+        <div class="container bg ">
 
             <div class="row">
-
-                <div class="col-md-4 col-md-offset-4">
+            <img src="{% static 'loginapp/dist/img/DCC infotech logo.jpg' %}" class="responsive" height="100" width="100">
+                <div class="col-md-4 col-md-offset-4 ">
                     <div class="login-panel panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Please Sign In</h3>
+                            <h3 class="panel-title text-center"><b>DIPL LOGIN</b></h3>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body center">
                             <form role="form" action="{% url 'loginapp:loggin' %}" method="post">
                                 <fieldset>
                                   {% csrf_token %}
@@ -74,13 +90,11 @@
                                     <div class="form-group">
                                         <input class="form-control" placeholder="city" name="city" type="text" value="">
                                     </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input name="remember" type="checkbox" value="Remember Me">Remember Me
-                                        </label>
-                                    </div>
+
                                     <!-- Change this to a button or input when using this as a form -->
-                                    <input type="submit" value="login">
+                                    <div class="form-group">
+                                    <input type="submit" class = "form-control btn btn-success" value="login">
+                                  </div>
                                 </fieldset>
                             </form>
                             {% if form.errors %}

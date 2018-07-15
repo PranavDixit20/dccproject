@@ -325,12 +325,6 @@
           </a>
         </li>
         <li>
-        <a href="{% url 'loginapp:getcustomer' %}">
-          <i class="fa fa-files-o"></i> <span>Customer List</span>
-        </a>
-        </li>
-
-        <li>
         <a href="{% url 'loginapp:getcalllist' %}">
           <i class="fa fa-files-o"></i> <span>Call List</span>
         </a>
@@ -398,7 +392,7 @@
                              </tr>
                              <tr>
                                <td>{{engg.engg_id}}</td>
-                               <td><img src="{% url 'db_file_storage.get_file' %}?name={{ engg.engg_pic }}"  height="10%"></td>
+                               <td><img src="{{engg.engg_pic.url}}"  height="10%"></td>
                                <td>{{engg.engg_name}}</td>
                                <td>{{engg.engg_contact_number}}</td>
                                 <td>{{engg.engg_city}}</td>

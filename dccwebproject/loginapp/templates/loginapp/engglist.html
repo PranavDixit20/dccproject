@@ -342,22 +342,10 @@
           <li>
             <a href="{% url 'loginapp:calendar' %}">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-red">3</small>
-                <small class="label pull-right bg-blue">17</small>
-              </span>
+
             </a>
           </li>
-          <li>
-            <a href="pages/mailbox/mailbox.html">
-              <i class="fa fa-envelope"></i> <span>Mailbox</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-yellow">12</small>
-                <small class="label pull-right bg-green">16</small>
-                <small class="label pull-right bg-red">5</small>
-              </span>
-            </a>
-          </li>
+        
           </section>
       <!-- /.sidebar -->
     </aside>
@@ -411,6 +399,8 @@
                                <th>Status</th>
                                <th>Address</th>
                                 <th>Edit</th>
+                                <th>Track</th>
+                                <th>Performance</th>
                              </tr>
                               {% for list in enggobj %}
                              <tr>
@@ -419,9 +409,15 @@
                                <td>{{list.engg_contact_number}}</td>
                                 <td>{{list.engg_city}}</td>
                                   <td>{{list.engg_branch_code}}</td>
-                               <td><span class="label label-success">{{list.engg_status}}</span></td>
+                                  {% ifequal list.engg_status 'Online' %}
+                                   <td><span class="label label-success">{{list.engg_status}}</span></td>
+                                    {%else%}
+                                     <td><span class="label label-danger">{{list.engg_status}}</span></td>
+                                   {%endifequal%}
                                <td>{{list.engg_address}}</td>
                                <td><a href="{% url 'loginapp:enggupdate' list.id %}">update</a></td>
+                               <td><a href="{% url 'loginapp:enggtrack' list.id %}">track</a></td>
+                               <td><a href="{% url 'loginapp:enggperf' list.engg_id %}">performance</a></td>
                              </tr>
                                  {%endfor%}
                            </table>

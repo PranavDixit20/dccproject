@@ -50,7 +50,7 @@ $(document).ready(function() {
      });
  });
 
- using jQuery
+// using jQuery
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
