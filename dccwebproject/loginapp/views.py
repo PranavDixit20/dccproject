@@ -448,16 +448,49 @@ def regengg(request):
                     eid = enggform.cleaned_data['engg_id']
                     ename = enggform.cleaned_data['engg_name']
                     eemail = enggform.cleaned_data['engg_email']
+                    eadr = enggform.cleaned_data['engg_address']
+                    epadr = enggform.cleaned_data['engg_permanent_address']
+                    econ = enggform.cleaned_data['engg_contact_number']
+                    etel = enggform.cleaned_data['engg_tell_no']
+                    ecity = enggform.cleaned_data['engg_city']
+                    ebrc = enggform.cleaned_data['engg_branch_code']
+                    ebdt = enggform.cleaned_data['engg_bdate']
+                    eage = enggform.cleaned_data['engg_age']
+                    ejd = enggform.cleaned_data['engg_joining_date']
+                    equal = enggform.cleaned_data['engg_qual']
+                    edes = enggform.cleaned_data['engg_designation']
+                    esk = enggform.cleaned_data['engg_skill']
+                    estat = enggform.cleaned_data['engg_status']
                     epassword = enggform.cleaned_data['engg_pass']
                     conpassword = enggform.cleaned_data['engg_conf_pass']
                     if epassword == conpassword:
-                      enggform.save()
-                      User.objects.create_user(ename, eemail, epassword,is_staff=True)
-                      user = authenticate(username=ename, password=epassword)
-                      regmail(enm=str(eid),passwd=epassword,eemail=eemail)
-                      return render(request,'loginapp/register2.html',{'enggform':enggform,})
+                       esave = engg(
+                      engg_id= eid,
+                      engg_name = ename,
+                      engg_email=eemail,
+                      engg_address=eadr,
+                      engg_permanent_address=epad,
+                      engg_contact_number=econ,
+                      engg_tell_no=etel,
+                      engg_city=ecity,
+                      engg_branch_code=ebrc,
+                      engg_bdate=ebdt,
+                      engg_age=eage,
+                      engg_joining_date=ejd,
+                      engg_qual=equal,
+                      engg_designation=edes,
+                      engg_skill=esk,
+                      engg_status=estat,
+                      engg_pass=epassword,
+                      engg_conf_pass=conpassword,
+                       )
+                       esave.save()
+                       User.objects.create_user(ename, eemail, epassword,is_staff=True)
+                       user = authenticate(username=ename, password=epassword)
+                       regmail(enm=str(eid),passwd=epassword,eemail=eemail)
+                       return render(request,'loginapp/register2.html',{'enggform':enggform,})
                     else:
-                         return HttpResponse("<div>passwords do not match!!!</div><a href='/register2.html/'>back</a>")
+                         return HttpResponse('<div>passwords do not match!!!</div><a href="loginapp/register2.html">back</a>')
         else:
             enggform = EnggRegisterForm(prefix='enggform')
         return render(request,'loginapp/register2.html',{'enggform':enggform,})
@@ -471,14 +504,49 @@ def regenggs(request):
                 eid = enggform.cleaned_data['engg_id']
                 ename = enggform.cleaned_data['engg_name']
                 eemail = enggform.cleaned_data['engg_email']
+                eadr = enggform.cleaned_data['engg_address']
+                epadr = enggform.cleaned_data['engg_permanent_address']
+                econ = enggform.cleaned_data['engg_contact_number']
+                etel = enggform.cleaned_data['engg_tell_no']
+                ecity = enggform.cleaned_data['engg_city']
+                ebrc = enggform.cleaned_data['engg_branch_code']
+                ebdt = enggform.cleaned_data['engg_bdate']
+                eage = enggform.cleaned_data['engg_age']
+                ejd = enggform.cleaned_data['engg_joining_date']
+                equal = enggform.cleaned_data['engg_qual']
+                edes = enggform.cleaned_data['engg_designation']
+                esk = enggform.cleaned_data['engg_skill']
+                estat = enggform.cleaned_data['engg_status']
                 epassword = enggform.cleaned_data['engg_pass']
                 conpassword = enggform.cleaned_data['engg_conf_pass']
+
+
                 if epassword == conpassword:
-                 enggform.save()
-                 User.objects.create_user(ename, eemail, epassword,is_staff=True)
-                 user = authenticate(username=ename, password=epassword)
-                 regmail(enm=eid,passwd=epassword,eemail=eemail)
-                 return render(request,'loginapp/register1.html',{'enggform':enggform,})
+                  esave = engg(
+                  engg_id= eid,
+                  engg_name = ename,
+                  engg_email=eemail,
+                  engg_address=eadr,
+                  engg_permanent_address=epad,
+                  engg_contact_number=econ,
+                  engg_tell_no=etel,
+                  engg_city=ecity,
+                  engg_branch_code=ebrc,
+                  engg_bdate=ebdt,
+                  engg_age=eage,
+                  engg_joining_date=ejd,
+                  engg_qual=equal,
+                  engg_designation=edes,
+                  engg_skill=esk,
+                  engg_status=estat,
+                  engg_pass=epassword,
+                  engg_conf_pass=conpassword,
+                  )
+                  esave.save()
+                  User.objects.create_user(ename, eemail, epassword,is_staff=True)
+                  user = authenticate(username=ename, password=epassword)
+                  regmail(enm=eid,passwd=epassword,eemail=eemail)
+                  return render(request,'loginapp/register1.html',{'enggform':enggform,})
                 else:
                     return HttpResponse("<div>passwords do not match!!!</div>")
 
@@ -589,18 +657,29 @@ def callallocation(request):
             engg_status = estat,
             engg_name = en,
             engg_contact = ec,
-            call_alloc_time = tme,
             comp_email = ce,
-
             )
             csave.save()
-            #print(addr)
             subject = 'Call Allocated'
-            message = 'Your call has been allocated successfully!! on'+' '+str(dte)+'\n your complaint no. is '+str(c)+'. Your problem is '+prob+'. Your call has been assigned to '+str(en)+' his contact number is '+str(ec)+' '
+            ctx = {
+            'complid':str(c),
+            'custname':cn,
+            'addr':qs,
+            'ename':en,
+            'econt':ec,
+            'prod':pro.product_name,
+            'prob':prob,
+            'note':cnote,
+            'calnme':cname,
+            'stat':cstatus,
+            }
+            message = get_template('loginapp/email.html').render(ctx)
 
             from_email = settings.EMAIL_HOST_USER
             to_list = [ce,settings.EMAIL_HOST_USER]
-            send_mail(subject,message,from_email,to_list,fail_silently = True)
+            msg = EmailMessage(subject,message,to=to_list,from_email=from_email)
+            msg.content_subtype = 'html'
+            msg.send()
 
             return render(request,'loginapp/calendar.html')
 
