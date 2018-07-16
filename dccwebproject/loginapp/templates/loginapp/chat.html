@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Admin Calendar</title>
+  <title>Co-Admin Calendar</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -32,6 +32,13 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  <!--Import Google Icon Font-->
+       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+       <!--Import materialize.css-->
+       <link type="text/css" rel="stylesheet" href="{% static 'loginapp/css/materialize.min.css' %}"  media="screen,projection"/>
+       <link type="text/css" rel="stylesheet" href="{% static 'loginapp/css/style.css' %}"  media="screen,projection"/>
+     <!--Import jQuery before materialize.js-->
+       <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -41,7 +48,7 @@
       <!-- Logo -->
       <a href="{% url 'loginapp:dash1' %}" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-
+        <span class="logo-mini"><b>A</b>LT</span>
         <!-- logo for regular state and mobile devices -->
         <span class="logo-lg"><b>Home</b></span>
       </a>
@@ -88,7 +95,7 @@
                           <img src="{% static 'loginapp/dist/img/user3-128x128.jpg' %}" class="img-circle" alt="User Image">
                         </div>
                         <h4>
-                        AdminLTE Design Team
+                        Admin
                         <small><i class="fa fa-clock-o"></i> 2 hours</small>
                       </h4>
                         <p>Why not buy a new awesome theme?</p>
@@ -260,18 +267,11 @@
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="{%static 'loginapp/dist/img/user2-160x160.jpg' %}" class="user-image" alt="User Image">
-              <span class="hidden-xs">Admin</span>
+              <span class="hidden-xs">Co-Admin</span>
             </a>
               <ul class="dropdown-menu">
                 <!-- User image -->
-                <li class="user-header">
-                  <img src="{% static 'loginapp/dist/img/user2-160x160.jpg' %}" class="img-circle" alt="User Image">
 
-                  <p>
-                    Admin - Web Developer
-                    <small>Member since Nov. 2012</small>
-                  </p>
-                </li>
                 <!-- Menu Body -->
 
                 <!-- Menu Footer-->
@@ -293,80 +293,52 @@
     <aside class="main-sidebar">
       <!-- sidebar: style can be found in sidebar.less -->
       <section class="sidebar">
+        <!-- Sidebar user panel -->
 
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">MAIN NAVIGATION</li>
           <li class="treeview">
-              <li><a href="{% url 'loginapp:dash1' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
+              <li><a href="{% url 'loginapp:dash2' %}"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
           </li>
           <li>
-          <a href="{% url 'loginapp:productsave' %}">
-            <i class="fa fa-files-o"></i> <span>Add Products</span>
+            <a href="{% url 'loginapp:regengg' %}">
+            <i class="fa fa-files-o"></i> <span>Add Engineer</span>
+
           </a>
-        </li>
+          </li>
+
           <li>
-            <a href="{% url 'loginapp:regcoadmin' %}">
-            <i class="fa fa-files-o"></i> <span>Add co-Admin</span>
+          <a href="{% url 'loginapp:enggmap' %}">
+            <i class="fa fa-files-o"></i> <span>Track Engineers</span>
           </a>
         </li>
+
           <li>
-          <a href="{% url 'loginapp:regenggs' %}">
-            <i class="fa fa-files-o"></i> <span>Add Engg</span>
+          <a href="{% url 'loginapp:getengg' %}">
+            <i class="fa fa-files-o"></i> <span>Engineers List</span>
           </a>
         </li>
+
+
         <li>
-        <a href="{% url 'loginapp:regcustoms' %}">
-          <i class="fa fa-files-o"></i> <span>Add Customer</span>
+        <a href="{% url 'loginapp:getcalllist' %}">
+          <i class="fa fa-files-o"></i> <span>Call List</span>
         </a>
-      </li>
-      <li>
-      <a href="{% url 'loginapp:enggmaps' %}">
-        <i class="fa fa-files-o"></i> <span>Track Engineers</span>
-      </a>
-    </li>
-    <li>
-    <a href="{% url 'loginapp:stockentry' %}">
-      <i class="fa fa-files-o"></i> <span>Stock Entry</span>
-    </a>
-    </li>
-    <li>
-    <a href="{% url 'loginapp:stocklist' %}">
-      <i class="fa fa-files-o"></i> <span>Stock List</span>
-    </a>
-    </li>
-    <li>
-    <a href="{% url 'loginapp:getcoadmin' %}">
-      <i class="fa fa-files-o"></i> <span>Coadmin List</span>
-    </a>
-  </li>
-      <li>
-      <a href="{% url 'loginapp:getenggs' %}">
-        <i class="fa fa-files-o"></i> <span>Engineers List</span>
-      </a>
-    </li>
-    <li>
-    <a href="{% url 'loginapp:getcustomers' %}">
-      <i class="fa fa-files-o"></i> <span>Customer List</span>
-    </a>
-    </li>
+        </li>
 
-    <li>
-    <a href="{% url 'loginapp:getcalllists' %}">
-      <i class="fa fa-files-o"></i> <span>Call List</span>
-    </a>
-    </li>
-
-    <li>
-    <a href="{% url 'loginapp:callallocations' %}">
-      <i class="fa fa-files-o"></i> <span>Call Allocation</span>
-    </a>
-    </li>
+        <li>
+        <a href="{% url 'loginapp:callallocation' %}">
+          <i class="fa fa-files-o"></i> <span>Call Allocation</span>
+        </a>
+        </li>
           <li class="active">
-            <a href="{% url 'loginapp:calendars' %}">
+            <a href="calendar.html">
             <i class="fa fa-calendar"></i> <span>Calendar</span>
           </a>
           </li>
+
+
       </section>
       <!-- /.sidebar -->
     </aside>
@@ -388,45 +360,49 @@
       <!-- Main content -->
       <section class="content">
         <div class="row">
-          <div class="register-logo ">
-            <a href="#"><b>Admin Calendar</b></a>
-          </div>
+
           <!-- /.col -->
           <div class="col-md-12">
             <div class="box box-primary">
               <div class="box-body no-padding">
                 <!-- THE CALENDAR -->
-                <div id="calendar"></div>
+                <div class="section" style="height: 80vh">
+        <div class="row">
+            <div class="col s3">
+            <div class="card">
 
-                <!--modal form-->
+                <div class="collection">
+                    {% for user in users %}
+                    <a href="{% url 'loginapp' request.user.id user.id %}" id="user{{ user.id }}" class="collection-item row">
+                        <img src="https://frontend-1.adjust.com/new-assets/images/site-images/interface/user.svg" class="col s4">
+                        <div class="col s8">
+                        <span class="title" style="font-weight: bolder">{{ user.username }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
 
-                <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document" id="modal1">
-                    <div class="modal-content">
-                      <div class="modal-header text-center">
-                        <h4 class="modal-title w-100 font-weight-bold">call Allocate</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-                      </div>
-                      <div class="modal-body mx-3">
-                        <div class="md-form mb-5">
-                          <form method="post" action="{% url 'loginapp:callallocations' %}" enctype="multipart/form-data">
-                            {% csrf_token %}
-                          {{callobj.as_p}}
-                        </form>
-
-                      <div class="modal-footer d-flex justify-content-center">
-                        <button id="modal-action" class="btn btn-primary">OK <i class="fa ml-1"></i></button>
-                        <button class="btn btn-primary" data-dismiss="modal">Cancel <i class="fa ml-1"></i></button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
-              <!-- /.box-body -->
             </div>
-            <!-- /. box -->
+            </div>
+            <script src="{% static 'loginapp/chat.js' %}"></script>
+               <script>
+                   // For receiving
+                   sender_id = "{{ receiver.id }}";
+                   receiver_id = "{{ request.user.id }}";
+
+                   //For sending
+                   $(function () {
+                       scrolltoend();
+                       $('#chat-box').on('submit', function (event) {
+                           event.preventDefault();
+                           var message = $('#id_message');
+                           send('{{ request.user.username }}', '{{ receiver.username }}', message.val());
+                           message.val('');
+                       })
+                   })
+               </script>
+
+
           </div>
           <!-- /.col -->
         </div>
@@ -685,7 +661,7 @@
 
         eventSources: [
     {
-      url  : "/eventcall1",
+      url  : "/eventcall",
       color: 'gray',
       textColor: 'white',
     }
@@ -693,7 +669,7 @@
   ],
   eventClick: function(event, element) {
     id = event.id;
-    var  url = "{% url 'loginapp:eventupdates' 123 %}";
+    var  url = "{% url 'loginapp:eventupdate' 123 %}";
     document.location.href =  url.replace('123', id);
     //$(location).attr('href',)
     console.log(event.id);
@@ -718,7 +694,7 @@
         dayClick: function () {
         var currentdate = $('#calendar').fullCalendar('getDate');
         //{{callallocate.call_alloc_date}} = currentdate;
-        $(location).attr('href', "{% url 'loginapp:callallocations' %}")
+        $(location).attr('href', "{% url 'loginapp:callallocation' %}")
 
 
           $('#calendar').fullCalendar('renderEvent', event);

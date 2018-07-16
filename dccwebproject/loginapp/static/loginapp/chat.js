@@ -1,82 +1,47 @@
-$('#chat-form').on('submit', function(event){
-    event.preventDefault();
+var text_box = '<div class="card-panel right" style="width: 75%; position: relative">' +
+        '<div style="position: absolute; top: 0; left:3px; font-weight: bolder" class="title">{sender}</div>' +
+        '{message}' +
+        '</div>';
 
-    $.ajax({
-        url : '/post/',
-        type : 'POST',
-        data : { msgbox : $('#chat-msg').val() },
-
-        success : function(json){
-            console.log(json);
-            $('#chat-msg').val('');
-            $('#msg-list').append('<li class="text-right list-group-item">' + json.msg + '</li>');
-            var chatlist = document.getElementById('msg-list-div');
-            chatlist.scrollTop = chatlist.scrollHeight;
-        }
-    });
-});
-
-
-
-function getMessages(){
-    if (!scrolling) {
-        $.get('/messages/', function(messages){
-            console.log(messages);
-            $('#msg-list').html(messages);
-            var chatlist = document.getElementById('msg-list-div');
-            chatlist.scrollTop = chatlist.scrollHeight;
-        });
-    }
-    scrolling = false;
+function scrolltoend() {
+    $('#board').stop().animate({
+        scrollTop: $('#board')[0].scrollHeight
+    }, 800);
 }
 
-var scrolling = false;
-$(function(){
-    $('#msg-list-div').on('scroll', function(){
-        scrolling = true;
-    });
-    refreshTimer = setInterval(getMessages, 100);
-});
+function send(sender, receiver, message) {
+    $.post('/api/messages', '{"sender": "'+ sender +'", "receiver": "'+ receiver +'","message": "'+ message +'" }', function (data) {
+        console.log(data);
+        var box = text_box.replace('{sender}', "You");
+        box = box.replace('{message}', message);
+        $('#board').append(box);
+        scrolltoend();
+    })
+}
 
-$(document).ready(function() {
-     $('#send').attr('disabled','disabled');
-     $('#chat-msg').keyup(function() {
-        if($(this).val() != '') {
-            $('#send').removeAttr('disabled');
-        }
-        else {
-            $('#send').attr('disabled','disabled');
-        }
-     });
- });
-
-// using jQuery
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+function receive() {
+    $.get('/api/messages/'+ sender_id + '/' + receiver_id, function (data) {
+        console.log(data);
+        if (data.length !== 0)
+        {
+            for(var i=0;i<data.length;i++) {
+                console.log(data[i]);
+                var box = text_box.replace('{sender}', data[i].sender);
+                box = box.replace('{message}', data[i].message);
+                box = box.replace('right', 'left blue lighten-5');
+                $('#board').append(box);
+                scrolltoend();
             }
         }
-    }
-    return cookieValue;
+    })
 }
 
-var csrftoken = getCookie('csrftoken');
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+function register(username, password) {
+    $.post('/api/users', '{"username": "'+ username +'", "password": "'+ password +'"}',
+        function (data) {
+        console.log(data);
+        window.location = '/';
+        }).fail(function (response) {
+            $('#id_username').addClass('invalid');
+        })
 }
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});

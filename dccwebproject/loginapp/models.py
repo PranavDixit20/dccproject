@@ -10,13 +10,18 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
-class Chat(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    message = models.TextField()
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+    message = models.CharField(max_length=1200)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.message
+
+    class Meta:
+        ordering = ('timestamp',)
 
 class Visitor(models.Model):
     user = models.OneToOneField(User,on_delete = models.CASCADE)
@@ -152,9 +157,6 @@ class coadmin(models.Model):
         return reverse("loginapp:coregister", kwargs={'pk':self.pk})
 
 
-
-
-
 class enggperformance(models.Model):
     engg_id = models.IntegerField(null=True,blank=True)
     calls_closed = models.IntegerField(null=True,blank=True)
@@ -169,8 +171,6 @@ class enggperformance(models.Model):
     punchin_time = models.TimeField(null=True,blank=True)
     punchout_time = models.TimeField(null=True,blank=True)
     online_status = models.BooleanField()
-
-
 
 class stock(models.Model):
     product_name = models.CharField(max_length=20,null=True,blank=False)
@@ -189,7 +189,6 @@ class stock(models.Model):
 
 class products(models.Model):
     product_name = models.CharField(max_length=100,null=True,blank=False)
-
     def __str__(self):
          return self.product_name
 

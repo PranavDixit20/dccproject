@@ -1,11 +1,10 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from . models import callallocate,coadmin,customer,engg,callallocate,stock,products
-from . models import Chat
+from . models import Message
 
-admin.site.register(Chat)
-
-
+# Register your models here.
+admin.site.register(Message)
 
 
 @admin.register(products)

@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from . import views
+from django.urls import path
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
@@ -7,8 +8,7 @@ from django.contrib.auth.views import login
 
 app_name = 'loginapp'
 urlpatterns = [
- url(r'^post/$', views.Post, name='post'),
- url(r'^messages/$', views.Messages, name='messages'),
+ url(r'^chat/$',views.chat1,name='chat1'),
  url(r'^quickmail/$',views.qmail,name='qmail'),
  url(r'^quickmail2/$',views.qmail2,name='qmail2'),
  url(r'^$',views.index,name='index'),
@@ -71,6 +71,12 @@ urlpatterns = [
  url(r'^enggtrack/(?P<pk>[0-9]+)/$',views.enggtrack,name='enggtrack'),
  url(r'engglist1/enggperformance/(?P<engg_id>[-\w]+)/$',views.enggperf1,name='enggperf1'),
  url(r'engglist/enggperformance/(?P<engg_id>[-\w]+)/$',views.enggperf,name='enggperf'),
+ url('chat', views.chat_view, name='chats'),
+ url('chat/<int:sender>/<int:receiver>', views.message_view, name='chat'),
+ url('api/messages/<int:sender>/<int:receiver>', views.message_list, name='message-detail'),
+ url('api/messages', views.message_list, name='message-list'),
+ url('api/users/<int:pk>', views.user_list, name='user-detail'),
+ url('api/users', views.user_list, name='user-list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()

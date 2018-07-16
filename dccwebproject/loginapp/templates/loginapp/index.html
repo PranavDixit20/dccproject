@@ -8,6 +8,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
   <title>Dashboard</title>
+
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -44,6 +45,7 @@
     var chart = new CanvasJS.Chart("chartContainer", {
     	animationEnabled: true,
     	theme: "light2", // "light1", "light2", "dark1", "dark2"
+      //dataPointWidth: 50,
     	title:{
     		text: "Call Log Statistics"
     	},
@@ -240,7 +242,11 @@
             <i class="fa fa-calendar"></i> <span>Calendar</span>
           </a>
         </li>
-
+        <li>
+          <a href="{% url 'loginapp:chat1' %}">
+            <i class="fa fa-files-o"></i> <span>Chat</span>
+          </a>
+        </li>
     </section>
     <!-- /.sidebar -->
   </aside>
@@ -337,80 +343,17 @@
   <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
           </div>
-
-          <!--<script> src="//cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>-->
-
-          <!-- Chat box -->
-
-          <div class="box box-success">
-            <div class="box-header">
-              <div class="col-sm-3">
-
-       </div>
-
-              <i class="fa fa-comments-o"></i>
-
-              <h3 class="box-title">Chat</h3>
-              <div class="box-tools pull-right" data-toggle="tooltip" title="Status">
-                <div class="btn-group" data-toggle="btn-toggle">
-                  <button type="button" class="btn btn-default btn-sm active"><i class="fa fa-square text-green"></i>
-                  </button>
-                  <button type="button" class="btn btn-default btn-sm"><i class="fa fa-square text-red"></i></button>
-                </div>
-              </div>
-            </div>
-            <div class="section" style="height: 80vh">
-      <div class="row">
-          <div class="col-sm-12">
-            <div id="chat-body" class="panel panel-default">
-
-                   <div id="msg-list-div" class="panel-body">
-                       <ul id="msg-list" class="list-group">
-
-                           {% for obj in chat %}
-
-                                   {%if obj.user == request.user%}
-                                   <li class="text-right list-group-item">{{ obj.message }}</li>
-                                       {%else%}
-                                   <li class="text-left list-group-item">{{ obj.message }}</li>
-                                   {%endif%}
-                                   {% empty %}
-                                   <li class="text-right list-group-item">No messages yet!</li>
-                           {% endfor %}
-                           <script>
-                               var chatlist = document.getElementById('msg-list-div');
-                               chatlist.scrollTop = chatlist.scrollHeight;
-                           </script>
-                       </ul>
-
-
-                   </div>
-               </div>
-
-               <form id="chat-form" method="post" action="{% url 'loginapp:post' %}">
-                 {%csrf_token%}
-                   <div id="chat-bottom" class="input-group">
-                       <input type="text" id="chat-msg" name="chat-msg" class="form-control"/>
-                       <span class="input-group-btn">
-                       <div>
-                           <input class="btn btn-primary" id="send" type="submit" value="Send"/>
-                       </div>
-
-                       </span>
-                   </div>
-               </form>
+          <div class="collection">
+              {% for user in users %}
+              <a href="{% url 'loginapp' request.user.id user.id %}" id="user{{ user.id }}" class="collection-item row">
+                  <img src="https://frontend-1.adjust.com/new-assets/images/site-images/interface/user.svg" class="col s4">
+                  <div class="col s8">
+                  <span class="title" style="font-weight: bolder">{{ user.username }}</span>
+                  </div>
+              </a>
+              {% endfor %}
 
           </div>
-        </div>
-      </div>
-    </div>
-
-
-          <!-- /.box (chat box) -->
-
-
-          <!-- /.box -->
-
           <!-- quick email widget -->
           <div class="box box-info">
             <div class="box-header">

@@ -24,49 +24,17 @@ from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAlloc
 from . models import engg,enggperformance
 from . models import callallocate,products
 from . models import coadmin
-from . models import customer,stock
+from . models import customer,stock,Message
 import json
 import datetime
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer,ChartSerializer, UserSerializer
+from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer, UserSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
 from tablib import Dataset
 from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource,ProductResource
-from . models import Chat
 
-
-
-
-def Post(request):
-    if request.method == "POST":
-        msg = request.POST.get('msgbox',None)
-
-        c = Chat(user=request.user, message=msg)
-
-        #if(msg[0:6] == "Robot:"):
-        #callRobot(msg, request)
-
-
-        msg = c.user.username+": "+msg
-
-        c = Chat(user=request.user, message=msg)
-
-        if msg != '':
-            c.save()
-
-        return JsonResponse({ 'msg': msg, 'user': c.user.username})
-
-
-    else:
-        return HttpResponse('Request must be POST.')
-
-
-def Messages(request):
-    c = Chat.objects.all()
-
-    return render(request, 'loginapp/messages.html', {'chat': c})
 
 def qmail(request):
 
@@ -269,9 +237,13 @@ def log_out(request):
 def dash2(request):
     session = request.session.get('city')
     return render(request,'loginapp/index2.html',coadcontext(request,session))
-@login_required
+
 def dash1(request):
     return render(request,'loginapp/index.html',admincontext(request))
+
+def chat1(request):
+    return render(request,'loginapp/chat1.html',admincontext(request))
+
 @login_required
 def calendar(request):
     return render(request,'loginapp/calendar.html')
@@ -973,15 +945,6 @@ class eventcall1(APIView):
             return Response(serializer.data)
 
 
-class ChartData(APIView):
-
-    authentication_classes = ()
-    permission_classes = ()
-    def get(self, request):
-
-        chartdata = customer.objects.all()
-        serializer = ChartSerializer(chartdata,many=True)
-        return Response(serializer.data)
 
 @csrf_exempt
 def user_list(request, pk=None):
@@ -1011,7 +974,7 @@ def message_list(request, sender=None, receiver=None):
     List all required messages, or create a new message.
     """
     if request.method == 'GET':
-        messages = Message.objects.filter(sender_id=sender, receiver_id=receiver, is_read=False)
+        messages = Message.objects.filter(sender_id=sender, receiver_id=receiver, is_read=True)
         serializer = MessageSerializer(messages, many=True, context={'request': request})
         for message in messages:
             message.is_read = True
@@ -1030,15 +993,15 @@ def message_list(request, sender=None, receiver=None):
 def chat_view(request):
 
     if request.method == "GET":
-        return render(request, 'chat/chat.html',
+        return render(request, 'loginapp/chat1.html',
                       {'users': User.objects.exclude(username=request.user.username)})
 
 
 def message_view(request, sender, receiver):
     if not request.user.is_authenticated:
-        return redirect('index')
+        return redirect('loggin')
     if request.method == "GET":
-        return render(request, "chat/messages.html",
+        return render(request, "loginapp/messages.html",
                       {'users': User.objects.exclude(username=request.user.username),
                        'receiver': User.objects.get(id=receiver),
                        'messages': Message.objects.filter(sender_id=sender, receiver_id=receiver) |

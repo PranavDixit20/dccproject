@@ -1,4 +1,5 @@
 {%load staticfiles%}
+
 <!DOCTYPE html>
 <html>
 
@@ -29,12 +30,21 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
-
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+  <!--Import Google Icon Font-->
+       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+       <!--Import materialize.css-->
+       <link type="text/css" rel="stylesheet" href="{% static 'loginapp/css/materialize.min.css' %}"  media="screen,projection"/>
+       <link type="text/css" rel="stylesheet" href="{% static 'loginapp/css/style.css' %}"  media="screen,projection"/>
+     <!--Import jQuery before materialize.js-->
+       <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
+
   <div class="wrapper">
 
     <header class="main-header">
@@ -362,9 +372,14 @@
       <i class="fa fa-files-o"></i> <span>Call Allocation</span>
     </a>
     </li>
-          <li class="active">
+          <li>
             <a href="{% url 'loginapp:calendars' %}">
             <i class="fa fa-calendar"></i> <span>Calendar</span>
+          </a>
+          </li>
+          <li class="active">
+            <a href="{% url 'loginapp:calendars' %}">
+            <i class="fa fa-chats"></i> <span>Chat</span>
           </a>
           </li>
       </section>
@@ -381,7 +396,7 @@
       </h1>
         <ol class="breadcrumb">
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">Calendar</li>
+          <li class="active">Chat</li>
         </ol>
       </section>
 
@@ -389,47 +404,70 @@
       <section class="content">
         <div class="row">
           <div class="register-logo ">
-            <a href="#"><b>Admin Calendar</b></a>
+            <a href="#"><b>Admin Chat</b></a>
           </div>
           <!-- /.col -->
-          <div class="col-md-12">
-            <div class="box box-primary">
-              <div class="box-body no-padding">
-                <!-- THE CALENDAR -->
-                <div id="calendar"></div>
-
-                <!--modal form-->
-
-                <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document" id="modal1">
-                    <div class="modal-content">
-                      <div class="modal-header text-center">
-                        <h4 class="modal-title w-100 font-weight-bold">call Allocate</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-                      </div>
-                      <div class="modal-body mx-3">
-                        <div class="md-form mb-5">
-                          <form method="post" action="{% url 'loginapp:callallocations' %}" enctype="multipart/form-data">
-                            {% csrf_token %}
-                          {{callobj.as_p}}
-                        </form>
-
-                      <div class="modal-footer d-flex justify-content-center">
-                        <button id="modal-action" class="btn btn-primary">OK <i class="fa ml-1"></i></button>
-                        <button class="btn btn-primary" data-dismiss="modal">Cancel <i class="fa ml-1"></i></button>
-                      </div>
-                    </div>
+          <div class="section" style="height: 80vh">
+  <div class="row">
+      <div class="col s3">
+      <div class="card">
+      
+          <div class="collection">
+              {% for user in users %}
+              <a href="{% url 'loginapp' request.user.id user.id %}" id="user{{ user.id }}" class="collection-item row">
+                  <img src="https://frontend-1.adjust.com/new-assets/images/site-images/interface/user.svg" class="col s4">
+                  <div class="col s8">
+                  <span class="title" style="font-weight: bolder">{{ user.username }}</span>
                   </div>
-                </div>
-              </div>
-              <!-- /.box-body -->
-            </div>
-            <!-- /. box -->
+              </a>
+              {% endfor %}
+
           </div>
-          <!-- /.col -->
-        </div>
+      </div>
+      </div>
+      <div class="col s9">
+          <div class="card">
+          <div id="board" class="section grey lighten-3" style="height: 68vh; padding: 5px; overflow-y: scroll">
+              {% block messages %}
+
+              {% endblock %}
+          </div>
+          <form id="chat-box" class="form-group {% block hide %}hide{% endblock %}" method="post">
+              {% csrf_token %}
+              <div class="row">
+                  <div class="col s11">
+                      <div class="input-field">
+                          <input id="id_message" name="message" type="text" placeholder="Type your message..">
+                      </div>
+                  </div>
+                  <div class="col s1" style="line-height: 80px">
+                      <button class="btn btn-floating blue lighten-2 waves-effect waves-light"><i class="material-icons">send</i></button>
+                  </div>
+              </div>
+          </form>
+          </div>
+      </div>
+  </div>
+  </div>
+  <script src="{% static 'loginapp/chat.js' %}"></script>
+     <script>
+         // For receiving
+         sender_id = "{{ receiver.id }}";
+         receiver_id = "{{ request.user.id }}";
+
+         //For sending
+         $(function () {
+             scrolltoend();
+             $('#chat-box').on('submit', function (event) {
+                 event.preventDefault();
+                 var message = $('#id_message');
+                 send('{{ request.user.username }}', '{{ receiver.username }}', message.val());
+                 message.val('');
+             })
+         })
+     </script>
+
+
         <!-- /.row -->
       </section>
       <!-- /.content -->
@@ -440,7 +478,8 @@
       <div class="pull-right hidden-xs">
         <b>Version</b> 2.4.0
       </div>
-      <strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights reserved.
+      <strong>Copyright &copy; 2017-2018 <a href="https://www.ganakcomputers.com/">Ganak Computers</a>.</strong> All rights
+      reserved.
     </footer>
 
     <!-- Control Sidebar -->
@@ -655,77 +694,9 @@
   <script src="{% static 'loginapp/dist/js/demo.js' %}"></script>
   <!-- fullCalendar -->
   <script src="{% static 'loginapp/bower_components/moment/moment.js' %}"></script>
-  <script src="{% static 'loginapp/bower_components/fullcalendar/fullcalendar.min.js' %}"></script>
+
+  <script type="text/javascript" src="{% static 'loginapp/js/materialize.min.js' %}"></script>
   <!-- Page specific script -->
-
-  <script>
-    //load page
-    $(document).ready(function () {
-      'use strict'
-      var myevents = [];
-      var curdate;
-      var id;
-
-      //fullcalendar
-      $('#calendar').fullCalendar({
-
-        editable: true,
-        droppable: true,
-        dragRevertDuration: 0,
-        startEditable: true,
-        eventLimit: true,
-        allDayDefault: false,
-        selectable: true,
-        selectHelper: true,
-        header: {
-          left: 'prev,next today myCustomButton',
-          center: 'title',
-          right: 'month,agendaWeek,agendaDay',
-        },
-
-        eventSources: [
-    {
-      url  : "/eventcall1",
-      color: 'gray',
-      textColor: 'white',
-    }
-
-  ],
-  eventClick: function(event, element) {
-    id = event.id;
-    var  url = "{% url 'loginapp:eventupdates' 123 %}";
-    document.location.href =  url.replace('123', id);
-    //$(location).attr('href',)
-    console.log(event.id);
-
-
-    $('#calendar').fullCalendar('updateEvent', event);
-
-  },
-
-
-        //calendar date-selection function
-        select: function (start, end, jsEvent, view) {
-          var newdate = $('#calendar').fullCalendar('getDate');
-          console.log(newdate);
-          curdate = moment(start).format();
-          $('#startdt').val(curdate);
-          console.log(curdate);
-          moment(end).format() + 1;
-        },
-
-        //calendar day-click function
-        dayClick: function () {
-        var currentdate = $('#calendar').fullCalendar('getDate');
-        //{{callallocate.call_alloc_date}} = currentdate;
-        $(location).attr('href', "{% url 'loginapp:callallocations' %}")
-
-
-          $('#calendar').fullCalendar('renderEvent', event);
-        },
-});
-});
-  </script>
 
 </body>
 

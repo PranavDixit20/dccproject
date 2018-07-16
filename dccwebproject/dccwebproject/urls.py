@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import url, include
 from . import views
-from loginapp.views import ChartData
 from loginapp import views
 from rest_framework import routers
 from django.conf import settings
@@ -29,6 +28,6 @@ urlpatterns = [
     url(r'callallocation/', views.calllist.as_view()),
     url(r'eventcall/', views.eventcall.as_view()),
     url(r'eventcall1/', views.eventcall1.as_view()),
-    url(r'^api/chart/data/$', ChartData.as_view()),
+
 
             ]
