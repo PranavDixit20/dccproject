@@ -1,6 +1,7 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.forms import ModelChoiceField
-from . models import engg, stock, callallocate, customer, products, coadmin
+from . models import engg, stock, callallocate, Customer, products, coadmin
 from django.contrib.admin import widgets
 import datetime
 import random
@@ -40,13 +41,21 @@ class EnggRegisterForm(forms.ModelForm):
 
         }
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+
 class CustomerRegisterForm(forms.ModelForm):
     q = products.objects.all()
     customer_product = forms.ModelChoiceField(queryset=q)
     class Meta:
-        model = customer
-        exclude = []
-        fields = '__all__'
+        model = Customer
+        fields = ('customer_name','customer_email','customer_adrress',
+        'customer_city','customer_pincode','customer_product',
+        'customer_agreement_from','customer_agreement_to',
+        'customer_agreement_amount','cutomer_fax','customer_company_type','customer_contact_no',
+        'customer_GSTIN_no')
         widgets = {
             'customer_doc': forms.DateInput(attrs={'type': 'date'},),
             'customer_agreement_from': forms.DateInput(attrs={'type': 'date'},),
@@ -59,11 +68,11 @@ class CallAllocateForm(forms.ModelForm):
          super(CallAllocateForm, self).__init__(*args, **kwargs)
          if city:
              #print(city)
-             self.fields['customer_id'].queryset = customer.objects.filter(customer_city=city)
+             self.fields['customer_id'].queryset = Customer.objects.filter(customer_city=city)
              self.fields['engg_id'].queryset = engg.objects.filter(engg_city=city)
          else:
 
-            self.fields['customer_id'].queryset = customer.objects.all()
+            self.fields['customer_id'].queryset = Customer.objects.all()
             self.fields['engg_id'].queryset = engg.objects.all()
 
     p = products.objects.all()

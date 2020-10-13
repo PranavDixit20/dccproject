@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.contrib.auth.forms import UserCreationForm
 import random
+from django.db import transaction
 from django.template import Context
 from django.template.loader import get_template
 from django.db.models import Avg
@@ -7,6 +9,7 @@ from django.db.models import Q
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.db.models import Sum
 from django.core.mail import send_mail,EmailMessage
 from django.urls import reverse
 from django.shortcuts import render,redirect,get_object_or_404
@@ -16,19 +19,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView,DeleteView,CreateView
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect,HttpResponse,JsonResponse
-from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm,StockEntry,Product
+from . forms import RegisterForm,EnggRegisterForm,CustomerRegisterForm,CallAllocateForm,StockEntry,Product,UserForm
 from . models import engg,enggperformance
 from . models import callallocate,products
 from . models import coadmin
-from . models import customer,stock,Message
+from . models import Customer,stock
 import json
 import datetime
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from . serializers import CallAllocateSerializer,EnggSerializer,EventCallSerializer, UserSerializer
 from django.core import serializers
 from django.forms.models import model_to_dict
@@ -36,6 +41,7 @@ from tablib import Dataset
 from .resources import EnggResource,CustomerResource,CoadminResource,CallallocateResource,StockResource,ProductResource
 
 
+#quickmail
 def qmail(request):
 
     if request.method == 'POST':
@@ -65,11 +71,12 @@ def qmail2(request):
 
     else:
          return HttpResponseRedirect(reverse('loginapp:dash2'))
-
+#quick mail end
 
 def index(request):
     return render(request,'loginapp/login.html')
 
+#excel sheet import-export
 def callallocateexport_xls(request):
     person_resource = CallallocateResource()
     query = callallocate.objects.all()
@@ -222,7 +229,7 @@ def productimport_xls(request):
 
     return HttpResponseRedirect(reverse('loginapp:productsave'))
 
-
+# excelsheet import-export end
 
 def log_out(request):
     session = request.session.get('city')
@@ -233,35 +240,41 @@ def log_out(request):
     else:
         logout(request)
     return render(request,'loginapp/login.html')
+
+
 @login_required
 def dash2(request):
     session = request.session.get('city')
     return render(request,'loginapp/index2.html',coadcontext(request,session))
 
 def dash1(request):
+
     return render(request,'loginapp/index.html',admincontext(request))
 
-def chat1(request):
-    return render(request,'loginapp/chat1.html',admincontext(request))
+
 
 @login_required
 def calendar(request):
     return render(request,'loginapp/calendar.html')
-@login_required
-def calendars(request):
-    return render(request,'loginapp/calendar1.html')
+
 @login_required
 def coregister(request):
     return render(request,'loginapp/coadmin_form.html')
+
 @login_required
 def enggmap(request):
     city = request.session.get('city')
     data = callallocate.objects.filter(cust_city = city)
     return render(request,'loginapp/enggmap.html',{'data':data})
+
 @login_required
 def enggmaps(request):
     data = callallocate.objects.all()
     return render(request,'loginapp/enggmap1.html',{'data':data})
+
+@login_required
+def calendars(request):
+    return render(request,'loginapp/calendar1.html')
 @login_required
 def enggtrack1(request,pk):
     data = callallocate.objects.filter(engg_id_id=pk)
@@ -292,12 +305,28 @@ def coadcontext(request,city):
     'closed':closed,
 
     }
-
     return context
+
+class ChartData(APIView):
+
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, format=None):
+        open = callallocate.objects.filter(call_status='open').count()
+        pending = callallocate.objects.filter(call_status='pending').count()
+        closed = callallocate.objects.filter(call_status='closed').count()
+        chardata = {
+                'opencall':open,
+                'pendingcall':pending,
+                'closedcall':closed
+        }
+        return Response(chardata)
+
 
 def admincontext(request):
     mydate = datetime.datetime.now()
-    custom = customer.objects.all().count()
+    custom = Customer.objects.all().count()
     call = callallocate.objects.all().count()
     coad = coadmin.objects.all().count()
     eng = engg.objects.all().count()
@@ -318,7 +347,7 @@ def admincontext(request):
 
     return context
 
-
+@csrf_exempt
 def loggin(request):
         if request.method == 'POST':
             user = request.POST.get('username')
@@ -420,7 +449,7 @@ def regcoadmin(request):
 
     else:
         coadminform = RegisterForm(prefix='coadminform')
-        custom = customer.objects.all().count()
+        custom = Customer.objects.all().count()
         call = callallocate.objects.all().count()
         coad = coadmin.objects.all().count()
         eng = engg.objects.all().count()
@@ -488,7 +517,7 @@ def regengg(request):
                        User.objects.create_user(ename, eemail, epassword,is_staff=True)
                        user = authenticate(username=ename, password=epassword)
                        regmail(enm=str(eid),passwd=epassword,eemail=eemail)
-                       return render(request,'loginapp/register2.html',{'enggform':enggform,})
+                       return render(request,'loginapp/engglist.html',{'enggform':enggform,})
                     else:
                          return HttpResponse('<div>passwords do not match!!!</div><a href="loginapp/register2.html">back</a>')
         else:
@@ -497,9 +526,9 @@ def regengg(request):
 
 @login_required
 def regenggs(request):
-
+        enggform = EnggRegisterForm(request.POST or None,request.FILES or None,prefix='enggform')
         if request.method == 'POST':
-            enggform = EnggRegisterForm(request.POST,request.FILES,prefix='enggform')
+            # user_form = UserCreationForm(request.POST)
             if enggform.is_valid():
                 eid = enggform.cleaned_data['engg_id']
                 ename = enggform.cleaned_data['engg_name']
@@ -527,7 +556,7 @@ def regenggs(request):
                   engg_name = ename,
                   engg_email=eemail,
                   engg_address=eadr,
-                  engg_permanent_address=epad,
+                  engg_permanent_address=epadr,
                   engg_contact_number=econ,
                   engg_tell_no=etel,
                   engg_city=ecity,
@@ -546,12 +575,9 @@ def regenggs(request):
                   User.objects.create_user(ename, eemail, epassword,is_staff=True)
                   user = authenticate(username=ename, password=epassword)
                   regmail(enm=eid,passwd=epassword,eemail=eemail)
-                  return render(request,'loginapp/register1.html',{'enggform':enggform,})
-                else:
-                    return HttpResponse("<div>passwords do not match!!!</div>")
+                  enggobjs = engg.objects.all()
+                  return render(request,'loginapp/engglist1.html',{'enggobjs':enggobjs})
 
-        else:
-            enggform = EnggRegisterForm(prefix='enggform')
         return render(request,'loginapp/register1.html',{'enggform':enggform,})
 
 def regmail(enm,passwd,eemail):
@@ -562,20 +588,23 @@ def regmail(enm,passwd,eemail):
     send_mail(sub,msg,from_email,to,fail_silently = True)
     return
 
-@login_required
+# @login_required
 def regcustoms(request):
-
+    # user_form = UserCreationForm(request.POST or None)
+    customform = CustomerRegisterForm(request.POST or None ,prefix='customform')
     if request.method == 'POST':
-        customform = CustomerRegisterForm(request.POST,prefix='customform')
 
-        if customform.is_valid():
+        if  customform.is_valid():
+
+            # user = user_form.save()
+            # user.refresh_from_db()
+            # customform = CustomerRegisterForm(request.POST,instance=user.customer)
+            # customform.full_clean()
             customform.save()
+            customobjs = Customer.objects.all()
+            return render(request,'loginapp/customerlist1.html',{'customobjs':customobjs})
 
-            return HttpResponseRedirect(reverse('loginapp:regcustoms'))
-
-    else:
-        customform = CustomerRegisterForm(prefix='customform')
-        return render(request,'loginapp/customregister1.html',{'customform':customform,})
+    return render(request,'loginapp/customregister1.html',{'customform':customform})
 
 @login_required
 def productsave(request):
@@ -690,9 +719,8 @@ def callallocation(request):
           return render(request,'loginapp/callallocate_form.html',{'callallocateform':callallocateform,})
 
 def callallocations(request):
-
+    callallocateform = CallAllocateForm(None,request.POST or None,prefix='callallocateform')
     if request.method == 'POST':
-        callallocateform = CallAllocateForm(None,request.POST,prefix='callallocateform')
         cudate = datetime.datetime.now().strftime('%Y%m%d')
         c=cudate+""+str(random.randint(0,10000))
         print(c)
@@ -715,11 +743,11 @@ def callallocations(request):
             #dte = callallocateform.cleaned_data['start']
             #tme = callallocateform.cleaned_data['call_alloc_time']
 
-            qs = customer.objects.values_list('customer_adrress',flat=True).get(id=cid.id)
-            cn = customer.objects.values_list('customer_name',flat=True).get(id=cid.id)
-            ce = customer.objects.values_list('customer_email',flat=True).get(id=cid.id)
-            pn = customer.objects.values_list('customer_contact_no',flat=True).get(id=cid.id)
-            ct = customer.objects.values_list('customer_city',flat=True).get(id=cid.id)
+            qs = Customer.objects.values_list('customer_adrress',flat=True).get(id=cid.id)
+            cn = Customer.objects.values_list('customer_name',flat=True).get(id=cid.id)
+            ce = Customer.objects.values_list('customer_email',flat=True).get(id=cid.id)
+            pn = Customer.objects.values_list('customer_contact_no',flat=True).get(id=cid.id)
+            ct = Customer.objects.values_list('customer_city',flat=True).get(id=cid.id)
 
             eid = engg.objects.values_list('engg_id',flat=True).get(id=enid.id)
             en = engg.objects.values_list('engg_name',flat=True).get(id=enid.id)
@@ -775,9 +803,7 @@ def callallocations(request):
             #send_mail(subject,message,from_email,to_list,fail_silently = True)
 
             return render(request,'loginapp/calendar1.html')
-    else:
 
-        callallocateform = CallAllocateForm(None)
     return render(request,'loginapp/callallocate_form1.html',{'callallocateform':callallocateform,})
 
 def stockentry(request):
@@ -786,7 +812,13 @@ def stockentry(request):
 
         if form.is_valid():
             form.save()
+            stockobj = stock.objects.all()
+            return render(request,'loginapp/stocklist.html',{'stockobj':stockobj})
+        else:
+            form = StockEntry()
+
             return render(request,'loginapp/stockentry.html',{'form':form})
+
     else:
         form = StockEntry()
         #form.fields['product_quantity'].queryset = stock.objects.aggregate(Sum('product_quantity'))
@@ -873,7 +905,7 @@ class CustomerListView(generic.ListView):
 class Customer1ListView(generic.ListView):
     template_name = 'loginapp/customerlist1.html'
     context_object_name = 'customobjs'
-    model = customer
+    model = Customer
     def get_queryset(self):
         name = self.request.GET.get('q')
         if name:
@@ -883,26 +915,26 @@ class Customer1ListView(generic.ListView):
         return object_list
 
 class CustomerDetailView(generic.DetailView):
-    model = customer
+    model = Customer
     template_name = 'loginapp/customerdetail.html'
 
 class Customer1DetailView(generic.DetailView):
-    model = customer
+    model = Customer
     template_name = 'loginapp/customerdetail1.html'
 
 
 class Customer1UpdateView(UpdateView):
-    model = customer
+    model = Customer
     template_name = 'loginapp/customer_update1.html'
     success_url = reverse_lazy('loginapp:getcustomers')
     form_class = CustomerRegisterForm
 
 class CustomerDeleteView(DeleteView):
-    model = customer
+    model = Customer
     success_url = reverse_lazy('loginapp:getcustomer')
 
 class Customer1DeleteView(DeleteView):
-    model = customer
+    model = Customer
     success_url = reverse_lazy('loginapp:getcustomers')
 
 class EnggListView(generic.ListView):
@@ -1094,7 +1126,8 @@ def enggperf1(request,engg_id):
         callopen = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Open').count()
         callclosed = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Closed').count()
         callpending = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Pending').count()
-        return render(request,'loginapp/enggperformance1.html',{'name':name,'callopen':callopen,'callclosed':callclosed,'callpending':callpending})
+        totaldistance = callcheck.filter(start__icontains=datetime.date.today()).aggregate(Sum('engg_total_distance'))
+        return render(request,'loginapp/enggperformance1.html',{'name':name,'callopen':callopen,'callclosed':callclosed,'callpending':callpending,'totaldistance':totaldistance})
     else:
         return HttpResponseRedirect(reverse('loginapp:getenggs'))
 
@@ -1106,6 +1139,25 @@ def enggperf(request,engg_id):
         callopen = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Open').count()
         callclosed = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Closed').count()
         callpending = callallocate.objects.filter(engineer_id=name.engg_id).filter(call_status='Pending').count()
-        return render(request,'loginapp/enggperformance.html',{'name':name,'callopen':callopen,'callclosed':callclosed,'callpending':callpending})
+        totaldistance = callcheck.filter(start__icontains=datetime.date.today()).aggregate(Sum('engg_total_distance'))
+        return render(request,'loginapp/enggperformance.html',{'name':name,'callopen':callopen,'callclosed':callclosed,'callpending':callpending,'totaldistance':totaldistance})
     else:
         return HttpResponseRedirect(reverse('loginapp:getengg'))
+
+#client Section
+
+def clientlogin(request):
+    return render(request,'loginapp/clientlogin.html')
+
+def clientregister(request):
+    if request.method == 'POST':
+        customform = CustomerRegisterForm(request.POST,prefix='customform')
+
+        if customform.is_valid():
+            customform.save()
+
+            return HttpResponseRedirect(reverse('loginapp:clientlogin'))
+
+    else:
+        customform = CustomerRegisterForm(prefix='customform')
+        return render(request,'loginapp/clientregister.html',{'customform':customform,})

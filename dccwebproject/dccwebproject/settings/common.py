@@ -22,6 +22,7 @@ from decouple import config,Csv
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,6 +38,7 @@ DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,18 +49,30 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'bootstrapform',
+    'rest_framework.authtoken',
     'bootstrap3',
+    'bootstrapform',
     'import_export',
     'widget_tweaks',
     'loginapp',
 
 ]
 
-CONVERSEJS_BOSH_SERVICE_URL = 'https://my-bosh-service.com'
-IMPORT_EXPORT_USE_TRANSACTIONS = True
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# CONVERSEJS_BOSH_SERVICE_URL = 'https://my-bosh-service.com'
+# IMPORT_EXPORT_USE_TRANSACTIONS = True
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
+
+# CACHES = {
+#    'default': {
+#       'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#       'LOCATION': 'my_table_name',
+#    }
+# }
+MIDDLEWARE_CLASSES = (
+    'middleware.shadowdconnector.ShadowdConnectorMiddleware',
+
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -68,11 +82,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'dccwebproject.urls'
-
-CONVERSEJS_AUTO_REGISTER = 'ganakcomputers.xmpp.jp'
 
 TEMPLATES = [
     {
@@ -99,14 +114,21 @@ WSGI_APPLICATION = 'dccwebproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': config('DB_NAME'),
+#         'USERNAME' : config('DB_USER'),
+#         'PASSWORD' : config('DB_PASSWORD'),
+#         'HOST' : config('DB_HOST'),
+#         'PORT' : config('DB_PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USERNAME' : config('DB_USER'),
-        'PASSWORD' : config('DB_PASSWORD'),
-        'HOST' : config('DB_HOST'),
-        'PORT' : config('DB_PORT'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -149,11 +171,11 @@ USE_TZ = True
 
 PROJECT_DIR  = os.path.dirname(__file__)
 
-STATIC_URL = '/dccproject/dccwebproject/loginapp/static/'
+STATIC_URL = '/dccwebproject/loginapp/static/'
 STATIC_ROOT = os.path.join(PROJECT_DIR,'static')
 STATICFILES_DIR = [
-    os.path.join(PROJECT_DIR, 'staticfiles'),'/dccproject/dccwebproject/loginapp/static',
+    os.path.join(PROJECT_DIR, 'staticfiles'),'/dccwebproject/loginapp/static',
 ]
 
-MEDIA_URL = '/dccproject/dccwebproject/dccwebproject/loginapp/media/'
+MEDIA_URL = '/dccwebproject/dccwebproject/loginapp/media/'
 MEDIA_ROOT = os.path.join(PROJECT_DIR,'media')

@@ -139,35 +139,179 @@
           <section class="col-lg-12 connectedSortable">
             <!-- Custom tabs (Charts with tabs)-->
 
-            <div class="container">
+            <div class="container-fluid">
               <div class="row">
                 <div class="register-logo ">
                   <b>Engineer Registration</b>
                 </div>
-                <script>
-                  $(function () {
-                    $('.datepicker').datepicker({
-                      changeMonth: true,
-                      changeYear: true,
-                      yearRange: '1900:2012',
-
-                    });
-                  });
-                </script>
                 <div class=" register-box-body ">
                   <p class="login-box-msg">Register a new Engg</p>
 
                   <form method="post" action="{% url 'loginapp:regengg' %}" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="col-lg-12">
-                      <b></b>
-                      <div class="form-group has-feedback table-responsive">
-                        <table class="table">
-                          {{ enggform|bootstrap }}
-                        </table>
-                      </div>
-                    </div>
 
+                    <div class="row">
+                    <div class="col-sm-4 text-center">
+                   <b>ID *</b>
+                   <div class="form-group has-feedback">
+                     {{enggform.engg_id}}
+
+                     <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                   </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Photo *</b>
+                  <div class="form-group has-feedback">
+                   {{enggform.engg_pic}}
+                   <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                   <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Full name *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_name}}
+                  
+                  <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-6 text-center">
+                  <b>Address *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_address}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-6 text-center">
+                  <b>Permanent Address *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_permanent_address}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Emai-Id *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_email}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Contact Number *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_contact_number}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-phone form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Telephone </b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_tell_no}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-phone form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>City *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_city}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-map-marker form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Branch Code *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_branch_code}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Gender *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_gender}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Birth Date *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_bdate}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Age *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_age}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Joining Date *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_joining_date}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Qualification *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_qual}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Designation *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_designation}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Skill *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_skill}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Password *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_pass}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-pass form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Confirm Password *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_conf_pass}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <span class="glyphicon glyphicon-password form-control-feedback"></span>
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <b>Status *</b>
+                  <div class="form-group has-feedback">
+                  {{enggform.engg_status}}
+                  <!-- <input name="{{field.customer_name}}" type="text" class="form-control" placeholder="">-->
+                  <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  </div>
 
 
 
@@ -182,10 +326,10 @@
                         </div>
                       </div>-->
 
-                      <div class="col-lg-4">
+                      <div class="col-sm-4">
 
                       </div>
-                      <div class="col-lg-4 ">
+                      <div class="col-sm-4 ">
                         <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
                       </div>
                       <!-- /.col -->

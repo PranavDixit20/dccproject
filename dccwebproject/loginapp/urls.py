@@ -4,14 +4,16 @@ from django.urls import path
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
-from django.contrib.auth.views import login
+# from django.contrib.auth.views import login
 
 app_name = 'loginapp'
 urlpatterns = [
- url(r'^chatbox/$',views.chat1,name='chat1'),
+
  url(r'^quickmail/$',views.qmail,name='qmail'),
  url(r'^quickmail2/$',views.qmail2,name='qmail2'),
- url(r'^$',views.index,name='index'),
+ url(r'^$',views.clientlogin,name='clientlogin'),
+ url(r'clientregister/$',views.clientregister,name='clientregister'),
+ url(r'^amclogin/$',views.index,name='index'),
  url(r'customregisters/productsave/$',views.productsave,name='productsave'),
  url(r'productdelete/(?P<pk>[0-9]+)/$',views.deleteprod,name='deleteprod'),
  url(r'^loggin/$',views.loggin, name='loggin'),
@@ -71,12 +73,7 @@ urlpatterns = [
  url(r'^enggtrack/(?P<pk>[0-9]+)/$',views.enggtrack,name='enggtrack'),
  url(r'engglist1/enggperformance/(?P<engg_id>[-\w]+)/$',views.enggperf1,name='enggperf1'),
  url(r'engglist/enggperformance/(?P<engg_id>[-\w]+)/$',views.enggperf,name='enggperf'),
- url(r'^chat/$', views.chat_view, name='chats'),
- url(r'^chat/<int:sender>/<int:receiver>/$', views.message_view, name='chat'),
- url(r'^api/messages/<int:sender>/<int:receiver>/$', views.message_list, name='message-detail'),
- url(r'api/messages/$', views.message_list, name='message-list'),
- url(r'api/users/<int:pk>/$', views.user_list, name='user-detail'),
- url(r'api/users/$', views.user_list, name='user-list'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()

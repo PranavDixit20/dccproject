@@ -1,10 +1,10 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from . models import callallocate,coadmin,customer,engg,callallocate,stock,products
-from . models import Message
+from . models import callallocate,coadmin,Customer,engg,callallocate,stock,products
+# from . models import Message
 
 # Register your models here.
-admin.site.register(Message)
+# admin.site.register(Message)
 
 
 @admin.register(products)
@@ -15,7 +15,7 @@ class ProductsAdmin(ImportExportModelAdmin):
 class EnggAdmin(ImportExportModelAdmin):
     pass
 
-@admin.register(customer)
+@admin.register(Customer)
 class CustomerAdmin(ImportExportModelAdmin):
     pass
 

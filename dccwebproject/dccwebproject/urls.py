@@ -25,9 +25,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^', include('loginapp.urls')),
+    url(r'api/chartdata/', views.ChartData.as_view()),
     url(r'callallocation/', views.calllist.as_view()),
     url(r'eventcall/', views.eventcall.as_view()),
     url(r'eventcall1/', views.eventcall1.as_view()),
-
-
             ]

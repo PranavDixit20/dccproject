@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import json
+from loginapp.pswdgen import *
 from datetime import datetime
 from loginapp.choices import *
 from django.contrib.auth.models import User
@@ -10,49 +13,58 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 
-class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
-    message = models.CharField(max_length=1200)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
+# class Message(models.Model):
+#     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+#     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+#     message = models.CharField(max_length=1200)
+#     timestamp = models.DateTimeField(auto_now_add=True)
+#     is_read = models.BooleanField(default=False)
+#
+#     def __str__(self):
+#         return self.message
+#
+#     class Meta:
+#         ordering = ('timestamp',)
+#
+# class Visitor(models.Model):
+#     user = models.OneToOneField(User,on_delete = models.CASCADE)
+#     session_key = models.CharField(max_length=40,null=True, blank=True)
 
-    def __str__(self):
-        return self.message
-
-    class Meta:
-        ordering = ('timestamp',)
-
-class Visitor(models.Model):
-    user = models.OneToOneField(User,on_delete = models.CASCADE)
-    session_key = models.CharField(max_length=40,null=True, blank=True)
-
-class customer(models.Model):
-    customer_name = models.CharField(max_length=100,null=True,blank=True)
-    customer_adrress = models.CharField(max_length=500,null=True,blank=True)
+class Customer(models.Model):
+    # user = models.OneToOneField(User,on_delete = models.CASCADE)
+    customer_name = models.CharField(max_length=500,null=True,blank=False)
+    customer_adrress = models.CharField(max_length=500,null=True,blank=False)
     customer_city = models.CharField(max_length=500,null=True,blank=True)
     customer_pincode = models.IntegerField(null=True,blank=True)
     cutomer_fax = models.CharField(max_length=11,null=True,blank=True)
     customer_company_type = models.CharField(max_length=50,null=True,blank=True)
-    customer_doc = models.DateField(auto_now_add=True,null=True,blank=True)
-    customer_email = models.EmailField(null=True,blank=True)
+    customer_doc = models.DateField(auto_now_add=True)
+    customer_email = models.EmailField(null=True,blank=False)
     phone_curegex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     customer_contact_no = models.CharField(validators=[phone_curegex],max_length=17,null=True,blank=True)
-    customer_agreement_from = models.DateField(null=True,blank=True)
-    customer_agreement_to = models.DateField(null=True,blank=True)
+    customer_agreement_from = models.DateField(null=True,blank=False)
+    customer_agreement_to = models.DateField(null=True,blank=False)
     customer_agreement_amount = models.DecimalField(max_digits=20, decimal_places=2,null=True,blank=True)
     gstin_curegex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="GSTIN number must be entered in the format: '999999999'. Up to 15 digits allowed.")
     customer_GSTIN_no = models.CharField(validators=[gstin_curegex],max_length=20,null=True,blank=True)
-    customer_product = models.CharField(max_length=50,null=True,blank=True)
-
+    customer_product = models.CharField(max_length=40,null=True,blank=True)
 
     def __str__(self):
-            return '%s' %(self.customer_name)
+            return self.customer_name
+
+# @receiver(post_save,sender=User)
+# def update_customer_profile(sender,instance,created,**kwargs):
+#     if created:
+#         Customer.objects.create(user=instance)
+#     instance.customer.save()
+
 
 class engg(models.Model):
-    engg_id = models.CharField(max_length=10,null=True,blank=False,verbose_name=u"Engineer id")
-    engg_pic = models.ImageField(upload_to='co_pic/profile/',null=True,blank=False,verbose_name=u"Engineer photo")
-    engg_name = models.CharField(max_length=200,null=True,blank=False,verbose_name=u"Engineer Name")
+    pswd = passGen(8)
+    # user = models.OneToOneField(User,on_delete=models.CASCADE)
+    engg_id = models.CharField(max_length=10,null=True,blank=False,verbose_name=u"Engineer id *")
+    engg_pic = models.ImageField(upload_to='co_pic/profile/',null=True,blank=False,verbose_name=u"Engineer photo *")
+    engg_name = models.CharField(max_length=200,null=True,blank=False,verbose_name=u"Engineer Name *")
     engg_address = models.TextField(null=True,blank=False,verbose_name=u"Engineer Address")
     engg_permanent_address=models.TextField(null=True,blank=True,verbose_name=u"Engineer Permanent Address")
     engg_email = models.EmailField(max_length=70,null=True,blank=False,verbose_name=u"Engineer E-mail id")
@@ -68,8 +80,8 @@ class engg(models.Model):
     engg_qual = models.CharField(max_length=50,null=True,blank=True,verbose_name=u"Engineer Qualification")
     engg_designation = models.CharField(max_length=50,null=True,blank=True,verbose_name=u"Engineer Designation")
     engg_skill=models.CharField(choices=CALL_TYPE_CHOICES, default=1,max_length=20,null=True,blank=True,verbose_name=u"Engineer Skill")
-    engg_pass = models.CharField(max_length=16,null=True,blank=False,default='dcc@123',verbose_name=u"Engineer Password")
-    engg_conf_pass = models.CharField(max_length=16,null=True,blank=False,default='dcc@123',verbose_name=u"Engineer Confirm Password")
+    engg_pass = models.CharField(max_length=16,null=True,blank=False,default=pswd,verbose_name=u"Engineer Password")
+    engg_conf_pass = models.CharField(max_length=16,null=True,blank=False,default=pswd,verbose_name=u"Engineer Confirm Password")
     engg_status = models.CharField(choices=STATUS_CHOICES, default=1,max_length=12,null=True,blank=True,verbose_name=u"Engineer Status")
     engg_lat = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
     engg_long = models.DecimalField(max_digits=20, decimal_places=4,null=True,blank=True)
@@ -79,20 +91,25 @@ class engg(models.Model):
     def __str__(self):
         return '%s %s' %(self.engg_id,self.engg_name)
 
+# @receiver(post_save,sender=User)
+# def update_user_engg(sender,instance,created,**kwargs):
+#     if created:
+#         engg.objects.create(user=instance)
+#     instance.engg.save()
 
 
 
 class callallocate(models.Model):
-    customer_id = models.ForeignKey(customer,on_delete=models.CASCADE)
+    customer_id = models.ForeignKey(Customer,on_delete=models.CASCADE)
     title = models.CharField(max_length=200,null=True,blank=True)
     complaint_no = models.CharField(max_length=200,null=True,blank=True)
     comp_address = models.TextField(null=True,blank=True)
     comp_email = models.CharField(max_length=200,null=True,blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=False)
     product = models.CharField(max_length=100,null=True,blank=True)
     description = models.TextField(null=True,blank=True)
-    start = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    start = models.DateTimeField(auto_now_add=True,null=True,blank=False)
     engg_contact = models.CharField(validators=[phone_regex], max_length=17,null=True,blank=True)
     call_status = models.CharField(choices=CALL_CHOICES, default="Open",max_length=7,null=True,blank=True)
     call_type = models.CharField(choices=CALL_TYPE_CHOICES, default="Hardware",max_length=15,null=True,blank=True)
@@ -135,6 +152,7 @@ class callallocate(models.Model):
 
 
 class coadmin(models.Model):
+    pswd = passGen(8)
     co_name = models.CharField(max_length=200,null=True,blank=False,verbose_name=u"Name")
     co_address = models.TextField(null=True,blank=True,verbose_name=u"Address")
     co_email = models.EmailField(max_length=70,null=True,blank=False,verbose_name=u"E-mail")
@@ -149,8 +167,8 @@ class coadmin(models.Model):
     co_joining_date = models.DateTimeField(null=True,blank=True,verbose_name=u"Joining Date")
     co_qual = models.CharField(max_length=50,null=True,blank=True,verbose_name=u"Qualification")
     co_designation = models.CharField(max_length=50,null=True,blank=True,verbose_name=u"Designation")
-    co_pass = models.CharField(max_length=16,null=True,blank=True,default='dcc@123',verbose_name=u"Password")
-    co_conf_pass = models.CharField(max_length=16,null=True,blank=True,default='dcc@123',verbose_name=u"Confirm Password")
+    co_pass = models.CharField(max_length=16,null=True,blank=True,verbose_name=u"Password")
+    co_conf_pass = models.CharField(max_length=16,null=True,blank=True,verbose_name=u"Confirm Password")
     co_status =  models.CharField(choices=STATUS_CHOICES, default='Offline',max_length=12,null=True,blank=True,verbose_name=u" Status")
 
     def get_absolute_url(self):

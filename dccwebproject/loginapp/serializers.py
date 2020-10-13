@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from . models import callallocate,engg,customer
-from . models import Message
+from . models import callallocate,engg,Customer
+# from . models import Message
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,13 +12,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'password']
 
 
-class MessageSerializer(serializers.ModelSerializer):
-    sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
-    receiver = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
-
-    class Meta:
-        model = Message
-        fields = ['sender', 'receiver', 'message', 'timestamp']
+# class MessageSerializer(serializers.ModelSerializer):
+#     sender = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
+#     receiver = serializers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all())
+#
+#     class Meta:
+#         model = Message
+#         fields = ['sender', 'receiver', 'message', 'timestamp']
 
 
 class CallAllocateSerializer(serializers.ModelSerializer):

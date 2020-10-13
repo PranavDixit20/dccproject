@@ -1,0 +1,133 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Login</title>
+
+        <!-- Bootstrap Core CSS -->
+        <link href="{% static 'loginapp/css/bootstrap.min.css' %}" rel="stylesheet">
+
+        <!-- MetisMenu CSS -->
+        <link href="{% static 'loginapp/css/metisMenu.min.css' %}" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="{% static 'loginapp/css/startmin.css' %}" rel="stylesheet">
+
+        <!-- Custom Fonts -->
+        <link href="{% static 'loginapp/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+
+.bg {
+    /* The image used */
+    background-image: url("{% static 'loginapp/dist/img/hardware.jpg' %}");
+
+    /* Full height */
+    height:  100%;
+    width: auto;
+
+
+    /* Center and scale the image nicely */
+    background-position:  center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/* .panel-body {
+background:#F4FABF;} */
+.responsive {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+    width: 50%;
+    max-width: 200px;
+    height: 50%;
+    margin: auto;
+    padding: 20px;
+
+
+}
+</style>
+    </head>
+    <body>
+        <div class="container bg ">
+
+            <div class="row">
+
+                <div class="col-md-4 col-md-offset-4 ">
+                    <div class="login-panel panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center"><b>CLIENT LOGIN</b></h3>
+                        </div>
+                        <div class="panel-body center">
+                            <form role="form" action="{% url 'loginapp:loggin' %}" method="post">
+                                <fieldset>
+                                  {% csrf_token %}
+
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="username" required="true" name="username" type="text" autofocus>
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="Password" required="true" name="password" type="password" value="">
+                                        </div>
+
+                                    <!-- Change this to a button or input when using this as a form -->
+                                    <div class="form-group">
+                                    <input type="submit" class = "form-control btn btn-success" value="login">
+                                  </div>
+                                </fieldset>
+                                <div class="form-group">
+                                <a href="{% url 'loginapp:clientregister' %}" class="form-control btn btn-success">Register</a>
+                              </div>
+                            </form>
+                            {% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- jQuery -->
+        <script src="{% static 'loginapp/js/jquery.min.js' %}"></script>
+
+        <!-- Bootstrap Core JavaScript -->
+        <script src="{% static 'loginapp/js/bootstrap.min.js' %}"></script>
+
+        <!-- Metis Menu Plugin JavaScript -->
+        <script src="{% static 'loginapp/js/metisMenu.min.js' %}"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="{% static 'loginapp/js/startmin.js' %}"></script>
+
+
+    </body>
+</html>

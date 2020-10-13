@@ -173,45 +173,125 @@
           <section class="col-lg-12 connectedSortable">
             <!-- Custom tabs (Charts with tabs)-->
 
-            <div class="container">
+            <div class="container-fluid">
               <div class="row">
                 <div class="register-logo ">
                   <a href="{% url 'loginapp:dash1' %}"><b>Admin Stock Entry</b></a>
                 </div>
-                <script>
-                  $(function () {
-                    $('.datepicker').datepicker({
-                      changeMonth: true,
-                      changeYear: true,
-                      yearRange: '1900:2012',
-
-                    });
-                  });
-                </script>
-
 
                 <div class=" register-box-body ">
                   <p class="login-box-msg">Enter New Stock</p>
 
                   <form method="post" action="{% url 'loginapp:stockentry' %}" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="col-lg-12">
-                      <b></b>
-                      <div class="form-group has-feedback table-responsive">
-                        <table class="table">
-                          {{ form|bootstrap }}
-                        </table>
-                      </div>
-                    </div>
 
+                    <div class="row">
+                   <div class="col-sm-4 text-center">
+                  <!-- <b>Product name *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_name|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Size *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_size|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-envelope form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Quantity *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_quantity|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-phone form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Code</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_code|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-phone-alt form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Recieved Date *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_recieved_date|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-map-marker form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Provider Name *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_provider_name|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-map-marker form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Total Product Quantity *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.Total_product_quantity|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-user form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Serial No. * :</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_serial_no|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-certificate form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Model * :</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_model|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-certificate form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Model ID *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_model_id|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-number form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Description *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_description|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-map-marker form-control-feedback"></span> -->
+                  </div>
+                  </div>
+                  <div class="col-sm-4 text-center">
+                  <!-- <b>Product Warranty *</b> -->
+                  <div class="form-group has-feedback">
+                    {{form.product_warranty|bootstrap}}
+
+                    <!-- <span class="glyphicon glyphicon-picture form-control-feedback"></span> -->
+                  </div>
+                </div>
+
+                  </div>
 
 
                     <div class="row">
 
-                      <div class="col-lg-4">
+                      <div class="col-sm-4">
 
                       </div>
-                      <div class="col-lg-4 ">
+                      <div class="col-sm-4 ">
                         <button type="submit" class="btn btn-primary btn-block btn-flat">Save</button>
                       </div>
                       <!-- /.col -->

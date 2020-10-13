@@ -176,10 +176,10 @@
      <button type="submit" class="btn btn-primary btn-block btn-flat">Import</button>
      </form>
     </div>
-            <div class="container">
+            <div class="container-fluid">
               <div class="row">
                 <div class="register-logo ">
-                  <a href="{% url 'loginapp:dash1' %}"><b>Product list</b></a>
+                <br>  <a href="{% url 'loginapp:dash1' %}"><b>Product list</b></a>
                 </div>
                 <div class=" register-box-body ">
                   <p class="container">Add Customer Products</p>
@@ -191,10 +191,12 @@
                         {{form|bootstrap}}
                     </div>
                     <div class="row">
-                      <div class="col-lg-4">
+                      <div class="col-sm-4">
                       </div>
-                      <div class="col-lg-4 ">
+                      <div class="col-sm-4 ">
                         <button type="submit" class="btn btn-primary btn-block btn-flat">Save</button>
+                      </div>
+                      <div class="col-sm-4">
                       </div>
                       <!-- /.col -->
                       <div class="col-lg-12">

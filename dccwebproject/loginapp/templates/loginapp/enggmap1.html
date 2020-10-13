@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="refresh" content="10">
+  <!-- <meta http-equiv="refresh" content="10"> -->
   <title>Admin Engineer Tracking</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -145,22 +145,9 @@
           <li>
             <a href="{% url 'loginapp:calendars' %}">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-red">3</small>
-                <small class="label pull-right bg-blue">17</small>
-              </span>
             </a>
           </li>
-          <li>
-            <a href="pages/mailbox/mailbox.html">
-              <i class="fa fa-envelope"></i> <span>Mailbox</span>
-              <span class="pull-right-container">
-                <small class="label pull-right bg-yellow">12</small>
-                <small class="label pull-right bg-green">16</small>
-                <small class="label pull-right bg-red">5</small>
-              </span>
-            </a>
-          </li>
+
 
       </section>
       <!-- /.sidebar -->
@@ -200,8 +187,7 @@
 
                 var options = {
                 zoom:8,
-                center:{lat:19.7515,lng:75.7139}
-
+                center:{lat:19.7515,lng:75.7139},
                 }
                 //new Map
                 var map = new google.maps.Map(document.getElementById('map'),options);
@@ -213,7 +199,7 @@
                 {
 
                 coords: { lat:{{list.engg_lat}},lng:{{list.engg_long}} },
-                content:'{{list.cust_city}}'
+                content:'<p>{{list.engg_name}}</p><p>{{list.battery_percentage}}</p><p>{{list.complaint_no}}</p>'
 
               },
                   {%endfor%}
@@ -244,7 +230,10 @@
                 });
                 }
                 }
+
                 }
+                // setInterval(3000,initMap());
+
 
 
                 </script>

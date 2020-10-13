@@ -1,8 +1,8 @@
 from dccwebproject.settings.common import *
-
+from decouple import config,Csv
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0@^9uca^^u3v2^b8^()^&n4eq=)dc!u7m@no-m*wkjv3+k*=8y'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -15,11 +15,11 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'DB_NAME': 'djangodatabase',
-        'DB_USERNAME' : 'root',
-        'DB_PASSWORD' : '',
-        'DB_HOST' : 'localhost',
-        'DB_PORT' : '3306',
+        'NAME': config('DB_NAME'),
+        'USER' : config('DB_USER'),
+        'PASSWORD' : config('DB_PASSWORD'),
+        'HOST' : config('DB_HOST'),
+        'PORT' : config('DB_PORT'),
     }
 }
 

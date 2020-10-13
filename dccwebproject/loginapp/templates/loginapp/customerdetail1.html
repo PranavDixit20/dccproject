@@ -149,7 +149,7 @@
         </h1>
         <ol class="breadcrumb">
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active">Dashboard</li>
+          <li class="active"><a href="{% url 'loginapp:getcustomers' %}">Customer List</a></li>
         </ol>
       </section>
 
@@ -187,16 +187,18 @@
                              <tr>
                                <th>ID</th>
                                <th>User</th>
-                               <th>Contact</th>
+                               <th>Address</th>
+                               <th>Company Type</th>
                                <th>City</th>
-                               <th>Pincode</th>
+                               <th>GSTIN</th>
                              </tr>
                              <tr>
                                <td>{{customer.id}}</td>
                                <td>{{customer.customer_name}}</td>
-                               <td>{{customer.customer_contact_no}}</td>
+                               <td>{{customer.customer_adrress}}</td>
+                               <td>{{customer.customer_company_type}}</td>
                                 <td>{{customer.customer_city}}</td>
-                               <td>{{customer.customer_pincode}}</td>
+                               <td>{{customer.customer_GSTIN_no}}</td>
                              </tr>
 
                            </table>
